@@ -27,7 +27,7 @@ export default class App extends Component<{}> {
           Welcome to React Native!
         </Text>
         <Text style={styles.instructions}>
-          I have made my presence known. FEAR ME!!!
+          I have made my presence known. FEAR ME!!! AGAIN!!!!!
         </Text>
         <Text style={styles.instructions}>
           {instructions}
