@@ -27,7 +27,7 @@ export default class App extends Component<{}> {
           I made a change to branch kcarhart.
         </Text>
         <Text style={styles.instructions}>
-          I have made my presence known. FEAR ME!!! AGAIN!!!!!
+          Tis only a flesh wound!
         </Text>
         <Text style={styles.instructions}>
           {instructions}
