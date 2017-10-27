@@ -24,7 +24,7 @@ export default class App extends Component<{}> {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to React Native!
+          I made a change to branch kcarhart.
         </Text>
         <Text style={styles.instructions}>
           Tis only a flesh wound!
