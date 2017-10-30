@@ -24,7 +24,8 @@ export default class App extends Component<{}> {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          I made a change to branch kcarhart.
+          I made a change to branch kcarhart
+          I did a thing.
         </Text>
         <Text style={styles.instructions}>
           Brad's code changes
