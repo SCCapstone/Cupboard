@@ -9,7 +9,8 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  TextInput
 } from 'react-native';
 
 const instructions = Platform.select({
@@ -19,13 +20,36 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
+class SignIn extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: this.props.credential
+    };
+  }
+
+  render() {
+    return (
+      <TextInput
+        style={{height: 40, width: '75%', marginBottom: 10, borderColor: 'gray', borderWidth: 1}}
+        onChangeText={(text) => this.setState({text})}
+        onFocus={(text) => this.setState({text: ''})}
+        value={this.state.text}
+      />
+    );
+  }
+}
+
 export default class App extends Component<{}> {
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to Cupboard!
+          Welcome to
+          <Text style={{fontWeight: 'bold'}}> Cupboard!</Text>
         </Text>
+        <SignIn credential={"Username"}/>
+        <SignIn credential={"Password"}/>
       </View>
     );
   }
@@ -41,7 +65,7 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: 20
   },
   instructions: {
     textAlign: 'center',
