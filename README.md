@@ -15,4 +15,4 @@ Manage your foods, shopping lists, and recipes with one simple application.
 ### Notes:
 
 #### Adding new react-native-firebase modules:
-Make sure you run ``./gradlew.bat` clean in your android folder before attempting to build.
+Make sure you run `./gradlew.bat` clean in your android folder before attempting to build.
