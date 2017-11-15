@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
+import LoginScreen from './LoginScreen';
+import HomeScreen from './HomeScreen';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
@@ -116,41 +118,12 @@ class App extends Component<{}> {
   }
 }
 
-const loginScreen = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Login Screen</Text>
-      <Button
-          onPress={() => navigation.navigate('HomeS')}
-          title="Go to Home"
-      />
-    </View>
-);
-
-const HomeScreen = () => (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen</Text>
-      <Button
-          onPress={() => navigation.navigate('LoginS')}
-          title="Go to Login"
-      />
-    </View>
-);
-
 //make sure this is near the bottom
 const RootNavigator = StackNavigator({
-    LoginS: {
-        screen: loginScreen,
-        navigationOptions: {
-            headerTitle: 'Login',
-        },
-    },
-    HomeS: {
-        screen: HomeScreen,
-        navigationOptions: {
-            headerTitle: 'Home',
-        },
-    },
+    LoginS: { screen: LoginScreen},
+    HomeS: { screen: HomeScreen },
 });
+
 export default RootNavigator;
 
 const styles = StyleSheet.create({
