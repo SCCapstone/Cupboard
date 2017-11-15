@@ -9,29 +9,106 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  TextInput,
+  Button,
+  Alert
 } from 'react-native';
+import firebase from 'react-native-firebase';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+const firebaseConfig = {
+  apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
+  authDomain: 'the-cupboard-app.firebaseapp.com',
+  databaseURL: 'https://the-cupboard-app.firebaseio.com/',
+  storageBucket: 'gs://the-cupboard-app.appspot.com',
+  appId: '1:449840930413:android:7f854998b9cb29a1',
+  messagingSenderId: '449840930413',
+  projectId: 'the-cupboard-app'
+};
+
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+class SignIn extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: this.props.credential
+    };
+  }
+
+  tempfunction(text) {
+    if (this.props.credential === "Username") {
+      this.props.self.setState({username: text});
+    } else {
+      this.props.self.setState({password: text});
+    }
+  }
+
+  render() {
+    return (
+      <TextInput
+        style={{height: 40, width: '75%', paddingLeft: 10, marginBottom: 10, borderColor: 'lightgray', borderWidth: 1}}
+        onChangeText={(text) => {
+            this.setState({text});
+            this.tempfunction(text);
+          }
+        }
+        onFocus={(text) => this.setState({text: ''})}
+        value={this.state.text}
+        secureTextEntry={this.props.secure}
+      />
+    );
+  }
+}
 
 export default class App extends Component<{}> {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      username: '',
+      password: ''
+    }
+  }
+
+  signIn() {
+    firebase.auth().signInWithEmailAndPassword(this.state.username, this.state.password)
+      .then((user) => {
+        Alert.alert('Signed in successfully!');
+      }).catch( (err) => {
+
+        Alert.alert('Incorrect log in!');
+    });
+  }
+
+  createUser() {
+    firebase.auth().createUserWithEmailAndPassword(this.state.username, this.state.password)
+      .then((user) => {
+        Alert.alert('Created new account!');
+      }).catch( (err) => {
+        console.log(err);
+        Alert.alert('Unable to create account.');
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-        blah
         </Text>
-        <Text style={styles.instructions}>
-          Brad's code changes
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
+        <SignIn credential={"Username"} self={this} secure={false}/>
+        <SignIn credential={"Password"} self={this} secure={true}/>
+        <Button
+          onPress={this.signIn.bind(this)}
+          title="Sign in"
+          color="darkblue"
+        />
+        <Button
+          onPress={this.createUser.bind(this)}
+          title="Create account"
+          color="darkgreen"
+        />
       </View>
     );
   }
@@ -47,7 +124,7 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: 20
   },
   instructions: {
     textAlign: 'center',

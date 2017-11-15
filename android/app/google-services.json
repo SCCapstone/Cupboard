@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "449840930413",
+    "firebase_url": "https://the-cupboard-app.firebaseio.com",
+    "project_id": "the-cupboard-app",
+    "storage_bucket": "the-cupboard-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449840930413:android:7f854998b9cb29a1",
+        "android_client_info": {
+          "package_name": "com.cupboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449840930413-gmi1idl7i8o3fou0isjikhl2mljgb0g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkf6M1pdpgnpTsIp8PD42kFZHei4itqKE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
