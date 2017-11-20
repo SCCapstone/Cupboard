@@ -10,6 +10,9 @@ import {
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 import styles from './App'
 
 const firebaseConfig = {

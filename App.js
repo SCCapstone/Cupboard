@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  Alert
+  StyleSheet
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
+
+
 import LoginScreen from './LoginScreen';
 import HomeScreen from './HomeScreen';
 
