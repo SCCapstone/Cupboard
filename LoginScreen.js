@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import {
-    Platform,
     StyleSheet,
     Text,
     View,
-    TextInput,
     Alert
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { FormLabel, FormInput, Button} from 'react-native-elements'
 
 const firebaseConfig = {
@@ -61,6 +58,10 @@ class SignIn extends Component {
 }
 
 export default class LoginScreen extends Component<{}> {
+
+    static navigationOptions = {
+      header: null
+    };
 
     constructor(props) {
         super(props);
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    height: "75%"
+    height: "80%",
   },
   title: {
     fontSize: 19,

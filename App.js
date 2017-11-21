@@ -22,10 +22,15 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 //make sure this is near the bottom
-const RootNavigator = StackNavigator({
-    LoginS: { screen: LoginScreen},
-    HomeS: { screen: HomeScreen },
-});
+const RootNavigator = StackNavigator(
+  {
+    LoginS: {screen: LoginScreen},
+    HomeS: {screen: HomeScreen},
+  },
+  {
+    // headerMode: 'screen'
+  }
+);
 
 export default RootNavigator;
 
