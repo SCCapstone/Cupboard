@@ -5,15 +5,12 @@ import {
     Text,
     View,
     TextInput,
-    Button,
     Alert
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-
-import styles from './App'
+import { FormLabel, FormInput, Button} from 'react-native-elements'
 
 const firebaseConfig = {
     apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
@@ -36,8 +33,8 @@ class SignIn extends Component {
     }
 
     tempfunction(text) {
-        if (this.props.credential === "Username") {
-            this.props.self.setState({username: text});
+        if (this.props.credential === "Email") {
+            this.props.self.setState({username: text})
         } else {
             this.props.self.setState({password: text});
         }
@@ -45,17 +42,20 @@ class SignIn extends Component {
 
     render() {
         return (
-            <TextInput
-                style={{height: 40, width: '75%', paddingLeft: 10, marginBottom: 10, borderColor: 'lightgray', borderWidth: 1}}
+            <View>
+              <FormLabel>
+                {this.props.credential}
+              </FormLabel>
+              <FormInput
                 onChangeText={(text) => {
-                    this.setState({text});
-                    this.tempfunction(text);
-                }
-                }
-                onFocus={(text) => this.setState({text: ''})}
+                  this.setState({text});
+                  this.tempfunction(text);
+                }}
                 value={this.state.text}
+                onFocus={(text) => this.setState({text: ''})}
                 secureTextEntry={this.props.secure}
-            />
+              />
+            </View>
         );
     }
 }
@@ -94,31 +94,75 @@ export default class LoginScreen extends Component<{}> {
     render() {
         const { navigate } = this.props.navigation;
         return (
-            <View style={styles.container}>
-                <Text style={styles.welcome}>
+            <View style={styles.page}>
+                <Text style={styles.title}>
+                  Welcome to Cupboard!
                 </Text>
-                <SignIn credential={"Username"} self={this} secure={false}/>
+                <SignIn credential={"Email"} self={this} secure={false}/>
                 <SignIn credential={"Password"} self={this} secure={true}/>
-                <Button
+                <View style={styles.buttons}>
+                  <Button
+                    containerViewStyle={styles.buttonContainer}
+                    buttonStyle={styles.button}
+                    backgroundColor="white"
                     onPress={this.signIn.bind(this)}
-                    title="Sign in"
-                    color="darkblue"
-                />
-                <Button
+                    title="SIGN IN"
+                    raised
+                    color="black"
+                  />
+                  <Button
+                    containerViewStyle={styles.buttonContainer}
+                    buttonStyle={styles.button}
+                    backgroundColor="#875F9A"
                     onPress={() => {
-                        this.createUser.bind(this)
-                        navigate('HomeS')
-                    }
-                    }
-                    title="Create account"
-                    color="lightgreen"
-                />
-                <Button
+                      this.createUser.bind(this)
+                      navigate('HomeS')
+                    }}
+                    title="CREATE ACCOUNT"
+                    color="white"
+                    raised
+                  />
+                  <Button
+                    containerViewStyle={styles.buttonContainer}
+                    buttonStyle={styles.button}
                     onPress={() => {navigate('HomeS')}}
-                    title="Go Home"
-                    color="Red"
-                />
+                    title="HOME"
+                    color="white"
+                    backgroundColor="#9D2933"
+                    raised
+                  />
+                </View>
+
             </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "75%"
+  },
+  title: {
+    fontSize: 19,
+    fontWeight: 'bold',
+  },
+  activeTitle: {
+    color: 'red',
+  },
+  button: {
+    borderRadius: 10
+  },
+  buttonContainer: {
+    alignSelf: "center",
+    marginBottom: 5,
+    width: "auto",
+    borderRadius: 10
+  },
+  buttons: {
+    flexDirection: "row"
+  }
+});
+
