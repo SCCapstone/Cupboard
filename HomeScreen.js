@@ -4,15 +4,16 @@ import {
   View,
   StyleSheet
 } from 'react-native';
-import { Button } from 'react-native-elements'
+import { Button } from 'react-native-elements';
+import { style } from "./Styles";
 
 export default class HomeScreen extends Component<{}> {
   render() {
     return (
-      <View style={styles.page}>
+      <View style={style.containerCenterContent}>
         <Button
-          containerViewStyle={styles.buttonContainer}
-          buttonStyle={styles.button}
+          containerViewStyle={style.buttonContainer}
+          buttonStyle={style.button}
           title='MY CUPBOARD'
           onPress={() => {
             this.props.navigation.navigate("CupboardS");
@@ -20,16 +21,16 @@ export default class HomeScreen extends Component<{}> {
         />
         <Button
           title='RECIPES'
-          containerViewStyle={styles.buttonContainer}
-          buttonStyle={styles.button}
+          containerViewStyle={style.buttonContainer}
+          buttonStyle={style.button}
           onPress={() => {
             this.props.navigation.navigate("RecipesS");
           }}
         />
         <Button
           title='SHOPPING LISTS'
-          containerViewStyle={styles.buttonContainer}
-          buttonStyle={styles.button}
+          containerViewStyle={style.buttonContainer}
+          buttonStyle={style.button}
           onPress={() => {
             this.props.navigation.navigate("ListsS");
           }}
@@ -38,32 +39,3 @@ export default class HomeScreen extends Component<{}> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  },
-  title: {
-    fontSize: 19,
-    fontWeight: 'bold',
-  },
-  activeTitle: {
-    color: 'red',
-  },
-  button: {
-    borderRadius: 10,
-    padding: 25,
-  },
-  buttonContainer: {
-    alignSelf: "center",
-    marginBottom: 30,
-    width: 200,
-    borderRadius: 10,
-  },
-  buttons: {
-    flexDirection: "row"
-  }
-});
