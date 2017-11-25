@@ -8,6 +8,10 @@ import { StackNavigator } from 'react-navigation';
 
 import LoginScreen from './LoginScreen';
 import HomeScreen from './HomeScreen';
+import CupboardScreen from './CupboardScreen';
+import RecipesScreen from './RecipesScreen';
+import ListsScreen from './ListsScreen';
+
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
@@ -24,31 +28,37 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 //make sure this is near the bottom
 const RootNavigator = StackNavigator(
   {
-    LoginS: {screen: LoginScreen},
-    HomeS: {screen: HomeScreen},
+    LoginS: {
+      screen: LoginScreen,
+      navigationOptions: {
+        header: null
+      }
+    },
+    HomeS: {
+      screen: HomeScreen,
+      navigationOptions: {
+        headerTitle: "Home"
+      }
+    },
+    CupboardS: {
+      screen: CupboardScreen,
+      navigationOptions: {
+        headerTitle: "My Cupboard"
+      }
+    },
+    RecipesS: {
+      screen: RecipesScreen,
+      navigationOptions: {
+        headerTitle: "My Recipes"
+      }
+    },
+    ListsS: {
+      screen: ListsScreen,
+      navigationOptions: {
+        headerTitle: "My Shopping Lists"
+      }
+    },
   },
-  {
-    // headerMode: 'screen'
-  }
 );
 
 export default RootNavigator;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginBottom: 20
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
