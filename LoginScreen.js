@@ -6,8 +6,8 @@ import {
   Alert
 } from 'react-native';
 import firebase from 'react-native-firebase';
-import { StackNavigator } from 'react-navigation';
 import { FormLabel, FormInput, Button} from 'react-native-elements'
+import { style } from './Styles'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
@@ -29,7 +29,7 @@ class SignIn extends Component {
     };
   }
 
-  tempfunction(text) {
+  extract(text) {
     if (this.props.credential === "Email") {
       this.props.self.setState({username: text})
     } else {
@@ -46,10 +46,16 @@ class SignIn extends Component {
         <FormInput
           onChangeText={(text) => {
             this.setState({text});
-            this.tempfunction(text);
+            this.extract(text);
           }}
           value={this.state.text}
-          onFocus={(text) => this.setState({text: ''})}
+          onFocus={() => {
+            if (this.state.text === this.props.credential) {
+              this.setState({
+                text: ""
+              })
+            }
+          }}
           secureTextEntry={this.props.secure}
         />
       </View>
@@ -90,16 +96,16 @@ export default class LoginScreen extends Component<{}> {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style={styles.page}>
-        <Text style={styles.title}>
+      <View style={style.containerCenterContent}>
+        <Text style={style.title}>
           Welcome to Cupboard!
         </Text>
         <SignIn credential={"Email"} self={this} secure={false}/>
         <SignIn credential={"Password"} self={this} secure={true}/>
-        <View style={styles.buttons}>
+        <View style={style.buttons}>
           <Button
-            containerViewStyle={styles.buttonContainer}
-            buttonStyle={styles.button}
+            containerViewStyle={style.buttonContainer}
+            buttonStyle={style.button}
             backgroundColor="white"
             onPress={this.signIn.bind(this)}
             title="SIGN IN"
@@ -107,8 +113,8 @@ export default class LoginScreen extends Component<{}> {
             color="black"
           />
           <Button
-            containerViewStyle={styles.buttonContainer}
-            buttonStyle={styles.button}
+            containerViewStyle={style.buttonContainer}
+            buttonStyle={style.button}
             backgroundColor="#875F9A"
             onPress={() => {
               this.createUser.bind(this);
@@ -118,8 +124,8 @@ export default class LoginScreen extends Component<{}> {
             raised
           />
           <Button
-            containerViewStyle={styles.buttonContainer}
-            buttonStyle={styles.button}
+            containerViewStyle={style.buttonContainer}
+            buttonStyle={style.button}
             onPress={() => {navigate('HomeS')}}
             title="HOME"
             color="white"
@@ -127,36 +133,7 @@ export default class LoginScreen extends Component<{}> {
             raised
           />
         </View>
-
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  },
-  title: {
-    fontSize: 19,
-    fontWeight: 'bold',
-  },
-  activeTitle: {
-    color: 'red',
-  },
-  button: {
-    borderRadius: 10
-  },
-  buttonContainer: {
-    alignSelf: "center",
-    marginBottom: 5,
-    width: "auto",
-    borderRadius: 10
-  },
-  buttons: {
-    flexDirection: "row"
-  }
-});
