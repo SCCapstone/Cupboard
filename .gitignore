@@ -51,3 +51,9 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+# ****** Custom ******
+#
+# The above ones are defaults. Ones below this are added manually.
+
+.tmp/*
