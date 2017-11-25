@@ -55,5 +55,4 @@ buck-out/
 # ****** Custom ******
 #
 # The above ones are defaults. Ones below this are added manually.
-
-.tmp/*
+.tmp/
