@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+    Alert
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { style } from "./Styles";
