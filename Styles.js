@@ -26,6 +26,7 @@ const style = StyleSheet.create({
   buttons: {
     flexDirection: "row"
   }
+
 });
 
 export { style }
