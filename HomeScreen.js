@@ -6,8 +6,17 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { style } from "./Styles";
+import firebase from 'react-native-firebase';
 
 export default class HomeScreen extends Component<{}> {
+    signOut() {
+        firebase.auth().signOut()
+            .then((user) => {
+                this.props.navigation.navigate('LoginS');
+            }).catch( (err) => {
+            Alert.alert('Sign Out Failed!');
+        });
+    }
   render() {
     return (
       <View style={style.containerCenterContent}>
@@ -35,6 +44,14 @@ export default class HomeScreen extends Component<{}> {
             this.props.navigation.navigate("ListsS");
           }}
         />
+          <Button
+              title='SIGN OUT'
+              containerViewStyle={style.buttonContainer}
+              buttonStyle={style.button}
+              onPress={
+                  this.signOut.bind(this)
+              }
+          />
       </View>
     );
   }
