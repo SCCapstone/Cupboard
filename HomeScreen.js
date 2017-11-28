@@ -19,8 +19,13 @@ export default class HomeScreen extends Component<{}> {
         });
     }
   render() {
+    const {params} = this.props.navigation.state;
+    const user = (typeof params === 'undefined') ? {email: 'anonymous'} : params;
+
     return (
       <View style={style.containerCenterContent}>
+
+        <Text>Hello {user.email}!</Text>
         <Button
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
