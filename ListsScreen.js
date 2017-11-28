@@ -13,12 +13,15 @@ import { style } from "./Styles";
 
 const list = [
   {
+    key: 'asdf',
     title: 'Appointments',
   },
   {
+    key: 'jkl',
     title: 'Trips',
   },
   {
+    key: 'lmnop',
     title: 'New List',
   },
 ];
@@ -29,17 +32,25 @@ export default class ListsScreen extends Component<{}> {
     super(props);
 
     this.state = {
-      data: list
+      data: list,
+      key: 1
     };
   }
 
   addToList() {
+    let newKey = this.state.key;
     let newData = this.state.data;
-    newData.push([{title: "something"}]);
+    newData.push({key: this.state.key, title: "something"});
 
+    newKey += 1;
     this.setState({
-      data: newData
+      data: newData,
+      key: newKey
     });
+  }
+
+  // TODO: Load all the recipes from firebase in here into the data state
+  componentDidMount(){
   }
 
   render() {
@@ -51,11 +62,10 @@ export default class ListsScreen extends Component<{}> {
         <FlatList
           data={this.state.data}
           renderItem={({item}) => <ListItem
-            key={item.title}
+            key={item.key}
             title={item.title}
-            leftIcon={{name: item.icon}}
           />}
-          keyExtractor={(item, index) => item.title}
+          keyExtractor={(item, index) => item.key}
           extraData={this.state}
         />
 
