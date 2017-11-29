@@ -4,17 +4,72 @@ import {
   View,
   Alert
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, FormLabel, FormInput } from 'react-native-elements';
 import { style } from "./Styles";
 
-export default class EntryScreen extends Component<{}> {
+class FoodField extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: this.props.field
+    };
+  }
+
+  extract(text) {
+    if (this.props.field === "Food Name") {
+      this.props.self.setState({foodName: text})
+    } else if (this.props.field === "Quantity"){
+      this.props.self.setState({quantity: text})
+    } else {
+      this.props.self.setState({expires: text});
+    }
+  }
+
   render() {
     return (
-      <View style={style.containerCenterContent}>
+      <View>
+        <FormLabel>
+          {this.props.field}
+        </FormLabel>
+        <FormInput
+          onChangeText={(text) => {
+            this.setState({text});
+            this.extract(text);
+          }}
+          value={this.state.text}
+          onFocus={() => {
+            if (this.state.text === this.props.field) {
+              this.setState({
+                text: ""
+              })
+            }
+          }}
+        />
+      </View>
+    );
+  }
+}
+
+export default class EntryScreen extends Component<{}> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      foodName: '',
+      quantity: '',
+      expires: ''
+    }
+  }
+  render() {
+    return (
+      <View>
+        <FoodField field={"Food Name"} self={this} />
+        <FoodField field={"Quantity"} self={this} />
+        <FoodField field={"Expires"} self={this} />
         <Button
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
-          title='USELESS BUTTON'
+          title='SUBMIT'
         />
       </View>
     );
