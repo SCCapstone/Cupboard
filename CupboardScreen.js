@@ -4,7 +4,8 @@ import {
   View,
   StyleSheet,
   TextInput,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native';
 import { style } from './Styles'
 import { Button } from 'react-native-elements'
@@ -14,15 +15,14 @@ import { SearchBar } from 'react-native-elements'
 //https://react-native-training.github.io/react-native-elements/API/searchbar/
 
 //TODO:: put in search functionality
-//TODO:: implement deleting of rows
 //TODO:: add 'edit item' and 'add to list' button functionality
 //TODO:: Read in data from user/firebase to SECTIONS
 //TODO:: Look into accordian separators
-
+//TODO:: add "sort by" button at the top
 
 const SECTIONS = [ //PLACEHOLDER. THIS WILL BE READ IN FROM USER/FIREBASE DATA.
   {
-    title: 'Cereal',
+    title: 'Cereal1',
     noItems: '2',
     content: 'Calories - 250\nExpires - 10/20/17',
   },
@@ -30,7 +30,32 @@ const SECTIONS = [ //PLACEHOLDER. THIS WILL BE READ IN FROM USER/FIREBASE DATA.
     title: 'Baked beans',
     noItems: '3',
     content: 'Calories - 20\nExpires - 10/21/17',
-  }
+  },
+  {
+      title: 'Cereal2',
+      noItems: '2',
+      content: 'Calories - 250\nExpires - 10/20/17',
+  },
+  {
+      title: 'Cereal3',
+      noItems: '2',
+      content: 'Calories - 250\nExpires - 10/20/17',
+  },
+  {
+      title: 'Cereal4',
+      noItems: '2',
+      content: 'Calories - 250\nExpires - 10/20/17',
+  },
+  {
+      title: 'Cereal5',
+      noItems: '2',
+      content: 'Calories - 250\nExpires - 10/20/17',
+  },
+  {
+      title: 'Cereal6',
+      noItems: '2',
+      content: 'Calories - 250\nExpires - 10/20/17',
+  },
 ];
 
 export default class CupboardScreen extends Component<{}> {
@@ -61,8 +86,8 @@ export default class CupboardScreen extends Component<{}> {
     //TODO:: implement this function
   }
 
-  deleteItem() {
-    //TODO:: implement this function
+  deleteItem(index) {
+    delete(SECTIONS[index])
   }
 
   onChanged(text,arrayvar){
@@ -80,27 +105,28 @@ export default class CupboardScreen extends Component<{}> {
       this.setState({ quantity: arrayvar });
   }
 
-  _renderHeader(section) {
+  _renderHeader(section,index) {
     var arrayvar = this.state.quantity.slice()
     arrayvar.push(section.noItems)
     return (
-      <View style={styles.containerCenterContent}>
-        <Text>{section.title}</Text>
+      <View style={styles.accordianHeader}>
+        <Text style={styles.accordianHeader}>{section.title}</Text>
         <TextInput
-          //style={styles.textInput}
+          style={styles.smallerTextInput}
           keyboardType='numeric'
           onChangeText={(text)=> this.onChanged(text,arrayvar)}
           placeholder={section.noItems.toString()}
           value={this.state.quantity}
-          maxLength={10}  //setting limit of input
+          maxLength={100}  //setting limit of input
         />
         <Button //SHOULD BE SWIPE TO DELETE, IS BUTTON FOR NOW
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
             backgroundColor="#ffffff"
-            onPress={
-              this.deleteItem
-            }
+            onPress={() => {
+              this.deleteItem(index)
+            }}
+
             title="Delete Item"
             color="black"
             raised
@@ -112,9 +138,9 @@ export default class CupboardScreen extends Component<{}> {
   _renderContent(section) {
     return (
       <View style={styles.containerCenterContent}>
-        <Text>{section.content}</Text>
+        <Text style={styles.accordianHeader}>{section.content}</Text>
           <View style={style.accordianButtons}>
-          <Button
+            <Button
               containerViewStyle={style.buttonContainer}
               buttonStyle={style.button}
               backgroundColor="#ffffff"
@@ -124,18 +150,18 @@ export default class CupboardScreen extends Component<{}> {
               title="Add to List"
               color="black"
               raised
-          />
-          <Button
-          containerViewStyle={style.buttonContainer}
-          buttonStyle={style.button}
-          backgroundColor="#ffffff"
-          onPress={
-              this.EditItem
-          }
-          title="Edit Item"
-          color="black"
-          raised
-      />
+            />
+            <Button
+              containerViewStyle={style.buttonContainer}
+              buttonStyle={style.button}
+              backgroundColor="#ffffff"
+              onPress={
+                  this.EditItem
+              }
+              title="Edit Item"
+              color="black"
+              raised
+            />
           </View>
       </View>
     );
@@ -144,16 +170,21 @@ export default class CupboardScreen extends Component<{}> {
   render() {
     return (
       <View style={styles.content}>
-      <SearchBar
-        round
-        //onChangeText={filterResults}
-        //onClearText={}
-        placeholder='Type Here...' />
-      <Accordion
-        sections={SECTIONS}
-        renderHeader={this._renderHeader}
-        renderContent={this._renderContent}
-      />
+        <ScrollView>
+          <SearchBar
+            round
+            //onChangeText={filterResults}
+            //onClearText={}
+            placeholder='Type Here...' />
+          <Accordion
+            sections={SECTIONS}
+            renderHeader={this._renderHeader}
+            renderContent={this._renderContent}
+            onChange={() => {
+                this.render()
+            }}
+          />
+        </ScrollView>
       </View>
     );
   }
