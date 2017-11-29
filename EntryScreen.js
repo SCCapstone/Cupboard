@@ -17,11 +17,11 @@ class FoodField extends Component {
 
   extract(text) {
     if (this.props.field === "Food Name") {
-      this.props.self.setState({foodName: text})
+      this.props.self.setState({title: text})
     } else if (this.props.field === "Quantity"){
-      this.props.self.setState({quantity: text})
+      this.props.self.setState({noItems: text})
     } else {
-      this.props.self.setState({expires: text});
+      this.props.self.setState({content: text});
     }
   }
 
@@ -55,17 +55,18 @@ export default class EntryScreen extends Component<{}> {
     super(props);
 
     this.state = {
-      foodName: '',
-      quantity: '',
-      expires: ''
+      title: '',
+      noItems: '',
+      content: ''
     }
   }
+
   render() {
     return (
       <View>
         <FoodField field={"Food Name"} self={this} />
         <FoodField field={"Quantity"} self={this} />
-        <FoodField field={"Expires"} self={this} />
+        <FoodField field={"Content"} self={this} />
         <Button
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
