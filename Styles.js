@@ -25,6 +25,8 @@ const style = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row"
+<<<<<<< HEAD
+=======
   },
   accordianButtons: {
     flexDirection: "row",
@@ -39,6 +41,7 @@ const style = StyleSheet.create({
   smallerTextInput: {
     borderWidth: 10,
     width: 10
+>>>>>>> cupboard
   }
 });
 

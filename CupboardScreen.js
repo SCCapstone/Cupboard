@@ -7,7 +7,6 @@ import {
   Alert,
   ScrollView
 } from 'react-native';
-import { style } from './Styles'
 import { Button } from 'react-native-elements'
 import Accordion from 'react-native-collapsible/Accordion'
 //https://www.npmjs.com/package/react-native-collapsible
@@ -196,5 +195,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
-  },
+  }
 });
