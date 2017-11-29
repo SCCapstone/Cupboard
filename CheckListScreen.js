@@ -11,7 +11,6 @@ import {
 import { List, ListItem, Button, CheckBox, FormInput} from 'react-native-elements'
 import { style } from "./Styles";
 
-
 class ListElement extends Component {
   constructor(props) {
     super(props);
@@ -74,7 +73,7 @@ export default class CheckListScreen extends Component<{}> {
 
     newData.push({
       key: this.state.key,
-      title: "something"
+      title: ""
     });
 
     newKey += 1;

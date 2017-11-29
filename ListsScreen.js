@@ -9,19 +9,44 @@ import {
 } from 'react-native';
 import { List, ListItem, Button } from 'react-native-elements'
 import { style } from "./Styles";
-import styles from "./CheckListScreen";
+
+import firebase from 'react-native-firebase';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
+  authDomain: 'the-cupboard-app.firebaseapp.com',
+  databaseURL: 'https://the-cupboard-app.firebaseio.com/',
+  storageBucket: 'gs://the-cupboard-app.appspot.com',
+  appId: '1:449840930413:android:7f854998b9cb29a1',
+  messagingSenderId: '449840930413',
+  projectId: 'the-cupboard-app'
+};
+
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 export default class ListsScreen extends Component<{}> {
   constructor(props) {
     super(props);
 
+    this.user = this.props.navigation.state.params;
+    // this.itemsRef = firebaseApp.database().ref("lists/" + id);
+
     this.state = {
       data: null,
-      key: 1
+      key: 1,
     };
 }
 
   addToList() {
+    const user = this.props.navigation.state.params;
+    const id = user.uid;
+
+    console.log(firebaseApp.database().ref('lists/UGxPakKb3FQNCqreeY04CO4Z2r23'));
+
+    // firebaseApp.database().ref('lists/' + id).set({
+    //   data: 0
+    // });
+
     let newKey = this.state.key;
     let newData = this.state.data;
     newData.push({key: this.state.key, title: "something"});
@@ -35,6 +60,7 @@ export default class ListsScreen extends Component<{}> {
 
   // TODO: Load all the recipes from firebase in here into the data state
   componentDidMount(){
+
     this.setState({
       data: [
         {

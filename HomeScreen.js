@@ -47,7 +47,7 @@ export default class HomeScreen extends Component<{}> {
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           onPress={() => {
-            this.props.navigation.navigate("ListsS");
+            this.props.navigation.navigate("ListsS", user);
           }}
         />
           <Button
