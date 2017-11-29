@@ -54,7 +54,8 @@ export default class CheckListScreen extends Component<{}> {
     super(props);
 
     this.state = {
-      elements: []
+      data: null,
+      key: 1
     };
   }
 
@@ -62,16 +63,35 @@ export default class CheckListScreen extends Component<{}> {
     title: navigation.state.params
   });
 
+  addToList() {
+    let newKey = this.state.key;
+    let newData = this.state.data;
+
+    newData.push({
+      key: this.state.key,
+      title: "something"
+    });
+
+    newKey += 1;
+
+    this.setState({
+      data: newData,
+      key: newKey
+    });
+  }
+
   // TODO: Load all the recipes from firebase in here into the data state
   componentDidMount(){
     this.setState({
-      elements: [
+      data: [
         {
-          elementName: "asdf",
+          key: 99,
+          title: "asdf",
           checked: false
         },
         {
-          elementName: "asdasdasd",
+          key: 20,
+          title: "asdasdasd",
           checked: true
         }
       ]
@@ -79,18 +99,21 @@ export default class CheckListScreen extends Component<{}> {
   }
 
   render() {
-    const { elements } = this.state;
     return (
-      <ScrollView>
-        {elements.map((elem)=>{
-          return (
-            <ListElement
-              title={elem.elementName}
-              checked={elem.checked}
-            />
-          );
-        })}
-      </ScrollView>
+      <View>
+        <Button
+          onPress={()=>{this.addToList()}}
+        />
+        <FlatList
+          data={this.state.data}
+          renderItem={({item}) => <ListElement
+            checked={item.checked}
+            title={item.title}
+          />}
+          keyExtractor={(item, index) => item.key}
+          extraData={this.state}
+        />
+      </View>
     );
   }
 }

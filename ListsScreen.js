@@ -10,27 +10,12 @@ import {
 import { List, ListItem, Button } from 'react-native-elements'
 import { style } from "./Styles";
 
-const list = [
-  {
-    key: 'asdf',
-    title: 'Appointments',
-  },
-  {
-    key: 'jkl',
-    title: 'Trips',
-  },
-  {
-    key: 'lmnop',
-    title: 'New List',
-  },
-];
-
 export default class ListsScreen extends Component<{}> {
   constructor(props) {
     super(props);
 
     this.state = {
-      data: list,
+      data: null,
       key: 1
     };
 }
@@ -49,6 +34,22 @@ export default class ListsScreen extends Component<{}> {
 
   // TODO: Load all the recipes from firebase in here into the data state
   componentDidMount(){
+    this.setState({
+      data: [
+        {
+          key: 'asdf',
+          title: 'Appointments',
+        },
+        {
+          key: 'jkl',
+          title: 'Trips',
+        },
+        {
+          key: 'lmnop',
+          title: 'New List',
+        },
+      ]
+    });
   }
 
   render() {
