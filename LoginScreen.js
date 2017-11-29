@@ -77,9 +77,9 @@ export default class LoginScreen extends Component<{}> {
   signIn() {
     firebase.auth().signInWithEmailAndPassword(this.state.username, this.state.password)
       .then((user) => {
-        this.props.navigation.navigate('HomeS');
+        this.props.navigation.navigate('HomeS', user);
       }).catch( (err) => {
-      Alert.alert('Incorrect log in!');
+        Alert.alert('Incorrect log in!');
     });
   }
 
