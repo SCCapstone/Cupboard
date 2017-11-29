@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet
+  Alert,
+  TouchableOpacity
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
+import { Icon } from 'react-native-elements';
 
 
 import LoginScreen from './LoginScreen';
@@ -11,6 +13,7 @@ import HomeScreen from './HomeScreen';
 import CupboardScreen from './CupboardScreen';
 import RecipesScreen from './RecipesScreen';
 import ListsScreen from './ListsScreen';
+import EntryScreen from './EntryScreen';
 
 
 const firebaseConfig = {
@@ -42,9 +45,15 @@ const RootNavigator = StackNavigator(
     },
     CupboardS: {
       screen: CupboardScreen,
-      navigationOptions: {
-        headerTitle: "My Cupboard"
-      }
+      navigationOptions: ({ navigation, screenProps}) => ({
+        headerTitle: "My Cupboard",
+        headerRight:
+          <TouchableOpacity onPress={() => navigation.navigate('EntryS')}>
+            <Icon name="circle-with-plus"
+                  type="entypo"
+            />
+          </TouchableOpacity>
+      })
     },
     RecipesS: {
       screen: RecipesScreen,
@@ -56,6 +65,12 @@ const RootNavigator = StackNavigator(
       screen: ListsScreen,
       navigationOptions: {
         headerTitle: "My Shopping Lists"
+      }
+    },
+    EntryS: {
+      screen: EntryScreen,
+      navigationOptions: {
+        headerTitle: "Enter An Item"
       }
     },
   },

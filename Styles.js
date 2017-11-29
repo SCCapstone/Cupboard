@@ -25,6 +25,23 @@ const style = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row"
+<<<<<<< HEAD
+=======
+  },
+  accordianButtons: {
+    flexDirection: "row",
+    alignSelf: "center",
+  },
+  accordianHeader: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  smallerTextInput: {
+    borderWidth: 10,
+    width: 10
+>>>>>>> cupboard
   }
 });
 
