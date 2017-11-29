@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { List, ListItem, Button } from 'react-native-elements'
 import { style } from "./Styles";
+import styles from "./CheckListScreen";
 
 export default class ListsScreen extends Component<{}> {
   constructor(props) {
