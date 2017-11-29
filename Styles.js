@@ -28,12 +28,17 @@ const style = StyleSheet.create({
   },
   accordianButtons: {
     flexDirection: "row",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   accordianHeader: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center"
+  },
+  smallerTextInput: {
+    borderWidth: 10,
+    width: 10
   }
 });
 
