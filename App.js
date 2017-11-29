@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Alert
+  Alert,
+  TouchableOpacity
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { StackNavigator } from 'react-navigation';
@@ -44,12 +45,15 @@ const RootNavigator = StackNavigator(
     },
     CupboardS: {
       screen: CupboardScreen,
-      navigationOptions: {
+      navigationOptions: ({ navigation, screenProps}) => ({
         headerTitle: "My Cupboard",
-        headerRight: <Icon name="circle-with-plus"
-                           type="entypo"
-                           onPress={() => Alert.alert('Navigate to EntryS')}/>
-      }
+        headerRight:
+          <TouchableOpacity onPress={() => navigation.navigate('EntryS')}>
+            <Icon name="circle-with-plus"
+                  type="entypo"
+            />
+          </TouchableOpacity>
+      })
     },
     RecipesS: {
       screen: RecipesScreen,
