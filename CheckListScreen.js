@@ -43,6 +43,11 @@ class ListElement extends Component {
             width: "66%"
           }}
           value={this.state.title}
+          onChangeText={(text)=>{
+            this.setState({
+              title: text
+            });
+          }}
         />
       </View>
     );
