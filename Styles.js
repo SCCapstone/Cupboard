@@ -37,8 +37,8 @@ const style = StyleSheet.create({
     alignItems: "center"
   },
   smallerTextInput: {
-    borderWidth: 10,
-    width: 10
+    borderWidth: 1,
+    width: 30
   },
   listElement: {
     flexDirection: "row",
