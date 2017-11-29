@@ -25,8 +25,10 @@ const style = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row"
+  },
+  listElement: {
+    flexDirection: "row"
   }
-
 });
 
 export { style }

@@ -10,7 +10,6 @@ import {
 import { List, ListItem, Button } from 'react-native-elements'
 import { style } from "./Styles";
 
-
 const list = [
   {
     key: 'asdf',
@@ -27,7 +26,6 @@ const list = [
 ];
 
 export default class ListsScreen extends Component<{}> {
-
   constructor(props) {
     super(props);
 
@@ -35,7 +33,7 @@ export default class ListsScreen extends Component<{}> {
       data: list,
       key: 1
     };
-  }
+}
 
   addToList() {
     let newKey = this.state.key;
@@ -62,13 +60,15 @@ export default class ListsScreen extends Component<{}> {
         <FlatList
           data={this.state.data}
           renderItem={({item}) => <ListItem
+            onPress={()=>{
+              this.props.navigation.navigate("CheckListS", item.title);
+            }}
             key={item.key}
             title={item.title}
           />}
           keyExtractor={(item, index) => item.key}
           extraData={this.state}
         />
-
       </View>
     );
   }
