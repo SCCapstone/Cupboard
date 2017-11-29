@@ -17,8 +17,8 @@ class ListElement extends Component {
     super(props);
 
     this.state = {
-      checked: false,
-      title: "temp"
+      checked: this.props.checked,
+      title: this.props.title
     }
   }
 
@@ -28,22 +28,34 @@ class ListElement extends Component {
         <CheckBox
           containerStyle={{
             backgroundColor: "rgba(0, 0, 0, 0)",
+            margin: 10,
+            marginLeft: 30,
+            marginRight: 0,
+            padding: 0
           }}
           checked={this.state.checked}
-          onPress={() => this.setState({ checked: !this.state.checked })}
+          onPress={() => this.setState({
+            checked: !this.state.checked
+          })}
         />
         <FormInput
           containerStyle={{
+            width: "66%"
           }}
+          value={this.state.title}
         />
       </View>
     );
   }
-  }
+}
 
 export default class CheckListScreen extends Component<{}> {
   constructor(props) {
     super(props);
+
+    this.state = {
+      elements: []
+    };
   }
 
   static navigationOptions = ({ navigation, screenProps }) => ({
@@ -52,13 +64,32 @@ export default class CheckListScreen extends Component<{}> {
 
   // TODO: Load all the recipes from firebase in here into the data state
   componentDidMount(){
-
+    this.setState({
+      elements: [
+        {
+          elementName: "asdf",
+          checked: false
+        },
+        {
+          elementName: "asdasdasd",
+          checked: true
+        }
+      ]
+    });
   }
+
   render() {
+    const { elements } = this.state;
     return (
       <ScrollView>
-        <ListElement/>
-        <ListElement/>
+        {elements.map((elem)=>{
+          return (
+            <ListElement
+              title={elem.elementName}
+              checked={elem.checked}
+            />
+          );
+        })}
       </ScrollView>
     );
   }
