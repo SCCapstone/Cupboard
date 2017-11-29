@@ -7,10 +7,11 @@ import {
   Alert,
   ScrollView
 } from 'react-native';
-import { Button } from 'react-native-elements'
-import Accordion from 'react-native-collapsible/Accordion'
+import { Button } from 'react-native-elements';
+import Accordion from 'react-native-collapsible/Accordion';
 //https://www.npmjs.com/package/react-native-collapsible
-import { SearchBar } from 'react-native-elements'
+import { SearchBar } from 'react-native-elements';
+import { style } from './Styles';
 //https://react-native-training.github.io/react-native-elements/API/searchbar/
 
 //TODO:: put in search functionality
@@ -64,10 +65,10 @@ export default class CupboardScreen extends Component<{}> {
         quantity: []
       };
       //this.onIncrementPress = this.onIncrementPress.bind(this)
-      this.onAddToList = this.onAddToList.bind(this)
-      this.EditItem = this.EditItem.bind(this)
-      this.deleteItem = this.deleteItem.bind(this)
-      this._renderHeader = this._renderHeader.bind(this)
+      this.onAddToList = this.onAddToList.bind(this);
+      this.EditItem = this.EditItem.bind(this);
+      this.deleteItem = this.deleteItem.bind(this);
+      this._renderHeader = this._renderHeader.bind(this);
   }
 
   /*
@@ -86,13 +87,13 @@ export default class CupboardScreen extends Component<{}> {
   }
 
   deleteItem(index) {
-    delete(SECTIONS[index])
+    delete(SECTIONS[index]);
   }
 
   onChanged(text,arrayvar){
       let newText = '';
       let numbers = '0123456789';
-      for (var i=0; i < text.length; i++) {
+      for (let i=0; i < text.length; i++) {
           if(numbers.indexOf(text[i]) > -1 ) {
               newText = newText + text[i];
           }
@@ -105,13 +106,13 @@ export default class CupboardScreen extends Component<{}> {
   }
 
   _renderHeader(section,index) {
-    var arrayvar = this.state.quantity.slice()
-    arrayvar.push(section.noItems)
+    let arrayvar = this.state.quantity.slice();
+    arrayvar.push(section.noItems);
     return (
-      <View style={styles.accordianHeader}>
-        <Text style={styles.accordianHeader}>{section.title}</Text>
+      <View style={style.accordianHeader}>
+        <Text style={style.accordianHeader}>{section.title}</Text>
         <TextInput
-          style={styles.smallerTextInput}
+          style={style.smallerTextInput}
           keyboardType='numeric'
           onChangeText={(text)=> this.onChanged(text,arrayvar)}
           placeholder={section.noItems.toString()}
@@ -136,8 +137,8 @@ export default class CupboardScreen extends Component<{}> {
 
   _renderContent(section) {
     return (
-      <View style={styles.containerCenterContent}>
-        <Text style={styles.accordianHeader}>{section.content}</Text>
+      <View style={style.containerCenterContent}>
+        <Text style={style.accordianHeader}>{section.content}</Text>
           <View style={style.accordianButtons}>
             <Button
               containerViewStyle={style.buttonContainer}
@@ -168,7 +169,7 @@ export default class CupboardScreen extends Component<{}> {
 
   render() {
     return (
-      <View style={styles.content}>
+      <View style={style.content}>
         <ScrollView>
           <SearchBar
             round
@@ -180,7 +181,7 @@ export default class CupboardScreen extends Component<{}> {
             renderHeader={this._renderHeader}
             renderContent={this._renderContent}
             onChange={() => {
-                this.render()
+                this.render();
             }}
           />
         </ScrollView>
@@ -188,12 +189,3 @@ export default class CupboardScreen extends Component<{}> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  }
-});

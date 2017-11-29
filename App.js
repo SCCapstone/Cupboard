@@ -14,6 +14,7 @@ import CupboardScreen from './CupboardScreen';
 import RecipesScreen from './RecipesScreen';
 import ListsScreen from './ListsScreen';
 import EntryScreen from './EntryScreen';
+import CheckListScreen from './CheckListScreen';
 
 
 const firebaseConfig = {
@@ -73,6 +74,9 @@ const RootNavigator = StackNavigator(
         headerTitle: "Enter An Item"
       }
     },
+    CheckListS: {
+      screen: CheckListScreen
+    }
   },
 );
 
