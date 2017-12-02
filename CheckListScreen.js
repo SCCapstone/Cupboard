@@ -64,7 +64,7 @@ export default class CheckListScreen extends Component<{}> {
   }
 
   static navigationOptions = ({ navigation, screenProps }) => ({
-    title: navigation.state.params
+    title: navigation.state.params.title
   });
 
   addToList() {

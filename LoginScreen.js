@@ -74,13 +74,22 @@ export default class LoginScreen extends Component<{}> {
     }
   }
 
-  signIn() {
-    firebase.auth().signInWithEmailAndPassword(this.state.username, this.state.password)
-      .then((user) => {
-        this.props.navigation.navigate('HomeS', user);
-      }).catch( (err) => {
+  signIn(username, password) {
+    if (username && password) {
+      firebase.auth().signInWithEmailAndPassword(username, password)
+        .then((user) => {
+          this.props.navigation.navigate('HomeS', user);
+        }).catch( (err) => {
         Alert.alert('Incorrect log in!');
-    });
+      });
+    } else {
+      firebase.auth().signInWithEmailAndPassword(this.state.username, this.state.password)
+        .then((user) => {
+          this.props.navigation.navigate('HomeS', user);
+        }).catch( (err) => {
+        Alert.alert('Incorrect log in!');
+      });
+    }
   }
 
   createUser() {
@@ -126,8 +135,10 @@ export default class LoginScreen extends Component<{}> {
           <Button
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
-            onPress={() => {navigate('HomeS')}}
-            title="HOME"
+            onPress={()=> {
+             this.signIn("username@example.com", "password");
+            }}
+            title="DEBUG"
             color="white"
             backgroundColor="#9D2933"
             raised

@@ -29,53 +29,68 @@ export default class ListsScreen extends Component<{}> {
     super(props);
 
     this.user = this.props.navigation.state.params;
-    // this.itemsRef = firebaseApp.database().ref("lists/" + id);
 
     this.state = {
       data: null,
-      key: 1,
     };
 }
 
-  addToList() {
+  createList() {
     const user = this.props.navigation.state.params;
     const id = user.uid;
 
-    console.log(firebaseApp.database().ref('lists/UGxPakKb3FQNCqreeY04CO4Z2r23'));
-
-    // firebaseApp.database().ref('lists/' + id).set({
-    //   data: 0
-    // });
-
-    let newKey = this.state.key;
-    let newData = this.state.data;
-    newData.push({key: this.state.key, title: "something"});
-
-    newKey += 1;
-    this.setState({
-      data: newData,
-      key: newKey
+    const ref = firebaseApp.database().ref('lists/' + id).push({
+      title: "something",
+      items: 0
     });
+
+    let newData = this.state.data;
+    console.log('old data:', newData);
+    newData.push({key: ref.key, title: "something"});
+
+    this.setState({
+      data: newData
+    });
+
+    console.log("new data:", newData);
   }
 
   // TODO: Load all the recipes from firebase in here into the data state
   componentDidMount(){
+    console.log('component did mount');
+    const user = this.props.navigation.state.params;
+    const id = user.uid;
+    const ref = firebaseApp.database().ref('lists/' + id);
 
-    this.setState({
-      data: [
-        {
-          key: 'asdf',
-          title: 'Appointments',
-        },
-        {
-          key: 'jkl',
-          title: 'Trips',
-        },
-        {
-          key: 'lmnop',
-          title: 'New List',
-        },
-      ]
+    const data = [];
+    const self = this;
+
+    ref.on("value", function(snapshot) {
+      if (snapshot.val()){
+        Object.keys(snapshot.val()).forEach(function(key) {
+
+          data.push({
+            title: snapshot.val()[key].title,
+            key: key
+          });
+        });
+
+        self.setState({
+          data: data
+        });
+
+        ref.off();
+      } else {
+        self.setState({
+          data: []
+        });
+      }
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+
+      self.setState({
+        data: []
+      });
     });
   }
 
@@ -83,13 +98,16 @@ export default class ListsScreen extends Component<{}> {
     return (
       <View>
         <Button
-          onPress={()=>{this.addToList()}}
+          onPress={()=>{this.createList()}}
         />
         <FlatList
           data={this.state.data}
           renderItem={({item}) => <ListItem
             onPress={()=>{
-              this.props.navigation.navigate("CheckListS", item.title);
+              this.props.navigation.navigate("CheckListS", {
+                title: item.title,
+
+              });
             }}
             key={item.key}
             title={item.title}
