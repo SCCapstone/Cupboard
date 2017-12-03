@@ -5,21 +5,9 @@ import {
   View,
   Alert
 } from 'react-native';
-import firebase from 'react-native-firebase';
-import { FormLabel, FormInput, Button} from 'react-native-elements'
-import { style } from './Styles'
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
-  authDomain: 'the-cupboard-app.firebaseapp.com',
-  databaseURL: 'https://the-cupboard-app.firebaseio.com/',
-  storageBucket: 'gs://the-cupboard-app.appspot.com',
-  appId: '1:449840930413:android:7f854998b9cb29a1',
-  messagingSenderId: '449840930413',
-  projectId: 'the-cupboard-app'
-};
-
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+import { FormLabel, FormInput, Button} from 'react-native-elements';
+import { style } from './Styles';
+import FirebaseHandler from './FirebaseHandler';
 
 class SignIn extends Component {
   constructor(props) {
@@ -70,36 +58,37 @@ export default class LoginScreen extends Component<{}> {
 
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      fbhandler: new FirebaseHandler()
     }
   }
 
-  signIn(username, password) {
-    if (username && password) {
-      firebase.auth().signInWithEmailAndPassword(username, password)
-        .then((user) => {
-          this.props.navigation.navigate('HomeS', user);
-        }).catch( (err) => {
-        Alert.alert('Incorrect log in!');
-      });
-    } else {
-      firebase.auth().signInWithEmailAndPassword(this.state.username, this.state.password)
-        .then((user) => {
-          this.props.navigation.navigate('HomeS', user);
-        }).catch( (err) => {
-        Alert.alert('Incorrect log in!');
-      });
-    }
-  }
-
-  createUser() {
-    firebase.auth().createUserWithEmailAndPassword(this.state.username, this.state.password)
-      .then( (user) => {
-        Alert.alert('Created new account!');
-      }).catch( (err) => {
-      console.log(err);
-      Alert.alert('Unable to create account.');
+  // Sign in the email and password
+  signIn() {
+    this.state.fbhandler.signIn(this.state.username, this.state.password, ()=> {
+      this.props.navigation.navigate('HomeS', fbhandler);
+    }, (err) => {
+      Alert.alert(err);
     });
+  }
+
+  debugSignIn(email, password) {
+    this.state.fbhandler.signIn(email, password, (user)=> {
+      this.props.navigation.navigate('HomeS', {
+        'fbhandler': this.state.fbhandler
+      });
+    }, (err) => {
+      Alert.alert(err);
+    });
+  }
+
+  // Create a new user
+  createUser() {
+    this.state.fbhandler.createUser(this.state.username, this.state.password, () =>{
+      this.props.navigation.navigate('HomeS', fbhandler);
+    }, (err) => {
+      Alert.alert(err);
+    })
   }
 
   render() {
@@ -126,7 +115,7 @@ export default class LoginScreen extends Component<{}> {
             buttonStyle={style.button}
             backgroundColor="#875F9A"
             onPress={() => {
-              this.createUser.bind(this);
+              this.createUser.bind(this)();
             }}
             title="CREATE ACCOUNT"
             color="white"
@@ -136,7 +125,7 @@ export default class LoginScreen extends Component<{}> {
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
             onPress={()=> {
-             this.signIn("username@example.com", "password");
+             this.debugSignIn("username@example.com", "password");
             }}
             title="DEBUG"
             color="white"

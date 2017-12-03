@@ -11,20 +11,6 @@ import {
 import { List, ListItem, Button, CheckBox, FormInput} from 'react-native-elements'
 import { style } from "./Styles";
 
-import firebase from 'react-native-firebase';
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyDGvm-2kkreAPcffUHWCH5HaWlHas6Cnkg',
-  authDomain: 'the-cupboard-app.firebaseapp.com',
-  databaseURL: 'https://the-cupboard-app.firebaseio.com/',
-  storageBucket: 'gs://the-cupboard-app.appspot.com',
-  appId: '1:449840930413:android:7f854998b9cb29a1',
-  messagingSenderId: '449840930413',
-  projectId: 'the-cupboard-app'
-};
-
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
 class ListElement extends Component {
   constructor(props) {
     super(props);
@@ -106,20 +92,16 @@ export default class CheckListScreen extends Component<{}> {
   });
 
   addToList() {
-    const user = this.props.navigation.state.params.user;
-    const id = user.uid;
-
+    const fbhandler = this.props.navigation.state.params.fbhandler;
     const listid = this.props.navigation.state.params.list.key;
+    console.log(listid);
 
-    const ref = firebaseApp.database().ref('lists/' + id + '/' + listid + '/items').push({
-      title: "something",
-      checked: false
-    });
+    const ref = fbhandler.addListItemToList(listid);
 
     let newData = this.state.data;
     newData.push({
       key: ref.key,
-      title: "something",
+      title: "",
       checked: false
     });
 
@@ -129,13 +111,11 @@ export default class CheckListScreen extends Component<{}> {
   }
 
   saveList() {
-    const user = this.props.navigation.state.params.user;
-    const id = user.uid;
+    const fbhandler = this.props.navigation.state.params.fbhandler;
     const listid = this.props.navigation.state.params.list.key;
 
     const data = this.state.data;
     const json = {};
-
 
     data.forEach((elem) => {
       json[elem.id] = {
@@ -144,47 +124,33 @@ export default class CheckListScreen extends Component<{}> {
       };
     });
 
-    const ref = firebaseApp.database().ref('lists/' + id + '/' + listid + '/items').set(json);
+    fbhandler.saveListElements(listid, json);
   }
 
   // TODO: Load all the recipes from firebase in here into the data state
-  componentDidMount(){
-    const user = this.props.navigation.state.params.user;
-    const id = user.uid;
-
+  async componentDidMount(){
+    const fbhandler = this.props.navigation.state.params.fbhandler;
     const listid = this.props.navigation.state.params.list.key;
 
-    const ref = firebaseApp.database().ref('lists/' + id + '/' + listid + '/items');
+    const listItems = await fbhandler.getListItems(listid);
 
     const data = [];
-    const self = this;
-
-    ref.on("value", function(snapshot) {
-      if (snapshot.val()){
-        Object.keys(snapshot.val()).forEach(function(key) {
-          data.push({
-            title: snapshot.val()[key].title,
-            checked: snapshot.val()[key].checked,
-            id: key
-          });
+    if (listItems.val()){
+      Object.keys(listItems.val()).forEach(function(key) {
+        data.push({
+          title: listItems.val()[key].title,
+          checked: listItems.val()[key].checked,
+          id: key
         });
-
-        self.setState({
-          data: data
-        });
-
-        ref.off();
-      } else {
-        self.setState({
-          data: []
-        });
-      }
-    }, function (errorObject) {
-      console.log("The read failed: " + errorObject.code);
-      self.setState({
+      });
+      this.setState({
+        data: data
+      });
+    } else {
+      this.setState({
         data: []
       });
-    });
+    }
   }
 
   render() {
