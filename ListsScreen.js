@@ -45,19 +45,15 @@ export default class ListsScreen extends Component<{}> {
     });
 
     let newData = this.state.data;
-    console.log('old data:', newData);
     newData.push({key: ref.key, title: "something"});
 
     this.setState({
       data: newData
     });
-
-    console.log("new data:", newData);
   }
 
   // TODO: Load all the recipes from firebase in here into the data state
   componentDidMount(){
-    console.log('component did mount');
     const user = this.props.navigation.state.params;
     const id = user.uid;
     const ref = firebaseApp.database().ref('lists/' + id);
@@ -105,8 +101,8 @@ export default class ListsScreen extends Component<{}> {
           renderItem={({item}) => <ListItem
             onPress={()=>{
               this.props.navigation.navigate("CheckListS", {
-                title: item.title,
-
+                user: this.props.navigation.state.params,
+                list: item
               });
             }}
             key={item.key}
