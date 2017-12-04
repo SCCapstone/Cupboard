@@ -25,7 +25,7 @@ export default class ListsScreen extends Component<{}> {
       >
         <Icon
           color="#739E82"
-          name="circle-with-plus"
+          name="plus"
           type="entypo"
           containerStyle={{
             marginRight: 20

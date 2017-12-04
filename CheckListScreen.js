@@ -22,15 +22,35 @@ class ListElement extends Component {
     };
   }
 
-  _onChange(text){
-    const {fbhandler, list, self} = this.props.params;
 
-    const id = fbhandler.user.uid;
-    const listid = list.key;
+  // TODO make onCheckChange and onTextChange be the same method
+  _onCheckChange(){
+    const self = this.props.self;
+    const itemid = this.props.id;
+    let alldata = self.state.data;
+
+    this.setState({
+      checked: !this.state.checked
+    }, ()=> {
+      alldata.map((elem)=>{
+        if (elem.id === itemid){
+          elem.checked = this.state.checked;
+          return elem;
+        }
+      });
+
+      self.setState({
+        data: alldata
+      });
+    });
+  }
+
+  _onTextChange(text){
+    const self = this.props.self;
 
     const itemid = this.props.id;
 
-    let alldata = this.props.self.state.data;
+    let alldata = self.state.data;
 
     alldata.map((elem)=>{
       if (elem.id === itemid){
@@ -39,7 +59,7 @@ class ListElement extends Component {
       }
     });
 
-    this.props.self.setState({
+    self.setState({
       data: alldata
     });
 
@@ -60,9 +80,9 @@ class ListElement extends Component {
             padding: 0
           }}
           checked={this.state.checked}
-          onPress={() => this.setState({
-            checked: !this.state.checked
-          })}
+          onPress={() => {
+            this._onCheckChange();
+          }}
         />
         <FormInput
           containerStyle={{
@@ -70,7 +90,7 @@ class ListElement extends Component {
           }}
           value={this.state.title}
           onChangeText={(text)=>{
-            this._onChange(text);
+            this._onTextChange(text);
           }}
         />
       </View>
@@ -90,21 +110,39 @@ export default class CheckListScreen extends Component<{}> {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.state.params.list.title,
     headerRight:
-      <TouchableOpacity
-        onPress={()=>{
-          navigation.state.params.self.saveList();
-          Alert.alert("List Saved!");
-        }}
+      <View
+        style={{ flexDirection: "row"}}
       >
-        <Icon
-          color="#739E82"
-          name="save"
-          type="entypo"
-          containerStyle={{
-            marginRight: 20
+        <TouchableOpacity
+          onPress={()=>{
+            navigation.state.params.self.addToList();
           }}
-        />
-      </TouchableOpacity>
+        >
+          <Icon
+            color="#739E82"
+            name="plus"
+            type="entypo"
+            containerStyle={{
+              marginRight: 20
+            }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>{
+            navigation.state.params.self.saveList();
+            Alert.alert("List Saved!");
+          }}
+        >
+          <Icon
+            color="#739E82"
+            name="save"
+            type="entypo"
+            containerStyle={{
+              marginRight: 20
+            }}
+          />
+        </TouchableOpacity>
+      </View>
   });
 
   addToList() {
@@ -174,10 +212,6 @@ export default class CheckListScreen extends Component<{}> {
   render() {
     return (
       <View>
-        <Button
-          onPress={()=>{this.addToList()}}
-          title={"add element"}
-        />
         <FlatList
           data={this.state.data}
           renderItem={({item}) => <ListElement
