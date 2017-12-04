@@ -6,9 +6,10 @@ import {
   ListView,
   FlatList,
   TouchableOpacity,
+  Alert,
   ScrollView
 } from 'react-native';
-import { List, ListItem, Button, CheckBox, FormInput} from 'react-native-elements'
+import { Button, CheckBox, FormInput, Icon} from 'react-native-elements'
 import { style } from "./Styles";
 
 class ListElement extends Component {
@@ -22,12 +23,11 @@ class ListElement extends Component {
   }
 
   _onChange(text){
+    const {fbhandler, list, self} = this.props.params;
 
-    const user = this.props.params.user;
-    const id = user.uid;
-    const listid = this.props.params.list.key;
+    const id = fbhandler.user.uid;
+    const listid = list.key;
 
-    const self = this;
     const itemid = this.props.id;
 
     let alldata = this.props.self.state.data;
@@ -87,20 +87,35 @@ export default class CheckListScreen extends Component<{}> {
     };
   }
 
-  static navigationOptions = ({ navigation, screenProps }) => ({
-    title: navigation.state.params.list.title
+  static navigationOptions = ({ navigation }) => ({
+    title: navigation.state.params.list.title,
+    headerRight:
+      <TouchableOpacity
+        onPress={()=>{
+          navigation.state.params.self.saveList();
+          Alert.alert("List Saved!");
+        }}
+      >
+        <Icon
+          color="#739E82"
+          name="save"
+          type="entypo"
+          containerStyle={{
+            marginRight: 20
+          }}
+        />
+      </TouchableOpacity>
   });
 
   addToList() {
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const listid = this.props.navigation.state.params.list.key;
-    console.log(listid);
 
     const ref = fbhandler.addListItemToList(listid);
 
     let newData = this.state.data;
     newData.push({
-      key: ref.key,
+      id: ref.key,
       title: "",
       checked: false
     });
@@ -127,8 +142,11 @@ export default class CheckListScreen extends Component<{}> {
     fbhandler.saveListElements(listid, json);
   }
 
-  // TODO: Load all the recipes from firebase in here into the data state
   async componentDidMount(){
+    this.props.navigation.setParams({
+      self: this
+    });
+
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const listid = this.props.navigation.state.params.list.key;
 
@@ -159,11 +177,6 @@ export default class CheckListScreen extends Component<{}> {
         <Button
           onPress={()=>{this.addToList()}}
           title={"add element"}
-        />
-        <Button
-          onPress={()=>{this.saveList()}}
-          backgroundColor={"green"}
-          title={"save to firebase"}
         />
         <FlatList
           data={this.state.data}

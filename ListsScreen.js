@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import {
-  Text,
   View,
-  StyleSheet,
-  ListView,
   FlatList,
   TouchableOpacity
 } from 'react-native';
-import { List, ListItem, Button } from 'react-native-elements'
+import { List, ListItem, Button, Icon} from 'react-native-elements'
 import { style } from "./Styles";
 
 export default class ListsScreen extends Component<{}> {
@@ -19,15 +16,35 @@ export default class ListsScreen extends Component<{}> {
     };
   }
 
-  createList() {
+  static navigationOptions = ({navigation}) => ({
+    headerRight:
+      <TouchableOpacity
+        onPress={()=>{
+          navigation.state.params.self.createList('test for plus button');
+        }}
+      >
+        <Icon
+          color="#739E82"
+          name="circle-with-plus"
+          type="entypo"
+          containerStyle={{
+            marginRight: 20
+          }}
+        />
+      </TouchableOpacity>
+  });
+
+
+  // creates a list based on a name you give it, puts in it firebase too.
+  createList(name) {
     const fbhandler = this.props.navigation.state.params.fbhandler;
-    const ref = fbhandler.createList('test1');
+    const ref = fbhandler.createList(name);
 
     let newData = this.state.data;
 
     newData.push({
       key: ref.key,
-      title: "test1"
+      title: name
     });
 
     this.setState({
@@ -35,20 +52,39 @@ export default class ListsScreen extends Component<{}> {
     });
   }
 
-  // TODO implement delete function.
-  deleteList() {
+  // deletes an element based on listid.
+  async deleteList(listid) {
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const ref = fbhandler.deleteList();
 
-    let newData = this.state.data;
-    newData.shift();
+    //find arr index
+    let indexToDelete = null;
 
-    this.setState({
-      data: newData
+    this.state.data.forEach((elem, idx)=>{
+      if (elem.key === listid){
+        indexToDelete = idx;
+      }
     });
+
+    if (indexToDelete !== null) {
+      await fbhandler.deleteList(listid);
+
+      let newData = this.state.data;
+      newData.splice(indexToDelete, 1);
+
+      this.setState({
+        data: newData
+      });
+    }
   }
 
   async componentDidMount(){
+
+    // This is a workaround to get the plus button to have access to THIS.
+    this.props.navigation.setParams({
+      self: this
+    });
+
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const lists = await fbhandler.getLists();
 
@@ -76,9 +112,6 @@ export default class ListsScreen extends Component<{}> {
   render() {
     return (
       <View>
-        <Button
-          onPress={()=>{this.createList()}}
-        />
         <FlatList
           data={this.state.data}
           renderItem={({item}) => <ListItem
@@ -90,6 +123,9 @@ export default class ListsScreen extends Component<{}> {
             }}
             key={item.key}
             title={item.title}
+            onLongPress={()=>{
+              this.deleteList(item.key);
+            }}
           />}
           keyExtractor={(item, index) => item.key}
           extraData={this.state}

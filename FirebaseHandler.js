@@ -88,4 +88,9 @@ export default class FirebaseHandler {
   saveListElements(listid, json){
     return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid + '/items').update(json);
   }
+
+  deleteList(listid){
+    const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid);
+    return ref.remove();
+  }
 }
