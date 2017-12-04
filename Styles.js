@@ -26,8 +26,22 @@ const style = StyleSheet.create({
   buttons: {
     flexDirection: "row"
   },
+  accordianButtons: {
+    flexDirection: "row",
+    alignSelf: "center",
+  },
+  accordianHeader: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  smallerTextInput: {
+    borderWidth: 1,
+    width: 30
+  },
   listElement: {
-    flexDirection: "row"
+    flexDirection: "row",
   }
 });
 

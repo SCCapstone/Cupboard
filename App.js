@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet
+  Alert,
+  TouchableOpacity
 } from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import { Icon } from 'react-native-elements';
 
 
 import LoginScreen from './LoginScreen';
@@ -10,6 +12,7 @@ import HomeScreen from './HomeScreen';
 import CupboardScreen from './CupboardScreen';
 import RecipesScreen from './RecipesScreen';
 import ListsScreen from './ListsScreen';
+import EntryScreen from './EntryScreen';
 import CheckListScreen from './CheckListScreen';
 
 //make sure this is near the bottom
@@ -29,9 +32,15 @@ const RootNavigator = StackNavigator(
     },
     CupboardS: {
       screen: CupboardScreen,
-      navigationOptions: {
-        headerTitle: "My Cupboard"
-      }
+      navigationOptions: ({ navigation, screenProps}) => ({
+        headerTitle: "My Cupboard",
+        headerRight:
+          <TouchableOpacity onPress={() => navigation.navigate('EntryS')}>
+            <Icon name="circle-with-plus"
+                  type="entypo"
+            />
+          </TouchableOpacity>
+      })
     },
     RecipesS: {
       screen: RecipesScreen,
@@ -45,9 +54,15 @@ const RootNavigator = StackNavigator(
         headerTitle: "My Shopping Lists"
       }
     },
+    EntryS: {
+      screen: EntryScreen,
+      navigationOptions: {
+        headerTitle: "Enter An Item"
+      }
+    },
     CheckListS: {
       screen: CheckListScreen
-    },
+    }
   },
 );
 
