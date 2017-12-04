@@ -108,41 +108,51 @@ export default class CheckListScreen extends Component<{}> {
   }
 
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.state.params.list.title,
-    headerRight:
-      <View
-        style={{ flexDirection: "row"}}
+    headerTitle: <View>
+      <FormInput
+        underlineColorAndroid="transparent"
+        inputStyle={{
+          color: "black",
+          fontWeight: "bold",
+          fontSize: 18
+        }}
+        containerStyle={{
+          width: 200,
+        }}
+        value={navigation.state.params.list.title}
+      />
+    </View>,
+    headerRight: <View style={{ flexDirection: "row"}}>
+      <TouchableOpacity
+        onPress={()=>{
+          navigation.state.params.self.addToList();
+        }}
       >
-        <TouchableOpacity
-          onPress={()=>{
-            navigation.state.params.self.addToList();
+        <Icon
+          color="#739E82"
+          name="plus"
+          type="entypo"
+          containerStyle={{
+            marginRight: 20
           }}
-        >
-          <Icon
-            color="#739E82"
-            name="plus"
-            type="entypo"
-            containerStyle={{
-              marginRight: 20
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={()=>{
-            navigation.state.params.self.saveList();
-            Alert.alert("List Saved!");
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={()=>{
+          navigation.state.params.self.saveList();
+          Alert.alert("List Saved!");
+        }}
+      >
+        <Icon
+          color="#739E82"
+          name="save"
+          type="entypo"
+          containerStyle={{
+            marginRight: 20
           }}
-        >
-          <Icon
-            color="#739E82"
-            name="save"
-            type="entypo"
-            containerStyle={{
-              marginRight: 20
-            }}
-          />
-        </TouchableOpacity>
-      </View>
+        />
+      </TouchableOpacity>
+    </View>
   });
 
   addToList() {
