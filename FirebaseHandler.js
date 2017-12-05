@@ -78,6 +78,11 @@ export default class FirebaseHandler {
     return ref.once("value");
   }
 
+  getFoods(){
+    const ref = this.firebase.database().ref('foods/' + this.user.uid);
+    return ref.once("value");
+  }
+
   addListItemToList(listid){
     return this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items').push({
       title: "",

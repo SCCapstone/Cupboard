@@ -5,9 +5,10 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  ScrollView
+  ScrollView,
+  TouchableOpacity
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 import Accordion from 'react-native-collapsible/Accordion';
 //https://www.npmjs.com/package/react-native-collapsible
 import { SearchBar } from 'react-native-elements';
@@ -19,7 +20,6 @@ import { style } from './Styles';
 //TODO:: Read in data from user/firebase to SECTIONS
 //TODO:: Look into accordian separators
 //TODO:: add "sort by" button at the top
-
 const SECTIONS = [ //PLACEHOLDER. THIS WILL BE READ IN FROM USER/FIREBASE DATA.
   {
     title: 'Cereal1',
@@ -62,7 +62,8 @@ export default class CupboardScreen extends Component<{}> {
   constructor(props) {
     super(props);
       this.state = {
-        quantity: []
+        quantity: [],
+        data: null
       };
       //this.onIncrementPress = this.onIncrementPress.bind(this)
       this.onAddToList = this.onAddToList.bind(this);
@@ -70,6 +71,15 @@ export default class CupboardScreen extends Component<{}> {
       this.deleteItem = this.deleteItem.bind(this);
       this._renderHeader = this._renderHeader.bind(this);
   }
+
+  static navigationOptions = ({navigation}) => ({
+    headerRight:
+      <TouchableOpacity onPress={() => navigation.navigate('EntryS', {'fbhandler': navigation.state.params.fbhandler})}>
+        <Icon name="circle-with-plus"
+              type="entypo"
+        />
+      </TouchableOpacity>
+  });
 
   /*
   filterResults() {
@@ -103,6 +113,32 @@ export default class CupboardScreen extends Component<{}> {
           }
       }
       this.setState({ quantity: arrayvar });
+  }
+
+  async componentDidMount(){
+
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const foods = await fbhandler.getFoods();
+
+    const data = [];
+
+    if (foods.val()){
+      Object.keys(foods.val()).forEach(function(key) {
+        data.push({
+          title: foods.val()[key].title,
+          key: key
+        });
+      });
+
+      this.setState({
+        data: data
+      });
+
+    } else {
+      this.setState({
+        data: []
+      });
+    }
   }
 
   _renderHeader(section,index) {
