@@ -18,20 +18,46 @@ export default class ListsScreen extends Component<{}> {
 
   static navigationOptions = ({navigation}) => ({
     headerRight:
-      <TouchableOpacity
-        onPress={()=>{
-          navigation.state.params.self.createList('test for plus button');
+      <View
+        style={{
+          flexDirection: "row"
         }}
       >
-        <Icon
-          color="#739E82"
-          name="plus"
-          type="entypo"
-          containerStyle={{
-            marginRight: 20
+        <TouchableOpacity
+          onPress={()=>{
+            const newList = navigation.state.params.self.createList('My List');
+            navigation.navigate("CheckListS", {
+              list: newList,
+              fbhandler: navigation.state.params.fbhandler
+            });
           }}
-        />
-      </TouchableOpacity>
+        >
+          <Icon
+            color="#739E82"
+            name="plus"
+            type="entypo"
+            containerStyle={{
+              marginRight: 15
+            }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>{
+            navigation.state.params.self._refreshLists();
+          }}
+        >
+          <Icon
+            color="#739E82"
+            name="sync"
+            type="octicons"
+            containerStyle={{
+              marginRight: 15
+            }}
+          />
+        </TouchableOpacity>
+
+      </View>
+
   });
 
 
@@ -42,14 +68,18 @@ export default class ListsScreen extends Component<{}> {
 
     let newData = this.state.data;
 
-    newData.push({
+    const newList = {
       key: ref.key,
       title: name
-    });
+    };
+
+    newData.push(newList);
 
     this.setState({
       data: newData
     });
+
+    return newList;
   }
 
   // deletes an element based on listid.
@@ -78,13 +108,7 @@ export default class ListsScreen extends Component<{}> {
     }
   }
 
-  async componentDidMount(){
-
-    // This is a workaround to get the plus button to have access to THIS.
-    this.props.navigation.setParams({
-      self: this
-    });
-
+  async _refreshLists(){
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const lists = await fbhandler.getLists();
 
@@ -107,6 +131,15 @@ export default class ListsScreen extends Component<{}> {
         data: []
       });
     }
+  }
+
+  componentDidMount(){
+    // This is a workaround to get the plus button to have access to THIS.
+    this.props.navigation.setParams({
+      self: this
+    });
+
+    this._refreshLists();
   }
 
   render() {

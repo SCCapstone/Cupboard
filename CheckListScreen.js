@@ -4,6 +4,7 @@ import {
   View,
   StyleSheet,
   ListView,
+  TextInput,
   FlatList,
   TouchableOpacity,
   Alert,
@@ -98,28 +99,59 @@ class ListElement extends Component {
   }
 }
 
+class HeaderInput extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      title: this.props.title
+    };
+  }
+
+  _onChange(text) {
+    this.setState({
+      title: text
+    },()=>{
+      this.props.self.setState({
+        title: text
+      });
+    });
+  }
+
+  render() {
+    return (<FormInput
+      underlineColorAndroid="transparent"
+      inputStyle={{
+        color: "black",
+        fontWeight: "bold",
+        fontSize: 18
+      }}
+      containerStyle={{
+        width: 200,
+      }}
+      onChangeText={(text)=>{
+        this._onChange(text);
+      }}
+      value={this.state.title}
+    />)
+  }
+}
+
 export default class CheckListScreen extends Component<{}> {
   constructor(props) {
     super(props);
 
     this.state = {
       data: null,
+      title: this.props.navigation.state.params.list.title
     };
   }
 
   static navigationOptions = ({ navigation }) => ({
     headerTitle: <View>
-      <FormInput
-        underlineColorAndroid="transparent"
-        inputStyle={{
-          color: "black",
-          fontWeight: "bold",
-          fontSize: 18
-        }}
-        containerStyle={{
-          width: 200,
-        }}
-        value={navigation.state.params.list.title}
+      <HeaderInput
+        title={navigation.state.params.list.title}
+        self={navigation.state.params.self}
       />
     </View>,
     headerRight: <View style={{ flexDirection: "row"}}>
@@ -186,13 +218,17 @@ export default class CheckListScreen extends Component<{}> {
         title: elem.title
       };
     });
-
+    // save title
+    fbhandler.saveListTitle(listid, this.state.title);
+    // save elements
     fbhandler.saveListElements(listid, json);
   }
 
   async componentDidMount(){
+    const self = this;
     this.props.navigation.setParams({
-      self: this
+      self: self,
+      title: this.state.title
     });
 
     const fbhandler = this.props.navigation.state.params.fbhandler;
