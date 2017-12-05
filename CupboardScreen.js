@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  ScrollView
+  ScrollView,
+  FlatList
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -20,55 +21,58 @@ import { style } from './Styles';
 //TODO:: Look into accordian separators
 //TODO:: add "sort by" button at the top
 
-const SECTIONS = [ //PLACEHOLDER. THIS WILL BE READ IN FROM USER/FIREBASE DATA.
-  {
-    title: 'Cereal1',
-    noItems: '2',
-    content: 'Calories - 250\nExpires - 10/20/17',
-  },
-  {
-    title: 'Baked beans',
-    noItems: '3',
-    content: 'Calories - 20\nExpires - 10/21/17',
-  },
-  {
-      title: 'Cereal2',
-      noItems: '2',
-      content: 'Calories - 250\nExpires - 10/20/17',
-  },
-  {
-      title: 'Cereal3',
-      noItems: '2',
-      content: 'Calories - 250\nExpires - 10/20/17',
-  },
-  {
-      title: 'Cereal4',
-      noItems: '2',
-      content: 'Calories - 250\nExpires - 10/20/17',
-  },
-  {
-      title: 'Cereal5',
-      noItems: '2',
-      content: 'Calories - 250\nExpires - 10/20/17',
-  },
-  {
-      title: 'Cereal6',
-      noItems: '2',
-      content: 'Calories - 250\nExpires - 10/20/17',
-  },
-];
-
 export default class CupboardScreen extends Component<{}> {
   constructor(props) {
     super(props);
       this.state = {
-        quantity: []
+          data: [
+      {
+          title: 'Cereal1',
+          noItems: '2',
+          content: 'Calories - 250\nExpires - 10/20/17',
+          key: '1'
+      },
+      {
+          title: 'Baked beans',
+          noItems: '3',
+          content: 'Calories - 20\nExpires - 10/21/17',
+          key: '2'
+      },
+      {
+          title: 'Cereal2',
+          noItems: '2',
+          content: 'Calories - 250\nExpires - 10/20/17',
+          key: '3'
+      },
+      {
+          title: 'Cereal3',
+          noItems: '2',
+          content: 'Calories - 250\nExpires - 10/20/17',
+          key: '4'
+      },
+      {
+          title: 'Cereal4',
+          noItems: '2',
+          content: 'Calories - 250\nExpires - 10/20/17',
+          key: '5'
+      },
+      {
+          title: 'Cereal5',
+          noItems: '2',
+          content: 'Calories - 250\nExpires - 10/20/17',
+          key: '6'
+      },
+      {
+          title: 'Cereal6',
+          noItems: '2',
+          content: 'Calories - 250\nExpires - 10/20/17',
+          key: '7'
+      },
+              ]
       };
-      //this.onIncrementPress = this.onIncrementPress.bind(this)
       this.onAddToList = this.onAddToList.bind(this);
       this.EditItem = this.EditItem.bind(this);
       this.deleteItem = this.deleteItem.bind(this);
-      this._renderHeader = this._renderHeader.bind(this);
   }
 
   /*
@@ -86,8 +90,13 @@ export default class CupboardScreen extends Component<{}> {
     //TODO:: implement this function
   }
 
-  deleteItem(index) {
-    delete(SECTIONS[index]);
+  deleteItem(item) {
+      let newData = this.state.data;
+      newData.splice(this.state.data.indexOf(item), 1);
+
+      this.setState({
+          data: newData
+      });
   }
 
   onChanged(text,arrayvar){
@@ -102,69 +111,7 @@ export default class CupboardScreen extends Component<{}> {
               alert("please enter numbers only");
           }
       }
-      this.setState({ quantity: arrayvar });
-  }
-
-  _renderHeader(section,index) {
-    let arrayvar = this.state.quantity.slice();
-    arrayvar.push(section.noItems);
-    return (
-      <View style={style.accordianHeader}>
-        <Text style={style.accordianHeader}>{section.title}</Text>
-        <TextInput
-          style={style.smallerTextInput}
-          keyboardType='numeric'
-          onChangeText={(text)=> this.onChanged(text,arrayvar)}
-          placeholder={section.noItems.toString()}
-          value={this.state.quantity}
-          maxLength={100}  //setting limit of input
-        />
-        <Button //SHOULD BE SWIPE TO DELETE, IS BUTTON FOR NOW
-            containerViewStyle={style.buttonContainer}
-            buttonStyle={style.button}
-            backgroundColor="#ffffff"
-            onPress={() => {
-              this.deleteItem(index)
-            }}
-
-            title="Delete Item"
-            color="black"
-            raised
-        />
-      </View>
-    );
-  }
-
-  _renderContent(section) {
-    return (
-      <View style={style.containerCenterContent}>
-        <Text style={style.accordianHeader}>{section.content}</Text>
-          <View style={style.accordianButtons}>
-            <Button
-              containerViewStyle={style.buttonContainer}
-              buttonStyle={style.button}
-              backgroundColor="#ffffff"
-              onPress={
-                  this.onAddToList
-              }
-              title="Add to List"
-              color="black"
-              raised
-            />
-            <Button
-              containerViewStyle={style.buttonContainer}
-              buttonStyle={style.button}
-              backgroundColor="#ffffff"
-              onPress={
-                  this.EditItem
-              }
-              title="Edit Item"
-              color="black"
-              raised
-            />
-          </View>
-      </View>
-    );
+      this.setState({ noItems: arrayvar });
   }
 
   render() {
@@ -176,13 +123,76 @@ export default class CupboardScreen extends Component<{}> {
             //onChangeText={filterResults}
             //onClearText={}
             placeholder='Type Here...' />
-          <Accordion
-            sections={SECTIONS}
-            renderHeader={this._renderHeader}
-            renderContent={this._renderContent}
-            onChange={() => {
-                this.render();
-            }}
+          <FlatList
+            data={this.state.data}
+            renderItem={({item}) =>
+              <Accordion
+                sections={['Section 1']}
+                renderHeader={()=>
+                  {
+                    let arrayvar = item.noItems
+                    return (
+                      <View style={style.accordianHeader}>
+                        <Text style={style.accordianHeader}>{item.title}</Text>
+                        <TextInput
+                          style={style.smallerTextInput}
+                          keyboardType='numeric'
+                          onChangeText={(text)=> this.onChanged(text,arrayvar)}
+                          placeholder={arrayvar}
+                          maxLength={2}  //setting limit of input
+                        />
+                        <Button //SHOULD BE SWIPE TO DELETE, IS BUTTON FOR NOW
+                          containerViewStyle={style.buttonContainer}
+                          buttonStyle={style.button}
+                          backgroundColor="#ffffff"
+                          onPress={() => {
+                            this.deleteItem(item)
+                          }}
+
+                          title="Delete Item"
+                          color="black"
+                          raised
+                        />
+                    </View>
+                    );
+                  }
+                }
+                renderContent={()=>
+                  {
+                    return (
+                      <View style={style.containerCenterContent}>
+                        <Text style={style.accordianHeader}>{item.content}</Text>
+                        <View style={style.accordianButtons}>
+                          <Button
+                            containerViewStyle={style.buttonContainer}
+                            buttonStyle={style.button}
+                            backgroundColor="#ffffff"
+                            onPress={
+                              this.onAddToList
+                            }
+                            title="Add to List"
+                            color="black"
+                            raised
+                          />
+                          <Button
+                            containerViewStyle={style.buttonContainer}
+                            buttonStyle={style.button}
+                            backgroundColor="#ffffff"
+                            onPress={
+                              this.EditItem
+                            }
+                            title="Edit Item"
+                            color="black"
+                            raised
+                          />
+                        </View>
+                      </View>
+                    );
+                  }
+                }
+              />}
+            keyExtractor={(item) => item.key}
+            extraData={this.state}
           />
         </ScrollView>
       </View>
