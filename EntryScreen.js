@@ -63,7 +63,7 @@ export default class EntryScreen extends Component<{}> {
 
   addFood(name, quantity, content) {
     const fbhandler = this.props.navigation.state.params.fbhandler;
-    const ref = fbhandler.addFood(name,quantity,content);
+    const ref = fbhandler.addFood(name,parseInt(quantity, 10),content);
 
     /* I don't think there's use for this here but I will leave it for now
     let newData = this.state.data;

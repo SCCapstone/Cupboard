@@ -138,7 +138,7 @@ export default class CupboardScreen extends Component<{}> {
       Object.keys(foods.val()).forEach(function(key) {
         data.push({
           title: foods.val()[key].title,
-          noItems: foods.val()[key].noItems,
+          noItems: foods.val()[key].noItems.toString(),
           content: foods.val()[key].content,
           key: key
         });
