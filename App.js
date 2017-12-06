@@ -45,7 +45,7 @@ const RootNavigator = StackNavigator(
     ListsS: {
       screen: ListsScreen,
       navigationOptions: {
-        headerTitle: "My Shopping Lists"
+        headerTitle: "Shopping Lists"
       }
     },
     EntryS: {

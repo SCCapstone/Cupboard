@@ -4,6 +4,7 @@ import {
   View,
   StyleSheet,
   ListView,
+  TextInput,
   FlatList,
   TouchableOpacity,
   Alert,
@@ -45,6 +46,10 @@ class ListElement extends Component {
     });
   }
 
+  _delete(){
+    this.props.self.deleteFromList(this.props.id);
+  }
+
   _onTextChange(text){
     const self = this.props.self;
 
@@ -77,7 +82,8 @@ class ListElement extends Component {
             margin: 10,
             marginLeft: 30,
             marginRight: 0,
-            padding: 0
+            padding: 2,
+            borderWidth: 0
           }}
           checked={this.state.checked}
           onPress={() => {
@@ -93,8 +99,58 @@ class ListElement extends Component {
             this._onTextChange(text);
           }}
         />
+        <Icon
+          color="#413133"
+          name="x"
+          type="feather"
+          containerStyle={{
+            // marginRight: 20
+          }}
+          onPress={()=>{
+            this._delete();
+          }}
+          underlayColor={'transparent'}
+        />
       </View>
     );
+  }
+}
+
+class HeaderInput extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      title: this.props.title
+    };
+  }
+
+  _onChange(text) {
+    this.setState({
+      title: text
+    },()=>{
+      this.props.self.setState({
+        title: text
+      });
+    });
+  }
+
+  render() {
+    return (<FormInput
+      underlineColorAndroid="transparent"
+      inputStyle={{
+        color: "black",
+        fontWeight: "bold",
+        fontSize: 18
+      }}
+      containerStyle={{
+        width: 200,
+      }}
+      onChangeText={(text)=>{
+        this._onChange(text);
+      }}
+      value={this.state.title}
+    />)
   }
 }
 
@@ -104,45 +160,42 @@ export default class CheckListScreen extends Component<{}> {
 
     this.state = {
       data: null,
+      title: this.props.navigation.state.params.list.title
     };
   }
 
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.state.params.list.title,
-    headerRight:
-      <View
-        style={{ flexDirection: "row"}}
-      >
-        <TouchableOpacity
-          onPress={()=>{
-            navigation.state.params.self.addToList();
-          }}
-        >
-          <Icon
-            color="#739E82"
-            name="plus"
-            type="entypo"
-            containerStyle={{
-              marginRight: 20
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={()=>{
-            navigation.state.params.self.saveList();
-            Alert.alert("List Saved!");
-          }}
-        >
-          <Icon
-            color="#739E82"
-            name="save"
-            type="entypo"
-            containerStyle={{
-              marginRight: 20
-            }}
-          />
-        </TouchableOpacity>
-      </View>
+    headerTitle: <View>
+      <HeaderInput
+        title={navigation.state.params.list.title}
+        self={navigation.state.params.self}
+      />
+    </View>,
+    headerRight: <View style={{ flexDirection: "row"}}>
+      <Icon
+        color="#739E82"
+        name="plus"
+        type="entypo"
+        containerStyle={{
+          marginRight: 20
+        }}
+        onPress={()=>{
+          navigation.state.params.self.addToList();
+        }}
+      />
+      <Icon
+        color="#739E82"
+        name="save"
+        type="entypo"
+        containerStyle={{
+          marginRight: 20
+        }}
+        onPress={()=>{
+          navigation.state.params.self.saveList();
+          Alert.alert("List Saved!");
+        }}
+      />
+    </View>
   });
 
   addToList() {
@@ -163,6 +216,26 @@ export default class CheckListScreen extends Component<{}> {
     });
   }
 
+  async deleteFromList(itemid) {
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const listid = this.props.navigation.state.params.list.key;
+
+    await fbhandler.deleteItemFromList(listid, itemid);
+
+    console.log(itemid);
+    let newData = this.state.data;
+
+    newData = newData.filter((elem)=>{
+      return elem.id !== itemid;
+    });
+
+    console.log(newData);
+
+    this.setState({
+      data: newData
+    });
+  }
+
   saveList() {
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const listid = this.props.navigation.state.params.list.key;
@@ -176,13 +249,17 @@ export default class CheckListScreen extends Component<{}> {
         title: elem.title
       };
     });
-
+    // save title
+    fbhandler.saveListTitle(listid, this.state.title);
+    // save elements
     fbhandler.saveListElements(listid, json);
   }
 
   async componentDidMount(){
+    const self = this;
     this.props.navigation.setParams({
-      self: this
+      self: self,
+      title: this.state.title
     });
 
     const fbhandler = this.props.navigation.state.params.fbhandler;
@@ -207,6 +284,11 @@ export default class CheckListScreen extends Component<{}> {
         data: []
       });
     }
+  }
+
+  componentWillUnmount(){
+    this.saveList();
+    this.props.navigation.state.params.prevScreen._refreshLists();
   }
 
   render() {

@@ -65,10 +65,13 @@ export default class LoginScreen extends Component<{}> {
 
   // Sign in the email and password
   signIn() {
+    console.log(this.state);
     this.state.fbhandler.signIn(this.state.username, this.state.password, ()=> {
-      this.props.navigation.navigate('HomeS', fbhandler);
+      this.props.navigation.navigate('HomeS', {
+        'fbhandler': this.state.fbhandler
+      });
     }, (err) => {
-      Alert.alert(err);
+      Alert.alert("Error signing in!");
     });
   }
 
@@ -78,7 +81,7 @@ export default class LoginScreen extends Component<{}> {
         'fbhandler': this.state.fbhandler
       });
     }, (err) => {
-      Alert.alert(err);
+      Alert.alert("Error signing in debug!");
     });
   }
 
@@ -87,7 +90,7 @@ export default class LoginScreen extends Component<{}> {
     this.state.fbhandler.createUser(this.state.username, this.state.password, () =>{
       this.props.navigation.navigate('HomeS', fbhandler);
     }, (err) => {
-      Alert.alert(err);
+      Alert.alert("Error creating user!");
     })
   }
 

@@ -7,6 +7,7 @@ import {
 import { Button, FormLabel, FormInput } from 'react-native-elements';
 import { style } from "./Styles";
 
+// Class for getting/updating entered values for use in EntryScreen
 class FoodField extends Component {
   constructor(props) {
     super(props);
@@ -61,6 +62,28 @@ export default class EntryScreen extends Component<{}> {
     }
   }
 
+  // Add food to Firebase
+  addFood(name, quantity, content) {
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const ref = fbhandler.addFood(name,parseInt(quantity, 10),content);
+
+    /* I don't think there's use for this here but I will leave it for now
+    let newData = this.state.data;
+
+
+    newData.push({
+      key: ref.key,
+      title: name,
+      noItems: quantity,
+      content: content
+    });
+
+    this.setState({
+      data: newData
+    });
+    */
+  }
+
   render() {
     return (
       <View>
@@ -71,6 +94,7 @@ export default class EntryScreen extends Component<{}> {
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           title='SUBMIT'
+          onPress={() => this.addFood(this.state.title, this.state.noItems, this.state.content)}
         />
       </View>
     );

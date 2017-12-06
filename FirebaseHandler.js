@@ -78,11 +78,6 @@ export default class FirebaseHandler {
     return ref.once("value");
   }
 
-  getFoods(){
-    const ref = this.firebase.database().ref('foods/' + this.user.uid);
-    return ref.once("value");
-  }
-
   addListItemToList(listid){
     return this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items').push({
       title: "",
@@ -94,8 +89,42 @@ export default class FirebaseHandler {
     return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid + '/items').update(json);
   }
 
+  saveListTitle(listid, title) {
+    return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid).update({title: title});
+  }
+
   deleteList(listid){
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid);
+    return ref.remove();
+  }
+
+  deleteItemFromList(listid, itemid){
+    const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items/' + itemid);
+    return ref.remove();
+  }
+
+  // get foods
+  // returns a promise.
+  getFoods(){
+    const ref = this.firebase.database().ref('foods/' + this.user.uid);
+    return ref.once("value");
+  }
+
+  // create a food for the current user.
+  // name is a string, quantity is an int, content is a string
+  // returns the ref.
+  addFood(name, quantity, content){
+    return this.firebase.database().ref('foods/' + this.user.uid).push({
+      title: name,
+      noItems: quantity,
+      content: content
+    });
+  }
+
+  // deletes food item given a food id
+  // food id is a key
+  deleteFood(foodid){
+    const ref = this.firebase.database().ref('foods/' + this.user.uid + '/' + foodid);
     return ref.remove();
   }
 }

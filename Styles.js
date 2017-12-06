@@ -23,6 +23,14 @@ const style = StyleSheet.create({
     width: "auto",
     borderRadius: 10,
   },
+  logoutButtonContainer: {
+    position: 'absolute',
+    bottom:0,
+    left:0,
+    marginBottom: 5,
+    width: "auto",
+    borderRadius: 10,
+  },
   buttons: {
     flexDirection: "row"
   },

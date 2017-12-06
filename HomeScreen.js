@@ -52,7 +52,7 @@ export default class HomeScreen extends Component<{}> {
         />
         <Button
           title='SIGN OUT'
-          containerViewStyle={style.buttonContainer}
+          containerViewStyle={style.logoutButtonContainer}
           buttonStyle={style.button}
           onPress={()=>{
             fbhandler.signOut(()=>{
