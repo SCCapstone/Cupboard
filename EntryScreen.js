@@ -62,6 +62,11 @@ export default class EntryScreen extends Component<{}> {
     }
   }
 
+  componentWillUnmount(){
+    //this.addFood();
+    this.props.navigation.state.params.prevScreen._refreshFoods();
+  }
+
   // Add food to Firebase
   addFood(name, quantity, content) {
     const fbhandler = this.props.navigation.state.params.fbhandler;

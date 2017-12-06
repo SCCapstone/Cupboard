@@ -26,50 +26,7 @@ export default class CupboardScreen extends Component<{}> {
   constructor(props) {
     super(props);
       this.state = {
-          data: [
-      {
-          title: 'Cereal1',
-          noItems: '2',
-          content: 'Calories - 250\nExpires - 10/20/17',
-          key: '1'
-      },
-      {
-          title: 'Baked beans',
-          noItems: '3',
-          content: 'Calories - 20\nExpires - 10/21/17',
-          key: '2'
-      },
-      {
-          title: 'Cereal2',
-          noItems: '2',
-          content: 'Calories - 250\nExpires - 10/20/17',
-          key: '3'
-      },
-      {
-          title: 'Cereal3',
-          noItems: '2',
-          content: 'Calories - 250\nExpires - 10/20/17',
-          key: '4'
-      },
-      {
-          title: 'Cereal4',
-          noItems: '2',
-          content: 'Calories - 250\nExpires - 10/20/17',
-          key: '5'
-      },
-      {
-          title: 'Cereal5',
-          noItems: '2',
-          content: 'Calories - 250\nExpires - 10/20/17',
-          key: '6'
-      },
-      {
-          title: 'Cereal6',
-          noItems: '2',
-          content: 'Calories - 250\nExpires - 10/20/17',
-          key: '7'
-      },
-              ]
+          data: []
       };
       this.onAddToList = this.onAddToList.bind(this);
       this.EditItem = this.EditItem.bind(this);
@@ -78,7 +35,10 @@ export default class CupboardScreen extends Component<{}> {
 
   static navigationOptions = ({navigation}) => ({
     headerRight:
-      <TouchableOpacity onPress={() => navigation.navigate('EntryS', {'fbhandler': navigation.state.params.fbhandler})}>
+      <TouchableOpacity onPress={() => navigation.navigate('EntryS', {
+        'fbhandler': navigation.state.params.fbhandler,
+        'prevScreen': navigation.state.params.self
+      })}>
         <Icon name="circle-with-plus"
               type="entypo"
         />
@@ -113,7 +73,7 @@ export default class CupboardScreen extends Component<{}> {
       });
   }
 
-  onChanged(text,arrayvar){
+  onChanged(text,arrayvar,foodid){
       let newText = '';
       let numbers = '0123456789';
       for (let i=0; i < text.length; i++) {
@@ -125,12 +85,16 @@ export default class CupboardScreen extends Component<{}> {
               alert("please enter numbers only");
           }
       }
+      // Save edit in Firebase
+      const fbhandler = this.props.navigation.state.params.fbhandler;
+      fbhandler.saveFoodQuantity(foodid, parseInt(arrayvar, 10));
+
+      // Set state locally
       this.setState({ noItems: arrayvar });
   }
 
-  // Firebase function to get foods from database, set it to data
-  async componentDidMount(){
-
+  // Loads current foods from Firebase
+  async _refreshFoods(){
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const foods = await fbhandler.getFoods();
 
@@ -157,6 +121,16 @@ export default class CupboardScreen extends Component<{}> {
     }
   }
 
+  // Firebase function to get foods from database, set it to data
+  async componentDidMount(){
+    // Workaround to use THIS in header
+    this.props.navigation.setParams({
+      self: this
+    });
+
+    this._refreshFoods();
+  }
+
   render() {
     return (
       <View style={style.content}>
@@ -180,7 +154,7 @@ export default class CupboardScreen extends Component<{}> {
                         <TextInput
                           style={style.smallerTextInput}
                           keyboardType='numeric'
-                          onChangeText={(text)=> this.onChanged(text,arrayvar)}
+                          onChangeText={(text)=> this.onChanged(text,arrayvar,item.key)}
                           placeholder={arrayvar}
                           maxLength={2}  //setting limit of input
                         />
