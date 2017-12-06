@@ -288,6 +288,7 @@ export default class CheckListScreen extends Component<{}> {
 
   componentWillUnmount(){
     this.saveList();
+    this.props.navigation.state.params.prevScreen._refreshLists();
   }
 
   render() {

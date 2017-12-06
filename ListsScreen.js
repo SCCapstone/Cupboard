@@ -139,7 +139,8 @@ export default class ListsScreen extends Component<{}> {
             onPress={()=>{
               this.props.navigation.navigate("CheckListS", {
                 list: item,
-                fbhandler: this.props.navigation.state.params.fbhandler
+                fbhandler: this.props.navigation.state.params.fbhandler,
+                prevScreen: this
               });
             }}
             key={item.key}
