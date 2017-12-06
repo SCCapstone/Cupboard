@@ -46,6 +46,10 @@ class ListElement extends Component {
     });
   }
 
+  _delete(){
+    this.props.self.deleteFromList(this.props.id);
+  }
+
   _onTextChange(text){
     const self = this.props.self;
 
@@ -78,7 +82,8 @@ class ListElement extends Component {
             margin: 10,
             marginLeft: 30,
             marginRight: 0,
-            padding: 0
+            padding: 2,
+            borderWidth: 0
           }}
           checked={this.state.checked}
           onPress={() => {
@@ -93,6 +98,18 @@ class ListElement extends Component {
           onChangeText={(text)=>{
             this._onTextChange(text);
           }}
+        />
+        <Icon
+          color="#413133"
+          name="x"
+          type="feather"
+          containerStyle={{
+            // marginRight: 20
+          }}
+          onPress={()=>{
+            this._delete();
+          }}
+          underlayColor={'transparent'}
         />
       </View>
     );
@@ -155,35 +172,29 @@ export default class CheckListScreen extends Component<{}> {
       />
     </View>,
     headerRight: <View style={{ flexDirection: "row"}}>
-      <TouchableOpacity
+      <Icon
+        color="#739E82"
+        name="plus"
+        type="entypo"
+        containerStyle={{
+          marginRight: 20
+        }}
         onPress={()=>{
           navigation.state.params.self.addToList();
         }}
-      >
-        <Icon
-          color="#739E82"
-          name="plus"
-          type="entypo"
-          containerStyle={{
-            marginRight: 20
-          }}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
+      />
+      <Icon
+        color="#739E82"
+        name="save"
+        type="entypo"
+        containerStyle={{
+          marginRight: 20
+        }}
         onPress={()=>{
           navigation.state.params.self.saveList();
           Alert.alert("List Saved!");
         }}
-      >
-        <Icon
-          color="#739E82"
-          name="save"
-          type="entypo"
-          containerStyle={{
-            marginRight: 20
-          }}
-        />
-      </TouchableOpacity>
+      />
     </View>
   });
 
@@ -199,6 +210,26 @@ export default class CheckListScreen extends Component<{}> {
       title: "",
       checked: false
     });
+
+    this.setState({
+      data: newData
+    });
+  }
+
+  async deleteFromList(itemid) {
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const listid = this.props.navigation.state.params.list.key;
+
+    await fbhandler.deleteItemFromList(listid, itemid);
+
+    console.log(itemid);
+    let newData = this.state.data;
+
+    newData = newData.filter((elem)=>{
+      return elem.id !== itemid;
+    });
+
+    console.log(newData);
 
     this.setState({
       data: newData
@@ -253,6 +284,10 @@ export default class CheckListScreen extends Component<{}> {
         data: []
       });
     }
+  }
+
+  componentWillUnmount(){
+    this.saveList();
   }
 
   render() {

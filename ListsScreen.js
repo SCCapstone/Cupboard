@@ -18,12 +18,14 @@ export default class ListsScreen extends Component<{}> {
 
   static navigationOptions = ({navigation}) => ({
     headerRight:
-      <View
-        style={{
-          flexDirection: "row"
-        }}
-      >
-        <TouchableOpacity
+      <View style={{flexDirection: "row"}}>
+        <Icon
+          color="#739E82"
+          name="plus"
+          type="entypo"
+          containerStyle={{
+            marginRight: 15
+          }}
           onPress={()=>{
             const newList = navigation.state.params.self.createList('My List');
             navigation.navigate("CheckListS", {
@@ -31,33 +33,19 @@ export default class ListsScreen extends Component<{}> {
               fbhandler: navigation.state.params.fbhandler
             });
           }}
-        >
-          <Icon
-            color="#739E82"
-            name="plus"
-            type="entypo"
-            containerStyle={{
-              marginRight: 15
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
+        />
+        <Icon
+          color="#739E82"
+          name="sync"
+          type="octicons"
+          containerStyle={{
+            marginRight: 15
+          }}
           onPress={()=>{
             navigation.state.params.self._refreshLists();
           }}
-        >
-          <Icon
-            color="#739E82"
-            name="sync"
-            type="octicons"
-            containerStyle={{
-              marginRight: 15
-            }}
-          />
-        </TouchableOpacity>
-
+        />
       </View>
-
   });
 
 

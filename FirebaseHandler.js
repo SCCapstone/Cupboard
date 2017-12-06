@@ -97,4 +97,9 @@ export default class FirebaseHandler {
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid);
     return ref.remove();
   }
+
+  deleteItemFromList(listid, itemid){
+    const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items/' + itemid);
+    return ref.remove();
+  }
 }
