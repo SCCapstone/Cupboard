@@ -102,12 +102,17 @@ export default class FirebaseHandler {
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items/' + itemid);
     return ref.remove();
   }
-  
+
+  // get foods
+  // returns a promise.
   getFoods(){
     const ref = this.firebase.database().ref('foods/' + this.user.uid);
     return ref.once("value");
   }
 
+  // create a food for the current user.
+  // name is a string, quantity is an int, content is a string
+  // returns the ref.
   addFood(name, quantity, content){
     return this.firebase.database().ref('foods/' + this.user.uid).push({
       title: name,
@@ -116,6 +121,8 @@ export default class FirebaseHandler {
     });
   }
 
+  // deletes food item given a food id
+  // food id is a key
   deleteFood(foodid){
     const ref = this.firebase.database().ref('foods/' + this.user.uid + '/' + foodid);
     return ref.remove();

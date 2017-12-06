@@ -100,6 +100,7 @@ export default class CupboardScreen extends Component<{}> {
     //TODO:: implement this function
   }
 
+  // Deletes a food item from Firebase, then updates local data
   deleteItem(item) {
       const fbhandler = this.props.navigation.state.params.fbhandler;
       const ref = fbhandler.deleteFood(item.key);
@@ -127,6 +128,7 @@ export default class CupboardScreen extends Component<{}> {
       this.setState({ noItems: arrayvar });
   }
 
+  // Firebase function to get foods from database, set it to data
   async componentDidMount(){
 
     const fbhandler = this.props.navigation.state.params.fbhandler;

@@ -7,6 +7,7 @@ import {
 import { Button, FormLabel, FormInput } from 'react-native-elements';
 import { style } from "./Styles";
 
+// Class for getting/updating entered values for use in EntryScreen
 class FoodField extends Component {
   constructor(props) {
     super(props);
@@ -61,6 +62,7 @@ export default class EntryScreen extends Component<{}> {
     }
   }
 
+  // Add food to Firebase
   addFood(name, quantity, content) {
     const fbhandler = this.props.navigation.state.params.fbhandler;
     const ref = fbhandler.addFood(name,parseInt(quantity, 10),content);
