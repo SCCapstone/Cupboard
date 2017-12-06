@@ -89,8 +89,17 @@ export default class FirebaseHandler {
     return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid + '/items').update(json);
   }
 
+  saveListTitle(listid, title) {
+    return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid).update({title: title});
+  }
+
   deleteList(listid){
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid);
+    return ref.remove();
+  }
+
+  deleteItemFromList(listid, itemid){
+    const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items/' + itemid);
     return ref.remove();
   }
 }
