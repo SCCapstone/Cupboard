@@ -101,6 +101,9 @@ export default class CupboardScreen extends Component<{}> {
   }
 
   deleteItem(item) {
+      const fbhandler = this.props.navigation.state.params.fbhandler;
+      const ref = fbhandler.deleteFood(item.key);
+
       let newData = this.state.data;
       newData.splice(this.state.data.indexOf(item), 1);
 
@@ -135,6 +138,8 @@ export default class CupboardScreen extends Component<{}> {
       Object.keys(foods.val()).forEach(function(key) {
         data.push({
           title: foods.val()[key].title,
+          noItems: foods.val()[key].noItems,
+          content: foods.val()[key].content,
           key: key
         });
       });

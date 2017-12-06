@@ -61,6 +61,27 @@ export default class EntryScreen extends Component<{}> {
     }
   }
 
+  addFood(name, quantity, content) {
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const ref = fbhandler.addFood(name,quantity,content);
+
+    /* I don't think there's use for this here but I will leave it for now
+    let newData = this.state.data;
+
+
+    newData.push({
+      key: ref.key,
+      title: name,
+      noItems: quantity,
+      content: content
+    });
+
+    this.setState({
+      data: newData
+    });
+    */
+  }
+
   render() {
     return (
       <View>
@@ -71,6 +92,7 @@ export default class EntryScreen extends Component<{}> {
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           title='SUBMIT'
+          onPress={() => this.addFood(this.state.title, this.state.noItems, this.state.content)}
         />
       </View>
     );
