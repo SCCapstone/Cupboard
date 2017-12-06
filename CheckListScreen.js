@@ -6,9 +6,10 @@ import {
   ListView,
   FlatList,
   TouchableOpacity,
+  Alert,
   ScrollView
 } from 'react-native';
-import { List, ListItem, Button, CheckBox, FormInput} from 'react-native-elements'
+import { Button, CheckBox, FormInput, Icon} from 'react-native-elements'
 import { style } from "./Styles";
 
 class ListElement extends Component {
@@ -17,8 +18,54 @@ class ListElement extends Component {
 
     this.state = {
       checked: this.props.checked,
-      title: this.props.title
-    }
+      title: this.props.title,
+    };
+  }
+
+
+  // TODO make onCheckChange and onTextChange be the same method
+  _onCheckChange(){
+    const self = this.props.self;
+    const itemid = this.props.id;
+    let alldata = self.state.data;
+
+    this.setState({
+      checked: !this.state.checked
+    }, ()=> {
+      alldata.map((elem)=>{
+        if (elem.id === itemid){
+          elem.checked = this.state.checked;
+          return elem;
+        }
+      });
+
+      self.setState({
+        data: alldata
+      });
+    });
+  }
+
+  _onTextChange(text){
+    const self = this.props.self;
+
+    const itemid = this.props.id;
+
+    let alldata = self.state.data;
+
+    alldata.map((elem)=>{
+      if (elem.id === itemid){
+        elem.title = text;
+        return elem;
+      }
+    });
+
+    self.setState({
+      data: alldata
+    });
+
+    this.setState({
+      title: text
+    });
   }
 
   render() {
@@ -33,9 +80,9 @@ class ListElement extends Component {
             padding: 0
           }}
           checked={this.state.checked}
-          onPress={() => this.setState({
-            checked: !this.state.checked
-          })}
+          onPress={() => {
+            this._onCheckChange();
+          }}
         />
         <FormInput
           containerStyle={{
@@ -43,9 +90,7 @@ class ListElement extends Component {
           }}
           value={this.state.title}
           onChangeText={(text)=>{
-            this.setState({
-              title: text
-            });
+            this._onTextChange(text);
           }}
         />
       </View>
@@ -59,62 +104,124 @@ export default class CheckListScreen extends Component<{}> {
 
     this.state = {
       data: null,
-      key: 1
     };
   }
 
-  static navigationOptions = ({ navigation, screenProps }) => ({
-    title: navigation.state.params
+  static navigationOptions = ({ navigation }) => ({
+    title: navigation.state.params.list.title,
+    headerRight:
+      <View
+        style={{ flexDirection: "row"}}
+      >
+        <TouchableOpacity
+          onPress={()=>{
+            navigation.state.params.self.addToList();
+          }}
+        >
+          <Icon
+            color="#739E82"
+            name="plus"
+            type="entypo"
+            containerStyle={{
+              marginRight: 20
+            }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>{
+            navigation.state.params.self.saveList();
+            Alert.alert("List Saved!");
+          }}
+        >
+          <Icon
+            color="#739E82"
+            name="save"
+            type="entypo"
+            containerStyle={{
+              marginRight: 20
+            }}
+          />
+        </TouchableOpacity>
+      </View>
   });
 
   addToList() {
-    let newKey = this.state.key;
-    let newData = this.state.data;
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const listid = this.props.navigation.state.params.list.key;
 
+    const ref = fbhandler.addListItemToList(listid);
+
+    let newData = this.state.data;
     newData.push({
-      key: this.state.key,
-      title: ""
+      id: ref.key,
+      title: "",
+      checked: false
     });
 
-    newKey += 1;
-
     this.setState({
-      data: newData,
-      key: newKey
+      data: newData
     });
   }
 
-  // TODO: Load all the recipes from firebase in here into the data state
-  componentDidMount(){
-    this.setState({
-      data: [
-        {
-          key: 99,
-          title: "asdf",
-          checked: false
-        },
-        {
-          key: 20,
-          title: "asdasdasd",
-          checked: true
-        }
-      ]
+  saveList() {
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const listid = this.props.navigation.state.params.list.key;
+
+    const data = this.state.data;
+    const json = {};
+
+    data.forEach((elem) => {
+      json[elem.id] = {
+        checked: elem.checked,
+        title: elem.title
+      };
     });
+
+    fbhandler.saveListElements(listid, json);
+  }
+
+  async componentDidMount(){
+    this.props.navigation.setParams({
+      self: this
+    });
+
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const listid = this.props.navigation.state.params.list.key;
+
+    const listItems = await fbhandler.getListItems(listid);
+
+    const data = [];
+    if (listItems.val()){
+      Object.keys(listItems.val()).forEach(function(key) {
+        data.push({
+          title: listItems.val()[key].title,
+          checked: listItems.val()[key].checked,
+          id: key
+        });
+      });
+      this.setState({
+        data: data
+      });
+    } else {
+      this.setState({
+        data: []
+      });
+    }
   }
 
   render() {
     return (
       <View>
-        <Button
-          onPress={()=>{this.addToList()}}
-        />
         <FlatList
           data={this.state.data}
           renderItem={({item}) => <ListElement
+            params={this.props.navigation.state.params}
             checked={item.checked}
             title={item.title}
+            id={item.id}
+            self={this}
           />}
-          keyExtractor={(item, index) => item.key}
+          keyExtractor={(item, index) => item.id}
           extraData={this.state}
         />
       </View>

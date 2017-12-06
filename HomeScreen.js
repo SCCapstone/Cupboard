@@ -3,35 +3,31 @@ import {
   Text,
   View,
   StyleSheet,
-    Alert
+  Alert
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { style } from "./Styles";
-import firebase from 'react-native-firebase';
 
 export default class HomeScreen extends Component<{}> {
-    signOut() {
-        firebase.auth().signOut()
-            .then((user) => {
-                this.props.navigation.navigate('LoginS');
-            }).catch( (err) => {
-            Alert.alert('Sign Out Failed!');
-        });
-    }
+
+  constructor(props) {
+    super(props);
+  }
+
   render() {
-    const {params} = this.props.navigation.state;
-    const user = (typeof params === 'undefined') ? {email: 'anonymous'} : params;
+    const navigation = this.props.navigation;
+    const fbhandler = navigation.state.params.fbhandler;
 
     return (
       <View style={style.containerCenterContent}>
 
-        <Text>Hello {user.email}!</Text>
+        <Text>Hello {fbhandler.user.email}!</Text>
         <Button
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           title='MY CUPBOARD'
           onPress={() => {
-            this.props.navigation.navigate("CupboardS");
+            navigation.navigate("CupboardS");
           }}
         />
         <Button
@@ -39,7 +35,7 @@ export default class HomeScreen extends Component<{}> {
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           onPress={() => {
-            this.props.navigation.navigate("RecipesS");
+            navigation.navigate("RecipesS");
           }}
         />
         <Button
@@ -47,17 +43,23 @@ export default class HomeScreen extends Component<{}> {
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           onPress={() => {
-            this.props.navigation.navigate("ListsS", user);
+            navigation.navigate("ListsS", {
+              'fbhandler': fbhandler
+            });
           }}
         />
-          <Button
-              title='SIGN OUT'
-              containerViewStyle={style.buttonContainer}
-              buttonStyle={style.button}
-              onPress={
-                  this.signOut.bind(this)
-              }
-          />
+        <Button
+          title='SIGN OUT'
+          containerViewStyle={style.buttonContainer}
+          buttonStyle={style.button}
+          onPress={()=>{
+            fbhandler.signOut(()=>{
+              navigation.goBack();
+            }, (err)=> {
+              Alert.alert(err);
+            });
+          }}
+        />
       </View>
     );
   }
