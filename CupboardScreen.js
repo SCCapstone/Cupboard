@@ -6,9 +6,10 @@ import {
   TextInput,
   Alert,
   ScrollView,
-  FlatList
+  FlatList,
+  TouchableOpacity
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 import Accordion from 'react-native-collapsible/Accordion';
 //https://www.npmjs.com/package/react-native-collapsible
 import { SearchBar } from 'react-native-elements';
@@ -75,6 +76,15 @@ export default class CupboardScreen extends Component<{}> {
       this.deleteItem = this.deleteItem.bind(this);
   }
 
+  static navigationOptions = ({navigation}) => ({
+    headerRight:
+      <TouchableOpacity onPress={() => navigation.navigate('EntryS', {'fbhandler': navigation.state.params.fbhandler})}>
+        <Icon name="circle-with-plus"
+              type="entypo"
+        />
+      </TouchableOpacity>
+  });
+
   /*
   filterResults() {
     //TODO:: add filtering of list for search function
@@ -91,6 +101,9 @@ export default class CupboardScreen extends Component<{}> {
   }
 
   deleteItem(item) {
+      const fbhandler = this.props.navigation.state.params.fbhandler;
+      const ref = fbhandler.deleteFood(item.key);
+
       let newData = this.state.data;
       newData.splice(this.state.data.indexOf(item), 1);
 
@@ -112,6 +125,34 @@ export default class CupboardScreen extends Component<{}> {
           }
       }
       this.setState({ noItems: arrayvar });
+  }
+
+  async componentDidMount(){
+
+    const fbhandler = this.props.navigation.state.params.fbhandler;
+    const foods = await fbhandler.getFoods();
+
+    const data = [];
+
+    if (foods.val()){
+      Object.keys(foods.val()).forEach(function(key) {
+        data.push({
+          title: foods.val()[key].title,
+          noItems: foods.val()[key].noItems.toString(),
+          content: foods.val()[key].content,
+          key: key
+        });
+      });
+
+      this.setState({
+        data: data
+      });
+
+    } else {
+      this.setState({
+        data: []
+      });
+    }
   }
 
   render() {

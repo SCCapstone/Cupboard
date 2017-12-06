@@ -27,7 +27,9 @@ export default class HomeScreen extends Component<{}> {
           buttonStyle={style.button}
           title='MY CUPBOARD'
           onPress={() => {
-            navigation.navigate("CupboardS");
+            navigation.navigate("CupboardS", {
+              'fbhandler': fbhandler
+            });
           }}
         />
         <Button
