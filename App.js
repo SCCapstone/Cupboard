@@ -32,15 +32,9 @@ const RootNavigator = StackNavigator(
     },
     CupboardS: {
       screen: CupboardScreen,
-      navigationOptions: ({ navigation, screenProps}) => ({
-        headerTitle: "My Cupboard",
-        headerRight:
-          <TouchableOpacity onPress={() => navigation.navigate('EntryS')}>
-            <Icon name="circle-with-plus"
-                  type="entypo"
-            />
-          </TouchableOpacity>
-      })
+      navigationOptions: {
+        headerTitle: "My Cupboard"
+      }
     },
     RecipesS: {
       screen: RecipesScreen,

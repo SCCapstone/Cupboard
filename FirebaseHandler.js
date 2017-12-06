@@ -102,4 +102,22 @@ export default class FirebaseHandler {
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items/' + itemid);
     return ref.remove();
   }
+  
+  getFoods(){
+    const ref = this.firebase.database().ref('foods/' + this.user.uid);
+    return ref.once("value");
+  }
+
+  addFood(name, quantity, content){
+    return this.firebase.database().ref('foods/' + this.user.uid).push({
+      title: name,
+      noItems: quantity,
+      content: content
+    });
+  }
+
+  deleteFood(foodid){
+    const ref = this.firebase.database().ref('foods/' + this.user.uid + '/' + foodid);
+    return ref.remove();
+  }
 }
