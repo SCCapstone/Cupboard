@@ -73,7 +73,9 @@ export default class CupboardScreen extends Component<{}> {
       });
   }
 
-  onChanged(text,arrayvar,foodid){
+  // Edits Quantity
+  // Should we keep this as an onChanged method, or turn into onSubmit?
+  onChanged(text,foodid){
       let newText = '';
       let numbers = '0123456789';
       for (let i=0; i < text.length; i++) {
@@ -87,10 +89,10 @@ export default class CupboardScreen extends Component<{}> {
       }
       // Save edit in Firebase
       const fbhandler = this.props.navigation.state.params.fbhandler;
-      fbhandler.saveFoodQuantity(foodid, parseInt(arrayvar, 10));
+      fbhandler.saveFoodQuantity(foodid, parseInt(newText, 10));
 
       // Set state locally
-      this.setState({ noItems: arrayvar });
+      this.setState({ noItems: newText });
   }
 
   // Loads current foods from Firebase
@@ -154,7 +156,7 @@ export default class CupboardScreen extends Component<{}> {
                         <TextInput
                           style={style.smallerTextInput}
                           keyboardType='numeric'
-                          onChangeText={(text)=> this.onChanged(text,arrayvar,item.key)}
+                          onChangeText={(text)=> this.onChanged(text,item.key)}
                           placeholder={arrayvar}
                           maxLength={2}  //setting limit of input
                         />
