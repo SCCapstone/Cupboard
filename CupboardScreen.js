@@ -202,9 +202,18 @@ export default class CupboardScreen extends Component<{}> {
                             containerViewStyle={style.buttonContainer}
                             buttonStyle={style.button}
                             backgroundColor="#ffffff"
+                            onPress={()=>{
+                              this.props.navigation.navigate("EditFoodS", {
+                                food: item,
+                                fbhandler: this.props.navigation.state.params.fbhandler,
+                                prevScreen: this
+                              });
+                            }}
+                            /*
                             onPress={
                               this.EditItem
                             }
+                            */
                             title="Edit Item"
                             color="black"
                             raised

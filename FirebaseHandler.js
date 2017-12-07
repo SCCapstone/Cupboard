@@ -133,4 +133,10 @@ export default class FirebaseHandler {
   saveFoodQuantity(foodid, quantity){
     return firebaseApp.database().ref('foods/' + this.user.uid + '/' + foodid).update({noItems: quantity});
   }
+
+  // for editing quantity on Cupboard screen
+  // foodid is a key, quantity is an int
+  editFood(foodid, name, quantity, content){
+    return firebaseApp.database().ref('foods/' + this.user.uid + '/' + foodid).update({title: name, noItems: quantity, content: content});
+  }
 }

@@ -14,6 +14,7 @@ import RecipesScreen from './RecipesScreen';
 import ListsScreen from './ListsScreen';
 import EntryScreen from './EntryScreen';
 import CheckListScreen from './CheckListScreen';
+import EditFoodScreen from "./EditFoodScreen";
 
 //make sure this is near the bottom
 const RootNavigator = StackNavigator(
@@ -56,6 +57,12 @@ const RootNavigator = StackNavigator(
     },
     CheckListS: {
       screen: CheckListScreen
+    },
+    EditFoodS: {
+      screen: EditFoodScreen,
+      navigationOptions: {
+        headerTitle: "Edit An Item"
+      }
     }
   },
 );

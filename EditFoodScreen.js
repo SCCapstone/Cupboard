@@ -12,7 +12,7 @@ class FoodField extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: this.props.field
+      text: this.props.oldData
     };
   }
 
@@ -51,28 +51,29 @@ class FoodField extends Component {
   }
 }
 
-export default class EntryScreen extends Component<{}> {
+export default class EditFoodScreen extends Component<{}> {
   constructor(props) {
     super(props);
 
     this.state = {
-      title: '',
-      noItems: '',
-      content: ''
+      title: this.props.navigation.state.params.food.title,
+      noItems: this.props.navigation.state.params.food.noItems,
+      content: this.props.navigation.state.params.food.content
     }
   }
 
   componentWillUnmount(){
-    //this.addFood();
+    //this.editFood();
     this.props.navigation.state.params.prevScreen._refreshFoods();
   }
 
   // Add food to Firebase
-  addFood(name, quantity, content) {
-    if (name != ('' | null) & quantity != ('' | null) & content != ('' | null)) {
+  editFood(key, name, quantity, content) {
+    if (name != ('' | null) & quantity != ('' | null) & content != ('' | null)){
       const fbhandler = this.props.navigation.state.params.fbhandler;
-      const ref = fbhandler.addFood(name, parseInt(quantity, 10), content);
+      const ref = fbhandler.editFood(key, name,parseInt(quantity, 10),content);
     } else Alert.alert('Please fill all fields');
+
 
     /* I don't think there's use for this here but I will leave it for now
     let newData = this.state.data;
@@ -94,14 +95,14 @@ export default class EntryScreen extends Component<{}> {
   render() {
     return (
       <View>
-        <FoodField field={"Food Name"} self={this} />
-        <FoodField field={"Quantity"} self={this} />
-        <FoodField field={"Content"} self={this} />
+        <FoodField field={"Food Name"} oldData={this.props.navigation.state.params.food.title} self={this} />
+        <FoodField field={"Quantity"} oldData={this.props.navigation.state.params.food.noItems} self={this} />
+        <FoodField field={"Content"} oldData={this.props.navigation.state.params.food.content} self={this} />
         <Button
           containerViewStyle={style.buttonContainer}
           buttonStyle={style.button}
           title='SAVE'
-          onPress={() => this.addFood(this.state.title, this.state.noItems, this.state.content)}
+          onPress={() => this.editFood(this.props.navigation.state.params.food.key, this.state.title, this.state.noItems, this.state.content)}
         />
       </View>
     );
