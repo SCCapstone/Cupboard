@@ -35,12 +35,17 @@ export default class CupboardScreen extends Component<{}> {
 
   static navigationOptions = ({navigation}) => ({
     headerRight:
-      <TouchableOpacity onPress={() => navigation.navigate('EntryS', {
+      <TouchableOpacity style={{flexDirection: "row"}}
+                        onPress={() => navigation.navigate('EntryS', {
         'fbhandler': navigation.state.params.fbhandler,
         'prevScreen': navigation.state.params.self
       })}>
-        <Icon name="circle-with-plus"
+        <Icon name="plus"
               type="entypo"
+              color="#739E82"
+              containerStyle={{
+                marginRight: 15
+              }}
         />
       </TouchableOpacity>
   });
