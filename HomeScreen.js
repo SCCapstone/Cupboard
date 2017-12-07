@@ -3,7 +3,8 @@ import {
   Text,
   View,
   StyleSheet,
-  Alert
+  Alert,
+  Image,
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { style } from "./Styles";
@@ -17,10 +18,20 @@ export default class HomeScreen extends Component<{}> {
   render() {
     const navigation = this.props.navigation;
     const fbhandler = navigation.state.params.fbhandler;
+    const resizeMode = 'center';
+
 
     return (
       <View style={style.containerCenterContent}>
-
+              /*TODO fix img
+              <Image
+                  style={{
+                      flex: 1,
+                      resizeMode,
+                  }}
+                  source={{ uri: remote }}
+              />
+              */
         <Text>Hello {fbhandler.user.email}!</Text>
         <Button
           containerViewStyle={style.buttonContainer}
