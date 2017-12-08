@@ -111,7 +111,7 @@ export default class LoginScreen extends Component<{}> {
             onPress={this.signIn.bind(this)}
             title="SIGN IN"
             raised
-            color="black"
+            //color="black"
           />
           <Button
             containerViewStyle={style.buttonContainer}

@@ -144,9 +144,10 @@ export default class CupboardScreen extends Component<{}> {
         <ScrollView>
           <SearchBar
             round
+            lightTheme
             //onChangeText={filterResults}
             //onClearText={}
-            placeholder='Type Here...' />
+            placeholder='Search' />
           <FlatList
             data={this.state.data}
             renderItem={({item}) =>
@@ -174,7 +175,7 @@ export default class CupboardScreen extends Component<{}> {
                           }}
 
                           title="Delete Item"
-                          color="black"
+                          //color="black"
                           raised
                         />
                     </View>
