@@ -10,7 +10,6 @@ const style = StyleSheet.create({
   title: {
     fontSize: 19,
     fontWeight: 'bold',
-    color: 'black'
   },
   activeTitle: {
     color: 'red',
