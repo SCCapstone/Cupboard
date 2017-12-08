@@ -34,7 +34,8 @@ export default class ListsScreen extends Component<{}> {
             // navigate to the next screen passing list data and the fbhandler
             navigation.navigate("CheckListS", {
               list: newList,
-              fbhandler: navigation.state.params.fbhandler
+              fbhandler: navigation.state.params.fbhandler,
+              prevScreen: navigation.state.params.self
             });
           }}
         />
