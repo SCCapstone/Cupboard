@@ -3,11 +3,14 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { FormLabel, FormInput, Button} from 'react-native-elements';
 import { style } from './Styles';
 import FirebaseHandler from './FirebaseHandler';
+
+const remote = 'http://www.retinaiphonewallpapers.com/wp-content/uploads/00023.jpg';
 
 class SignIn extends Component {
   constructor(props) {
@@ -96,43 +99,65 @@ export default class LoginScreen extends Component<{}> {
 
   render() {
     const { navigate } = this.props.navigation;
+    const resizeMode = 'stretch';
+    //const text = 'Welcome to Cupboard!';
+
     return (
       <View style={style.containerCenterContent}>
+        <View
+            style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+            }}
+        >
+          <Image
+              style={{
+                  flex: 1,
+                  resizeMode,
+              }}
+              source={{ uri: remote }}
+          />
+        </View>
+        <View>
         <Text style={style.title}>
           Welcome to Cupboard!
         </Text>
+        </View>
         <SignIn credential={"Email"} self={this} secure={false}/>
         <SignIn credential={"Password"} self={this} secure={true}/>
         <View style={style.buttons}>
           <Button
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
-            backgroundColor="white"
+            backgroundColor="#b8b09b"
             onPress={this.signIn.bind(this)}
             title="SIGN IN"
-            raised
             color="black"
+            raised
           />
           <Button
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
-            backgroundColor="#875F9A"
+            backgroundColor="#dbd7cc"
             onPress={() => {
               this.createUser.bind(this)();
             }}
             title="CREATE ACCOUNT"
-            color="white"
+            color="black"
             raised
           />
           <Button
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
+            backgroundColor="#948869"
             onPress={()=> {
              this.debugSignIn("username@example.com", "password");
             }}
             title="DEBUG"
-            color="white"
-            backgroundColor="#9D2933"
+            color="black"
             raised
           />
         </View>
