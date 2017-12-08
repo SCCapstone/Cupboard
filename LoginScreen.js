@@ -10,7 +10,7 @@ import { FormLabel, FormInput, Button} from 'react-native-elements';
 import { style } from './Styles';
 import FirebaseHandler from './FirebaseHandler';
 
-const remote = 'http://www.retinaiphonewallpapers.com/wp-content/uploads/00023.jpg';
+const remote = 'https://vignette.wikia.nocookie.net/beauxbatonsacademy/images/0/07/Iphone-wallpaper-bookshelf.jpg/revision/latest?cb=20130307035455';
 
 class SignIn extends Component {
   constructor(props) {
@@ -99,7 +99,7 @@ export default class LoginScreen extends Component<{}> {
 
   render() {
     const { navigate } = this.props.navigation;
-    const resizeMode = 'stretch';
+    const resizeMode = 'cover';
     //const text = 'Welcome to Cupboard!';
 
     return (
@@ -152,12 +152,12 @@ export default class LoginScreen extends Component<{}> {
           <Button
             containerViewStyle={style.buttonContainer}
             buttonStyle={style.button}
-            backgroundColor="#948869"
             onPress={()=> {
              this.debugSignIn("username@example.com", "password");
             }}
             title="DEBUG"
             color="black"
+            backgroundColor="#948869"
             raised
           />
         </View>
