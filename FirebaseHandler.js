@@ -18,7 +18,11 @@ export default class FirebaseHandler {
     this.user = null;
   }
 
-  // create a user
+  // creates a user with an email and password
+  // user: string
+  // password: string
+  // callback: function
+  // callbackErr: function
   createUser(email, password, callback, callbackErr){
     this.firebase.auth().createUserWithEmailAndPassword(email, password)
       .then( (user) => {
@@ -32,7 +36,11 @@ export default class FirebaseHandler {
     );
   }
 
-  // sign user in
+  // sign a user in with email and password
+  // user: string
+  // password: string
+  // callback: function
+  // callbackErr: function
   signIn(email, password, callback, callbackErr) {
     this.firebase.auth().signInWithEmailAndPassword(email, password)
       .then( (user) => {
@@ -46,38 +54,45 @@ export default class FirebaseHandler {
   }
 
   // sign user out
+  // callback: function
+  // callbackErr: function
   signOut(callback, callbackErr) {
     this.firebase.auth().signOut()
       .then((user) => {
         this.user = null;
         callback(user);
       }).catch( (err) => {
-        callbackErr(err);
+      callbackErr(err);
     });
   }
 
   // create a list for the current user.
-  // returns the ref.
+  // listname: string
+  // returns: the ref
   createList(listname) {
     return this.firebase.database().ref('lists/' + this.user.uid).push({
       title: listname
     });
   }
 
-  // get lists
-  // returns a promise.
+  // get lists for the user
+  // returns: a promise.
   getLists(){
     const ref = this.firebase.database().ref('lists/' + this.user.uid);
     return ref.once("value");
   }
 
-  // get lists items
-  // returns a promise.
+  // get the users list items
+  // listid: string
+  // returns: a promise.
   getListItems(listid){
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items');
     return ref.once("value");
   }
 
+  // adds a item to a list
+  // listid: string
+  // returns: a ref.
   addListItemToList(listid){
     return this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items').push({
       title: "",
@@ -85,19 +100,34 @@ export default class FirebaseHandler {
     });
   }
 
+  // saves the list elements
+  // listid: string
+  // json: object
+  // returns: a ref
   saveListElements(listid, json){
     return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid + '/items').update(json);
   }
 
+  // save the list title
+  // listid: string
+  // title: string
+  // returns: a ref
   saveListTitle(listid, title) {
     return firebaseApp.database().ref('lists/' + this.user.uid + '/' + listid).update({title: title});
   }
 
+  // delete a list
+  // listid: string
+  // returns: a promise
   deleteList(listid){
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid);
     return ref.remove();
   }
 
+  // delete an item from a list
+  // listid: string
+  // itemid: string
+  // returns: a promise
   deleteItemFromList(listid, itemid){
     const ref = this.firebase.database().ref('lists/' + this.user.uid + '/' + listid + '/items/' + itemid);
     return ref.remove();
