@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "449840930413",
+    "firebase_url": "https://the-cupboard-app.firebaseio.com",
+    "project_id": "the-cupboard-app",
+    "storage_bucket": "the-cupboard-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449840930413:android:7f854998b9cb29a1",
+        "android_client_info": {
+          "package_name": "com.cupboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449840930413-gmi1idl7i8o3fou0isjikhl2mljgb0g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkf6M1pdpgnpTsIp8PD42kFZHei4itqKE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449840930413:android:8c2a5cff5e218846",
+        "android_client_info": {
+          "package_name": "com.thecupboardapp.cupboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449840930413-v0ti4m6ok4f7d3ips3kjteu8vm7n06fm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thecupboardapp.cupboard",
+            "certificate_hash": "ee2f727a096a5fd0097f970705b64b7d8f539af9"
+          }
+        },
+        {
+          "client_id": "449840930413-gmi1idl7i8o3fou0isjikhl2mljgb0g8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkf6M1pdpgnpTsIp8PD42kFZHei4itqKE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449840930413-gmi1idl7i8o3fou0isjikhl2mljgb0g8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
