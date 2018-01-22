@@ -39,3 +39,5 @@ From the home screen or an open project, navigate to to settings:
 5. *Give it an AVD Name (optional).*
 6. Click **Finish**.
 7. Launch the emulator by clicking the green play button.
+8. With the emulator open, navigate to `Extended Controls (triple dots) > Google Play` and click **Update**.
+9. Follow the steps to make sure google play is completely up to date.
