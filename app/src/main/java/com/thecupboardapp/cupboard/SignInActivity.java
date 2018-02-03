@@ -81,8 +81,9 @@ public class SignInActivity extends AppCompatActivity {
         mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(verifyEmail(mEmail))
-                signIn();
+                if(verifyEmail(mEmail)) signIn();
+                else Toast.makeText(SignInActivity.this, "Please enter a valid email address",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
