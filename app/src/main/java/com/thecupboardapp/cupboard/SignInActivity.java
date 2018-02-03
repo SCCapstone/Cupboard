@@ -81,6 +81,7 @@ public class SignInActivity extends AppCompatActivity {
         mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(verifyEmail(mEmail))
                 signIn();
             }
         });
@@ -96,6 +97,12 @@ public class SignInActivity extends AppCompatActivity {
     public static Intent newIntent(Context packageContext) {
         Intent intent = new Intent(packageContext, SignInActivity.class);
         return intent;
+    }
+
+    public static boolean verifyEmail(String email){
+        if (email.contains(Character.toString('@'))
+                && email.contains(Character.toString('.'))) return true;
+        else return false;
     }
 
     private void signIn() {
