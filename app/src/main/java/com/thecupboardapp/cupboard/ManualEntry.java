@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,7 +27,8 @@ public class ManualEntry extends AppCompatActivity {
         setTitle("New Food Item");
 
         EditText edittext= (EditText) findViewById(R.id.editText5);
-        edittext.setOnClickListener(new View.OnClickListener() {
+        ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
+        theDateButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
@@ -45,10 +47,21 @@ public class ManualEntry extends AppCompatActivity {
                 String theName = edittext.getText().toString();
                 String theDate = edittext2.getText().toString();
 
+                Intent resultInt = new Intent();
+                resultInt.putExtra("Result", "Done");
+
                 if(!theDate.isEmpty() && !theName.isEmpty()) {
-                    FoodItem theFoodToBeAdded = new FoodItem(theName, theDate);
+                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar);
+                    Calendar theDateAdded = Calendar.getInstance();
+                    theDateAdded.getTime();
+                    theFoodToBeAdded.setDateAdded(theDateAdded);
+                    UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
                     //go to the next screen passing FoodItem in...
-                    //setResult(RESULT_OK, resultInt);
+                    setResult(RESULT_OK, resultInt);
+                    finish();
+                }
+                else {
+                    //signal to user required fields...
                 }
 
             }
@@ -59,7 +72,11 @@ public class ManualEntry extends AppCompatActivity {
         cancelButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //go back passing nothing in...
+                Intent resultInt = new Intent();
+                resultInt.putExtra("Result", "Done");
+
+                setResult(RESULT_CANCELED, resultInt);
+                finish();
             }
         });
     }
