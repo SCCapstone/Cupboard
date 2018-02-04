@@ -46,3 +46,8 @@ From the home screen or an open project, navigate to to settings:
 1. In Android Studio, with the project open, navigate to Cupboard/app/src/test. This will contain all unit test files. Open one (ex. SignInActivityTest.java).
 2. Next to each test, there is a green circle with a play button (next to the line numbers).
 3. Click the icon to run the corresponding test, or click the one at the top next to `public class fileName` to run all of the tests in the file.
+
+### Running Instrumented Tests
+1. In Android Studio, with the project open, navigate to Cupboard/app/java/com.thecupboardapp.cupboard (androidTest)
+2. After building and syncing gradle, run each individual test by clicking the play button.
+3. A successful test will yeild a full green bar
