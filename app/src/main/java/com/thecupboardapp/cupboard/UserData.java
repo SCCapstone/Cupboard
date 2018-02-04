@@ -44,6 +44,18 @@ public class UserData {
 
             mShoppingLists.add(new ShoppingList("List " + j, shoppingListItems));
         }
+
+        //adding dummy food items
+        mFoodItems = new ArrayList<FoodItem>();
+        for (int j = 0; j < 5; j++) {
+            List<FoodItem> FoodItems = new ArrayList<FoodItem>();
+            for (int i = 0; i < 10; i++) {
+                String name = "Food item - " + i;
+                FoodItems.add(new FoodItem(name));
+            }
+
+            mFoodItems.add(new FoodItem());
+        }
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -113,7 +125,7 @@ public class UserData {
         return null;
     }
 
-    public void addFoodItems(FoodItem afoodItem) {
-        mFoodItems.add(afoodItem);
+    public void addFoodItem(FoodItem aFoodItem) {
+        mFoodItems.add(aFoodItem);
     }
 }

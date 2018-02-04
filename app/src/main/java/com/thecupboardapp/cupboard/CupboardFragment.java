@@ -32,12 +32,14 @@ public class CupboardFragment extends Fragment {
     private String[][] children;
     private FloatingActionButton manEntFAB;
     private int NEW_ENTRY_REQUEST = 0;
+    private List<FoodItem> mFoodItems;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.title_cupboard);
 
+        mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[]{"Test Header 1", "Test Header 2", "Test Header 3", "Test Header 4", "Test Header 5", "Test Header 6", "Test Header 7", "Test Header 8", "Test Header 9", "Test Header 10", "Test Header 11", "Test Header 12", "Test Header 13"};
 
         children = new String[][]{
