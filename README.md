@@ -41,3 +41,8 @@ From the home screen or an open project, navigate to to settings:
 7. Launch the emulator by clicking the green play button.
 8. With the emulator open, navigate to `Extended Controls (triple dots) > Google Play` and click **Update**.
 9. Follow the steps to make sure google play is completely up to date.
+
+### Running Unit Tests
+1. In Android Studio, with the project open, navigate to Cupboard/app/src/test. This will contain all unit test files. Open one (ex. SignInActivityTest.java).
+2. Next to each test, there is a green circle with a play button (next to the line numbers).
+3. Click the icon to run the corresponding test, or click the one at the top next to `public class fileName` to run all of the tests in the file.
