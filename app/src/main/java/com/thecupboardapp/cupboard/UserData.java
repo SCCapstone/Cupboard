@@ -10,7 +10,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -103,6 +107,53 @@ public class UserData {
                     shoppingLists.add(shoppingList);
                 }
                 mShoppingLists = shoppingLists;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+        refFood.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                for (DataSnapshot food : dataSnapshot.getChildren()) {
+                    FoodItem foodItem = new FoodItem();
+
+                    foodItem.setFirebaseId(food.getKey());
+                    foodItem.setName(food.child("title").getValue().toString());
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                    //String fakeValue = food.child("expiration").getValue().toString();
+                    try{
+                        Date date;
+                        if(!food.hasChild("expiration")){
+                            date = sdf.parse("01-01-1990");
+                        }
+                        else if(food.child("expiration").getValue().toString() == null){
+                            date = sdf.parse("01-01-1990");
+                        }
+                        else {
+                            date = sdf.parse(food.child("expiration").getValue().toString());
+                        }
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(date);
+                        foodItem.setExpiration(cal);
+                    }
+                    catch(java.text.ParseException parseException){
+
+                    }
+                    catch(Exception e){
+
+                    }
+
+
+                    foodItems.add(foodItem);
+                }
+                mFoodItems = foodItems;
             }
 
             @Override

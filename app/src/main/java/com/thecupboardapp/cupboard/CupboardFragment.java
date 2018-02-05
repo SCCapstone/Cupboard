@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by Kyle on 1/12/2018.
  */
@@ -30,6 +32,7 @@ public class CupboardFragment extends Fragment {
     ExpandableListView lv;
     private String[] groups;
     private String[][] children;
+    private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
     private int NEW_ENTRY_REQUEST = 0;
     private List<FoodItem> mFoodItems;
@@ -37,26 +40,33 @@ public class CupboardFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        updateFoods();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NEW_ENTRY_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                updateFoods();
+                //mAdapter.notifyDataSetChanged();
+                mAdapter = new ExpandableListAdapter(groups, children);
+                lv.setAdapter(mAdapter);
+            }
+        }
+    }
+
+    private void updateFoods() {
         getActivity().setTitle(R.string.title_cupboard);
-
         mFoodItems = UserData.get(getActivity()).getFoodItems();
-        groups = new String[]{"Test Header 1", "Test Header 2", "Test Header 3", "Test Header 4", "Test Header 5", "Test Header 6", "Test Header 7", "Test Header 8", "Test Header 9", "Test Header 10", "Test Header 11", "Test Header 12", "Test Header 13"};
+        groups = new String[mFoodItems.size()];
+        //TODO change second size
+        children = new String[mFoodItems.size()][1];
 
-        children = new String[][]{
-                {"1"},
-                {"2"},
-                {"3"},
-                {"4"},
-                {"5"},
-                {"6"},
-                {"7"},
-                {"8"},
-                {"9"},
-                {"10"},
-                {"11"},
-                {"12"},
-                {"13"}
-        };
+        for(int i=0;i<mFoodItems.size();i++){
+            groups[i] = mFoodItems.get(i).getName();
+            children[i][0] = mFoodItems.get(i).getExpiration().toString();
+        }
     }
 
     @Nullable
@@ -68,9 +78,9 @@ public class CupboardFragment extends Fragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        mAdapter = new ExpandableListAdapter(groups, children);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
-        lv.setAdapter(new ExpandableListAdapter(groups, children));
+        lv.setAdapter(mAdapter);
         lv.setGroupIndicator(null);
 
         manEntFAB = (FloatingActionButton)view.findViewById(R.id.add_food_fab);
