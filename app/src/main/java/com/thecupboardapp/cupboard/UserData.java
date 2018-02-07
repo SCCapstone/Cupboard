@@ -27,6 +27,15 @@ public class UserData {
     private static UserData sUserData;
     private List<ShoppingList> mShoppingLists;
     private List<FoodItem> mFoodItems;
+    private FirebaseUser mUser;
+
+    public FirebaseUser getUser() {
+        return mUser;
+    }
+
+    public void setUser(FirebaseUser user) {
+        mUser = user;
+    }
 
     public static UserData get(Context context) {
         if (sUserData == null) {
@@ -81,6 +90,7 @@ public class UserData {
 
     public void updateFromFirebase(FirebaseUser user) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        setUser(user);
 
         // Get shopping lists
         DatabaseReference ref = database.getReference("lists/" + user.getUid());
@@ -124,7 +134,12 @@ public class UserData {
                     FoodItem foodItem = new FoodItem();
 
                     foodItem.setFirebaseId(food.getKey());
-                    foodItem.setName(food.child("title").getValue().toString());
+
+                    //legacy food name in firebase was 'title', now it's 'name'
+                    if(food.hasChild("title")){
+                        foodItem.setName(food.child("title").getValue().toString());
+                    }
+                    else foodItem.setName(food.child("name").getValue().toString());
 
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                     //String fakeValue = food.child("expiration").getValue().toString();
@@ -177,6 +192,13 @@ public class UserData {
     }
 
     public void addFoodItem(FoodItem aFoodItem) {
+        //local change
         mFoodItems.add(aFoodItem);
+
+        //update firebase with converted foodItem
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + getUser().getUid());
+        FirebaseFoodItem aFirebaseFoodItem = new FirebaseFoodItem(aFoodItem.getName(),aFoodItem.getExpiration());
+        ref.push().setValue(aFirebaseFoodItem);
     }
 }
