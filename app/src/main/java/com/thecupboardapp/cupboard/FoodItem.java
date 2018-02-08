@@ -1,5 +1,8 @@
 package com.thecupboardapp.cupboard;
 
+import com.google.firebase.database.Exclude;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -52,12 +55,18 @@ public class FoodItem {
         mQuantity = quantity;
     }
 
+    @Exclude
     public Calendar getExpiration() {
         return mExpiration;
     }
 
+    @Exclude
     public void setExpiration(Calendar expiration) {
         mExpiration = expiration;
+    }
+
+    public long getExpirationAsLong(){
+        return mExpiration.getTimeInMillis();
     }
 
     public String getUnits() {
@@ -84,10 +93,12 @@ public class FoodItem {
         mFirebaseId = firebaseId;
     }
 
+    @Exclude
     public Calendar getDateAdded() {
         return mDateAdded;
     }
 
+    @Exclude
     public void setDateAdded(Calendar dateAdded) {
         mDateAdded = dateAdded;
     }

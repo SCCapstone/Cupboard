@@ -142,20 +142,23 @@ public class UserData {
                     else foodItem.setName(food.child("name").getValue().toString());
 
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-                    //String fakeValue = food.child("expiration").getValue().toString();
+                    //We will delete these other ifs once we are sure how we want to handle expiration
                     try{
-                        Date date;
-                        if(!food.hasChild("expiration")){
-                            date = sdf.parse("01-01-1990");
+                        Date expDate;
+                        if (food.hasChild("expirationAsLong")){
+                            expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+                        }
+                        else if(!food.hasChild("expiration")){
+                            expDate = sdf.parse("01-01-1990");
                         }
                         else if(food.child("expiration").getValue().toString() == null){
-                            date = sdf.parse("01-01-1990");
+                            expDate = sdf.parse("01-01-1990");
                         }
                         else {
-                            date = sdf.parse(food.child("expiration").getValue().toString());
+                            expDate = sdf.parse(food.child("expiration").getValue().toString());
                         }
                         Calendar cal = Calendar.getInstance();
-                        cal.setTime(date);
+                        cal.setTime(expDate);
                         foodItem.setExpiration(cal);
                     }
                     catch(java.text.ParseException parseException){
@@ -198,7 +201,6 @@ public class UserData {
         //update firebase with converted foodItem
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("foods/" + getUser().getUid());
-        FirebaseFoodItem aFirebaseFoodItem = new FirebaseFoodItem(aFoodItem.getName(),aFoodItem.getExpiration());
-        ref.push().setValue(aFirebaseFoodItem);
+        ref.push().setValue(aFoodItem);
     }
 }
