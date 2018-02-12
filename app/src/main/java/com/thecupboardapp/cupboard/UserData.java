@@ -190,4 +190,14 @@ public class UserData {
         DatabaseReference ref = database.getReference("foods/" + getUser().getUid());
         ref.push().setValue(aFoodItem);
     }
+
+    public void removeFoodItem(FoodItem aFoodItem){
+        //local change
+        mFoodItems.remove(aFoodItem);
+
+        //update firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + getUser().getUid() + "/" + aFoodItem.getFirebaseId());
+        ref.removeValue();
+    }
 }
