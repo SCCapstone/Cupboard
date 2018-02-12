@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -50,11 +51,18 @@ public class ManualEntry extends AppCompatActivity {
                 Intent resultInt = new Intent();
                 resultInt.putExtra("Result", "Done");
 
-                if(!theDate.isEmpty() && !theName.isEmpty()) {
+                if(!theName.isEmpty()) {
+                    //If user enters in no expiration date, it will default a value far in the future
+                    if(theDate.isEmpty()){
+                        Date expDate = new Date(Long.parseLong("4133987474999"));
+                        myCalendar.setTime(expDate);
+                    }
                     FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar);
+
                     Calendar theDateAdded = Calendar.getInstance();
                     theDateAdded.getTime();
                     theFoodToBeAdded.setDateAdded(theDateAdded);
+
                     UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
                     //go to the next screen passing FoodItem in...
                     setResult(RESULT_OK, resultInt);

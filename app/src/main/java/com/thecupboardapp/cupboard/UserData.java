@@ -141,28 +141,15 @@ public class UserData {
                     }
                     else foodItem.setName(food.child("name").getValue().toString());
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                     //We will delete these other ifs once we are sure how we want to handle expiration
                     try{
                         Date expDate;
-                        if (food.hasChild("expirationAsLong")){
-                            expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
-                        }
-                        else if(!food.hasChild("expiration")){
-                            expDate = sdf.parse("01-01-1990");
-                        }
-                        else if(food.child("expiration").getValue().toString() == null){
-                            expDate = sdf.parse("01-01-1990");
-                        }
-                        else {
-                            expDate = sdf.parse(food.child("expiration").getValue().toString());
-                        }
+                        //if (food.hasChild("expirationAsLong")){
+                        expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(expDate);
                         foodItem.setExpiration(cal);
-                    }
-                    catch(java.text.ParseException parseException){
-
                     }
                     catch(Exception e){
 
