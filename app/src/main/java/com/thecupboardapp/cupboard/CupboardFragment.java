@@ -12,11 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,6 +39,7 @@ public class CupboardFragment extends Fragment {
     private String[][] children;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
+    private Button mDeleteButton;
     private int NEW_ENTRY_REQUEST = 0;
     private List<FoodItem> mFoodItems;
 
@@ -65,7 +71,19 @@ public class CupboardFragment extends Fragment {
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
-            children[i][0] = mFoodItems.get(i).getExpiration().toString();
+
+            String expInfo = "Expires: ";
+            //See: the value put in mExpiration when theDate is empty in manual entry
+            long noExpDate = 4133987474999L;
+            if(mFoodItems.get(i).getExpirationAsLong() == noExpDate){
+                expInfo = expInfo.concat("Never");
+            }
+            else {
+                Calendar cal = mFoodItems.get(i).getExpiration();
+                SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+                expInfo = expInfo.concat(sdf.format(cal.getTime()));
+            }
+            children[i][0] = expInfo;
         }
     }
 
@@ -91,6 +109,13 @@ public class CupboardFragment extends Fragment {
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
         });
+    }
+
+    public FoodItem getFood(String foodName){
+        for (int i=0;i<mFoodItems.size();i++){
+            if(mFoodItems.get(i).getName().equals(foodName)) return mFoodItems.get(i);
+        }
+        return null;
     }
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -159,7 +184,7 @@ public class CupboardFragment extends Fragment {
         }
 
         @Override
-        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
             ViewHolder holder;
 
             if (convertView == null) {
@@ -167,12 +192,22 @@ public class CupboardFragment extends Fragment {
 
                 holder = new ViewHolder();
                 holder.text = (TextView) convertView.findViewById(R.id.lblListHeader);
+                holder.deleteButton = (Button) convertView.findViewById(R.id.delete_food_button);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             holder.text.setText(getGroup(groupPosition).toString());
+            holder.deleteButton.setFocusable(false);
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(),"Need to delete " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
+                    //FoodItem foodToDelete = getFood(getGroup(groupPosition).toString());
+                    //UserData.removeFoodItem(foodToDelete);
+                }
+            });
 
             return convertView;
         }
@@ -184,6 +219,7 @@ public class CupboardFragment extends Fragment {
 
         private class ViewHolder {
             TextView text;
+            Button deleteButton;
         }
     }
 }
