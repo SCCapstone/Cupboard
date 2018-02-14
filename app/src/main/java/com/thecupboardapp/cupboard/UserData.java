@@ -134,27 +134,16 @@ public class UserData {
                     FoodItem foodItem = new FoodItem();
 
                     foodItem.setFirebaseId(food.getKey());
+                    foodItem.setName(food.child("name").getValue().toString());
 
-                    //legacy food name in firebase was 'title', now it's 'name'
-                    if(food.hasChild("title")){
-                        foodItem.setName(food.child("title").getValue().toString());
-                    }
-                    else foodItem.setName(food.child("name").getValue().toString());
-
-                    //We will delete these other ifs once we are sure how we want to handle expiration
                     try{
-                        Date expDate;
-                        //if (food.hasChild("expirationAsLong")){
-                        expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
-
+                        Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(expDate);
                         foodItem.setExpiration(cal);
                     }
                     catch(Exception e){
-
                     }
-
 
                     foodItems.add(foodItem);
                 }
@@ -188,7 +177,10 @@ public class UserData {
         //update firebase with converted foodItem
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("foods/" + getUser().getUid());
-        ref.push().setValue(aFoodItem);
+        //generate key beforehand so we know firebase key locally without having to close and reopen My Cupboard
+        String key = ref.push().getKey();
+        ref.child(key).setValue(aFoodItem);
+        aFoodItem.setFirebaseId(key);
     }
 
     public void removeFoodItem(FoodItem aFoodItem){

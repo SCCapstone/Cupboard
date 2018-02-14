@@ -41,6 +41,7 @@ public class CupboardFragment extends Fragment {
     private FloatingActionButton manEntFAB;
     private Button mDeleteButton;
     private int NEW_ENTRY_REQUEST = 0;
+    long NO_EXP_DATE = 4133987474999L;
     private List<FoodItem> mFoodItems;
 
     @Override
@@ -66,16 +67,15 @@ public class CupboardFragment extends Fragment {
         getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
-        //TODO change second size
+        //CHANGE SECOND SIZE WHEN READY TO ADD MORE INFO
         children = new String[mFoodItems.size()][1];
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
 
             String expInfo = "Expires: ";
-            //See: the value put in mExpiration when theDate is empty in manual entry
-            long noExpDate = 4133987474999L;
-            if(mFoodItems.get(i).getExpirationAsLong() == noExpDate){
+
+            if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE){
                 expInfo = expInfo.concat("Never");
             }
             else {
@@ -203,9 +203,10 @@ public class CupboardFragment extends Fragment {
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(),"Need to delete " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    //FoodItem foodToDelete = getFood(getGroup(groupPosition).toString());
-                    //UserData.removeFoodItem(foodToDelete);
+                    //Toast.makeText(v.getContext(),"Need to delete " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
+                    FoodItem foodToDelete = getFood(getGroup(groupPosition).toString());
+                    UserData.get(getActivity()).removeFoodItem(foodToDelete);;
+                    onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
                 }
             });
 

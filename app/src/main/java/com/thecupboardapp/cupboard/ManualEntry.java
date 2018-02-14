@@ -20,6 +20,7 @@ import java.util.UUID;
 public class ManualEntry extends AppCompatActivity {
 
     Calendar myCalendar = Calendar.getInstance();
+    long NO_EXP_DATE = 4133987474999L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class ManualEntry extends AppCompatActivity {
                 if(!theName.isEmpty()) {
                     //If user enters in no expiration date, it will default a value far in the future
                     if(theDate.isEmpty()){
-                        Date expDate = new Date(Long.parseLong("4133987474999"));
+                        Date expDate = new Date(NO_EXP_DATE);
                         myCalendar.setTime(expDate);
                     }
                     FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar);
