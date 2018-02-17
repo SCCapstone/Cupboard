@@ -24,7 +24,14 @@ From the home screen or an open project, navigate to to settings:
 2. Navigate to the tab `Code Generation`.
 3. For the Field Name Prefix, put `m`.
 4. For the Static field name prefix, put `s`.
-5. Click **Apply** and **OK**.
+5. Uncheck `Line comment at first column`.
+6. Check `Add a space at comment start`.
+7. Uncheck `Block comment at first column`.
+8. CLick **Apply**.
+9. Navigate to `Wrapping and Braces` tab.
+10. Uncheck `Comment at first column`.
+11. Check `Simple methods in one line`.
+12. Click **Apply** and **OK**.
 
 ### Cupboard
 1. Clone the repo: `git clone https://github.com/SCCapstone/Cupboard.git`
@@ -41,6 +48,11 @@ From the home screen or an open project, navigate to to settings:
 7. Launch the emulator by clicking the green play button.
 8. With the emulator open, navigate to `Extended Controls (triple dots) > Google Play` and click **Update**.
 9. Follow the steps to make sure google play is completely up to date.
+
+## Something broken?
+Try some of these things:
+1. Gradle clean script: `Gradle > :app > Tasks > build > clean`.
+2. Sync gradle: `Tools > Android > Sync Project with Gradle Files`.
 
 ### Running Unit Tests
 1. In Android Studio, with the project open, navigate to Cupboard/app/src/test. This will contain all unit test files. Open one (ex. SignInActivityTest.java).
