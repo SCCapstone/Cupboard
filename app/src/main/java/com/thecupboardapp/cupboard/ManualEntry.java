@@ -21,15 +21,34 @@ public class ManualEntry extends AppCompatActivity {
 
     Calendar myCalendar = Calendar.getInstance();
     long NO_EXP_DATE = 4133987474999L;
+    private int NEW_ENTRY_REQUEST = 0;
+    private int UPDATE_ENTRY_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_entry);
-        setTitle("New Food Item");
-
-        EditText edittext= (EditText) findViewById(R.id.editText5);
+        Intent intent = getIntent();
+        final int requestCode = intent.getIntExtra("requestCode", NEW_ENTRY_REQUEST);
+        EditText edittext= (EditText) findViewById(R.id.editText3);
         ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
+        final String foodName;
+        final long foodExpires;
+        if(requestCode == NEW_ENTRY_REQUEST){
+            setTitle("New Food Item");
+            foodName = "";
+            foodExpires = NO_EXP_DATE;
+        }
+        else{ //requestCode == UPDATE_ENTRY_REQUEST
+            setTitle("Edit Food Item");
+            foodName = intent.getStringExtra("foodName");
+            foodExpires = intent.getLongExtra("foodExpires",NO_EXP_DATE);
+            edittext.setText(foodName);
+            Date expDate = new Date(foodExpires);
+            myCalendar.setTime(expDate);
+        }
+
+
         theDateButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,7 +83,13 @@ public class ManualEntry extends AppCompatActivity {
                     theDateAdded.getTime();
                     theFoodToBeAdded.setDateAdded(theDateAdded);
 
-                    UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
+                    if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
+                    else if(requestCode == UPDATE_ENTRY_REQUEST) {
+                        //FoodItem oldFoodItem = CupboardFragment.getFood(foodName);
+                        //FoodItem oldFoodItem = UserData.get(getActivity()).getFood(foodName);
+                        FoodItem oldFoodItem = UserData.get(ManualEntry.this).getFood(foodName);
+                        UserData.get(ManualEntry.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
+                    }
                     //go to the next screen passing FoodItem in...
                     setResult(RESULT_OK, resultInt);
                     finish();

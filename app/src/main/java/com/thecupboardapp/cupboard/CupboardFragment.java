@@ -39,8 +39,8 @@ public class CupboardFragment extends Fragment {
     private String[][] children;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
-    private Button mDeleteButton;
     private int NEW_ENTRY_REQUEST = 0;
+    private int UPDATE_ENTRY_REQUEST = 1;
     long NO_EXP_DATE = 4133987474999L;
     private List<FoodItem> mFoodItems;
 
@@ -53,7 +53,7 @@ public class CupboardFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NEW_ENTRY_REQUEST) {
+        if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 updateFoods();
                 //mAdapter.notifyDataSetChanged();
@@ -106,17 +106,13 @@ public class CupboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ManualEntry.class);
+                intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
         });
     }
 
-    public FoodItem getFood(String foodName){
-        for (int i=0;i<mFoodItems.size();i++){
-            if(mFoodItems.get(i).getName().equals(foodName)) return mFoodItems.get(i);
-        }
-        return null;
-    }
+
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
         private final LayoutInflater inf;
@@ -165,7 +161,7 @@ public class CupboardFragment extends Fragment {
         }
 
         @Override
-        public View getChildView(int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
             ViewHolder holder;
             if (convertView == null) {
@@ -173,12 +169,29 @@ public class CupboardFragment extends Fragment {
                 holder = new ViewHolder();
 
                 holder.text = (TextView) convertView.findViewById(R.id.lblListItem);
+                holder.editButton = (Button) convertView.findViewById(R.id.edit_food_button);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             holder.text.setText(getChild(groupPosition, childPosition).toString());
+            holder.editButton.setFocusable(false);
+            holder.editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Toast.makeText(v.getContext(),"Need to update " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
+                    //FoodItem foodToUpdate = getFood(getGroup(groupPosition).toString());
+                    FoodItem foodToUpdate = UserData.get(getActivity()).getFood(getGroup(groupPosition).toString());
+                    //UserData.get(getActivity()).updateFoodItem(foodToDelete);
+                    //onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+                    Intent intent = new Intent(getActivity(), ManualEntry.class);
+                    intent.putExtra("foodName", foodToUpdate.getName());
+                    intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
+                    intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
+                    startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
+                }
+            });
 
             return convertView;
         }
@@ -204,8 +217,8 @@ public class CupboardFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //Toast.makeText(v.getContext(),"Need to delete " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    FoodItem foodToDelete = getFood(getGroup(groupPosition).toString());
-                    UserData.get(getActivity()).removeFoodItem(foodToDelete);;
+                    FoodItem foodToDelete = UserData.get(getActivity()).getFood(getGroup(groupPosition).toString());
+                    UserData.get(getActivity()).removeFoodItem(foodToDelete);
                     onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
                 }
             });
@@ -221,6 +234,7 @@ public class CupboardFragment extends Fragment {
         private class ViewHolder {
             TextView text;
             Button deleteButton;
+            Button editButton;
         }
     }
 }
