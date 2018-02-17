@@ -24,6 +24,8 @@
             android:parentActivityName=".HomeActivity">
 
         </activity>
+        <activity android:name=".ManualEntry">
+        </activity>
 
         <activity android:name=".SignInActivity">
 
