@@ -28,15 +28,6 @@ public class UserData {
     private static UserData sUserData;
     private List<ShoppingList> mShoppingLists;
     private List<FoodItem> mFoodItems;
-    private FirebaseUser mUser;
-
-    public FirebaseUser getUser() {
-        return mUser;
-    }
-
-    public void setUser(FirebaseUser user) {
-        mUser = user;
-    }
 
     public static UserData get(Context context) {
         if (sUserData == null) {
@@ -45,7 +36,15 @@ public class UserData {
         return sUserData;
     }
 
+
     private UserData(Context context) {
+        // If signed in do shit
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            getListsFromFirebase();
+            getFoodsFromFirebase();
+        }
+
         //adding dummy food items
         mFoodItems = new ArrayList<FoodItem>();
         for (int j = 0; j < 5; j++) {
@@ -94,13 +93,13 @@ public class UserData {
 
                     for (DataSnapshot item : list.child("items").getChildren()) {
                         ShoppingListItem shoppingListItem = new ShoppingListItem();
+
+                        shoppingListItem.setName(item.child("title").getValue().toString());
+                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
                         shoppingListItem.setFirebaseId(item.getKey());
+                        shoppingListItem.setRef(item.getRef());
 
-                        //                        shoppingListItem.setName(item.child("title").getValue().toString());
-                        //                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
-
-                        shoppingList.addShoppingListItem(item.child("title").getValue().toString(),
-                                (boolean) item.child("checked").getValue());
+                        shoppingList.addShoppingListItem(shoppingListItem);
                     }
                     shoppingLists.add(shoppingList);
                 }
