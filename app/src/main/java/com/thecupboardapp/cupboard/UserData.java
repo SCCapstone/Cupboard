@@ -15,7 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -181,6 +183,15 @@ public class UserData {
         String key = ref.push().getKey();
         ref.child(key).setValue(aFoodItem);
         aFoodItem.setFirebaseId(key);
+    }
+
+    public void editFoodItemQuantity(FoodItem aFoodItem){
+        //update firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + getUser().getUid() + "/" + aFoodItem.getFirebaseId());
+        Map<String, Object> update = new HashMap<>();
+        update.put("quantity",aFoodItem.getQuantity());
+        ref.updateChildren(update);
     }
 
     public void removeFoodItem(FoodItem aFoodItem){

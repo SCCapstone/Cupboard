@@ -23,6 +23,12 @@
             android:layout_weight="1"
             tools:ignore="SpUsage" />
 
+        <NumberPicker
+            android:id="@+id/numPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+        </NumberPicker>
+
         <Button
             android:id="@+id/delete_food_button"
             android:layout_width="wrap_content"
