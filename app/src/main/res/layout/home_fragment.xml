@@ -16,11 +16,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <fragment
-                android:id="@+id/expiring_foods_fragment"
-                android:name="com.thecupboardapp.cupboard.ExpiringFoodsFragment"
+            <TextView
+                android:id="@+id/next_expiring"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="expiring food" />
         </LinearLayout>
 
     </ScrollView>

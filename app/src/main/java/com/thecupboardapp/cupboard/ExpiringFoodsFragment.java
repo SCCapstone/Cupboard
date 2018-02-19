@@ -1,6 +1,8 @@
 package com.thecupboardapp.cupboard;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -28,33 +30,50 @@ public class ExpiringFoodsFragment extends Fragment {
 
     private List<FoodItem> mFoods;
     private TextView mNextExpiring;
+    /*
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState)
 
-    @Nullable
+            /*View view= inflater.inflate(R.layout.dashboard_expriring_fragment, container, false);
+            UserData.get(getActivity()).getFoodsFromFirebase();
+            mFoods = UserData.get(getActivity()).getFoodItems();
+            //Collections.sort(mFoods);
+            //FoodItem mExpFood1 = ;
+            mNextExpiring = (TextView) view.findViewById(R.id.next_expiring);
+            if (mFoods!=null) {
+                Log.d("mFoods", "not null");
+                FoodItem f = mFoods.get(0);
+                for (FoodItem food: mFoods) {
+                    Log.d("mFoods", food.getName());
+                }
+                mNextExpiring.setText(f.getName());
+            }
+            else {
+                Log.d("mFoods", "mFoods equals null");
+                //Log.d("mFoods", "UID = );
+                String s = "foods doesn't exist";
+                mNextExpiring.setText(s);
+            }
+
+            return view;
+        }
+    */
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-
-        View view= inflater.inflate(R.layout.dashboard_expriring_fragment, container, false);
-        //if (UserData.get)
-        mFoods = UserData.get(getActivity()).getFoodItems();
-        //Collections.sort(mFoods);
-        //FoodItem mExpFood1 = ;
-        mNextExpiring = (TextView) view.findViewById(R.id.next_expiring);
-        if (mFoods!=null) {
-            Log.d("mFoods", "not null");
-            FoodItem f = mFoods.get(0);
-            //mNextExpiring.setText(f.getName());
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        FragmentManager fm = getChildFragmentManager();
+        ExpiringFoodsFragment expFragment = (ExpiringFoodsFragment) fm.findFragmentByTag("expFragment");
+        if (expFragment == null) {
+            expFragment = new ExpiringFoodsFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.expiring_foods_fragment_container, expFragment, "mapFragment");
+            ft.commit();
+            fm.executePendingTransactions();
         }
-        else {
-            Log.d("mFoods", "mFoods equals null");
-            //Log.d("mFoods", "UID = );
-            String s = "vngfdkaln";
-            mNextExpiring.setText(s);
-        }
-
-        return view;
+        //expFragment.getMapAsync(callback);
     }
-
-    public void onDestroyView() {
+/*public void onDestroyView() {
         super.onDestroyView();
         ExpiringFoodsFragment f = (ExpiringFoodsFragment) getFragmentManager()
                 .findFragmentById(R.id.expiring_foods_fragment);

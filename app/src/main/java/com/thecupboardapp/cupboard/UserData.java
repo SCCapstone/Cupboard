@@ -151,7 +151,7 @@ public class UserData {
         });
     }
 
-    public void updateFromFirebase(FirebaseUser user) {
+    public void updateFromFirebase(FirebaseUser user) {//
         getListsFromFirebase();
         getFoodsFromFirebase();
     }
@@ -185,7 +185,7 @@ public class UserData {
     public void editFoodItemQuantity(FoodItem aFoodItem){
         //update firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("foods/" + getUser().getUid() + "/" + aFoodItem.getFirebaseId());
+        DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + aFoodItem.getFirebaseId());
         Map<String, Object> update = new HashMap<>();
         update.put("quantity",aFoodItem.getQuantity());
         ref.updateChildren(update);
