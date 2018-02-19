@@ -1,5 +1,7 @@
 package com.thecupboardapp.cupboard;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.UUID;
 
 /**
@@ -11,6 +13,7 @@ public class ShoppingListItem {
     private String mFirebaseId;
     private String mName;
     private boolean mIsChecked;
+    private DatabaseReference mRef;
 
     public ShoppingListItem() {
         mId = UUID.randomUUID();
@@ -58,4 +61,7 @@ public class ShoppingListItem {
         mFirebaseId = firebaseId;
     }
 
+    public void setRef(DatabaseReference ref) {
+        mRef = ref;
+    }
 }
