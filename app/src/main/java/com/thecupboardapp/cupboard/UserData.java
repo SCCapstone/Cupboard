@@ -110,8 +110,8 @@ public class UserData {
                         ShoppingListItem shoppingListItem = new ShoppingListItem();
                         shoppingListItem.setFirebaseId(item.getKey());
 
-//                        shoppingListItem.setName(item.child("title").getValue().toString());
-//                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
+                        shoppingListItem.setName(item.child("title").getValue().toString());
+                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
 
                         shoppingList.addShoppingListItem(item.child("title").getValue().toString(),
                                 (boolean) item.child("checked").getValue());
