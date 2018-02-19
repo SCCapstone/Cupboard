@@ -169,6 +169,13 @@ public class UserData {
         return null;
     }
 
+    public FoodItem getFood(String foodName){
+        for (int i=0;i<mFoodItems.size();i++){
+            if(mFoodItems.get(i).getName().equals(foodName)) return mFoodItems.get(i);
+        }
+        return null;
+    }
+
     public void addFoodItem(FoodItem aFoodItem) {
         //local change
         mFoodItems.add(aFoodItem);
@@ -209,7 +216,7 @@ public class UserData {
 
         String key = oldFoodItem.getFirebaseId();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("foods/" + getUser().getUid() + "/" + key);
+        DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + key);
         ref.removeValue();
         //don't want firebaseid attribute in firebase
         newFoodItem.setFirebaseId(null);
