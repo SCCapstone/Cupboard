@@ -202,4 +202,19 @@ public class UserData {
         DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + aFoodItem.getFirebaseId());
         ref.removeValue();
     }
+  
+    public void updateFoodItem(FoodItem newFoodItem, FoodItem oldFoodItem){
+        int i = mFoodItems.indexOf(oldFoodItem);
+        mFoodItems.set(i, newFoodItem);
+
+        String key = oldFoodItem.getFirebaseId();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + getUser().getUid() + "/" + key);
+        ref.removeValue();
+        //don't want firebaseid attribute in firebase
+        newFoodItem.setFirebaseId(null);
+        ref.setValue(newFoodItem);
+        //remove firebase id then set?
+        newFoodItem.setFirebaseId(key);
+    }
 }
