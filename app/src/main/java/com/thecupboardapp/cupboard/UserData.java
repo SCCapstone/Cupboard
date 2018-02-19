@@ -217,11 +217,11 @@ public class UserData {
         String key = oldFoodItem.getFirebaseId();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + key);
-        ref.removeValue();
-        //don't want firebaseid attribute in firebase
-        newFoodItem.setFirebaseId(null);
-        ref.setValue(newFoodItem);
-        //remove firebase id then set?
-        newFoodItem.setFirebaseId(key);
+
+        Map<String, Object> update = new HashMap<>();
+        update.put("name", newFoodItem.getName());
+        update.put("quantity", newFoodItem.getQuantity());
+        update.put("expirationAsLong", newFoodItem.getExpirationAsLong());
+        ref.updateChildren(update);
     }
 }
