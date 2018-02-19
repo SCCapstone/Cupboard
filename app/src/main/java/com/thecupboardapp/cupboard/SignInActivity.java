@@ -81,7 +81,9 @@ public class SignInActivity extends AppCompatActivity {
         mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                if(verifyEmail(mEmail)) signIn();
+                else Toast.makeText(SignInActivity.this, "Please enter a valid email address",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -96,6 +98,12 @@ public class SignInActivity extends AppCompatActivity {
     public static Intent newIntent(Context packageContext) {
         Intent intent = new Intent(packageContext, SignInActivity.class);
         return intent;
+    }
+
+    public static boolean verifyEmail(String email){
+        if (email.contains(Character.toString('@'))
+                && email.contains(Character.toString('.'))) return true;
+        else return false;
     }
 
     private void signIn() {

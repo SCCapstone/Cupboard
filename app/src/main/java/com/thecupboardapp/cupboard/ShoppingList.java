@@ -50,9 +50,8 @@ public class ShoppingList {
         return mShoppingShoppingListItems;
     }
 
-    public void addShoppingListItem(String name, boolean checked){
-        mShoppingShoppingListItems.add(new ShoppingListItem(name, checked));
-
+    public void addShoppingListItem(ShoppingListItem item){
+        mShoppingShoppingListItems.add(item);
     }
 
     public void removeShoppingListItem(UUID id) {
