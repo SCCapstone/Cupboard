@@ -15,6 +15,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -206,11 +207,23 @@ public class CupboardFragment extends Fragment {
                 holder = new ViewHolder();
                 holder.text = (TextView) convertView.findViewById(R.id.lblListHeader);
                 holder.deleteButton = (Button) convertView.findViewById(R.id.delete_food_button);
+                holder.numPicker = (NumberPicker) convertView.findViewById(R.id.numPicker);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
+            holder.numPicker.setMinValue(1);
+            holder.numPicker.setMaxValue(1000);
+            holder.numPicker.setValue((int)(getFood(getGroup(groupPosition).toString()).getQuantity()));
+            holder.numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                    FoodItem foodToBeChanged = getFood(getGroup(groupPosition).toString());
+                    foodToBeChanged.setQuantity(newVal);
+                    UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
+                }
+            });
+            holder.numPicker.setFocusable(false);
             holder.text.setText(getGroup(groupPosition).toString());
             holder.deleteButton.setFocusable(false);
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +247,7 @@ public class CupboardFragment extends Fragment {
         private class ViewHolder {
             TextView text;
             Button deleteButton;
+            NumberPicker numPicker;
             Button editButton;
         }
     }

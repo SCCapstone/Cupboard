@@ -13,10 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -24,14 +26,18 @@ public class HomeActivity extends AppCompatActivity
     private final String TAG = "HomeActivity";
     private ImageView mNavHeader;
 
+    private TextView navEmail;
+    private TextView navId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //UserData.
 
-//         Set the home screen to be up first
+        //         Set the home screen to be up first
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction().add(R.id.fragment_container, new HomeFragment()).commit();
 
@@ -47,13 +53,27 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerview = navigationView.getHeaderView(0);
+
+        navEmail = (TextView) headerview.findViewById(R.id.nav_header_email);
+        navId = (TextView) headerview.findViewById(R.id.nav_header_id);
+
+        // Set the email and id if the user is logged in
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }
+
         headerview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = SignInActivity.newIntent(HomeActivity.this);
-                startActivity(intent);
+                // startActivity(intent);
+                startActivityForResult(intent, 99);
             }
         });
+
+
+        UserData.get(this);
     }
 
     @Override
@@ -79,6 +99,13 @@ public class HomeActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fm = getSupportFragmentManager();
         Log.d(TAG, "result code: " + resultCode);
+        Log.d(TAG, "request code: " + requestCode);
+
+        // Set the header for information
+        if (resultCode == 99) {
+            navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }
     }
 
     @Override
@@ -131,10 +158,19 @@ public class HomeActivity extends AppCompatActivity
                 fragment = new ShoppingListsFragment();
             }
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        } else if (id == R.id.nav_logout) {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
+
+            navEmail.setText(R.string.nav_header_title);
+            navId.setText(R.string.nav_header_subtitle);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
 }
