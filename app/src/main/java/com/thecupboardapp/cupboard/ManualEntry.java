@@ -87,7 +87,7 @@ public class ManualEntry extends AppCompatActivity {
                     else if(requestCode == UPDATE_ENTRY_REQUEST) {
                         //FoodItem oldFoodItem = CupboardFragment.getFood(foodName);
                         //FoodItem oldFoodItem = UserData.get(getActivity()).getFood(foodName);
-                        FoodItem oldFoodItem = UserData.get(ManualEntry.this).getFood(foodName);
+                        FoodItem oldFoodItem = UserData.get(ManualEntry.this).getFoodItem(foodName);
                         UserData.get(ManualEntry.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
                     }
                     //go to the next screen passing FoodItem in...

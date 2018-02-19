@@ -183,7 +183,7 @@ public class CupboardFragment extends Fragment {
                 public void onClick(View v) {
                     //Toast.makeText(v.getContext(),"Need to update " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
                     //FoodItem foodToUpdate = getFood(getGroup(groupPosition).toString());
-                    FoodItem foodToUpdate = UserData.get(getActivity()).getFood(getGroup(groupPosition).toString());
+                    FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
                     //UserData.get(getActivity()).updateFoodItem(foodToDelete);
                     //onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
                     Intent intent = new Intent(getActivity(), ManualEntry.class);
@@ -214,11 +214,11 @@ public class CupboardFragment extends Fragment {
             }
             holder.numPicker.setMinValue(1);
             holder.numPicker.setMaxValue(1000);
-            holder.numPicker.setValue((int)(UserData.get(getActivity()).getFood(getGroup(groupPosition).toString()).getQuantity()));
+            holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
             holder.numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                 @Override
                 public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    FoodItem foodToBeChanged = UserData.get(getActivity()).getFood(getGroup(groupPosition).toString());
+                    FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
                     foodToBeChanged.setQuantity(newVal);
                     UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
                 }
@@ -230,7 +230,7 @@ public class CupboardFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //Toast.makeText(v.getContext(),"Need to delete " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    FoodItem foodToDelete = UserData.get(getActivity()).getFood(getGroup(groupPosition).toString());
+                    FoodItem foodToDelete = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
                     UserData.get(getActivity()).removeFoodItem(foodToDelete);
                     onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
                 }

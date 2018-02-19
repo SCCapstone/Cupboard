@@ -169,9 +169,9 @@ public class UserData {
         return null;
     }
 
-    public FoodItem getFood(String foodName){
-        for (int i=0;i<mFoodItems.size();i++){
-            if(mFoodItems.get(i).getName().equals(foodName)) return mFoodItems.get(i);
+    public FoodItem getFoodItem(String foodName){
+        for (FoodItem item: mFoodItems){
+            if(item.getName().equals(foodName)) return item;
         }
         return null;
     }
