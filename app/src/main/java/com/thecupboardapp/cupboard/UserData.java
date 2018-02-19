@@ -3,6 +3,7 @@ package com.thecupboardapp.cupboard;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -10,8 +11,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,18 +38,25 @@ public class UserData {
         return sUserData;
     }
 
-    private UserData(Context context) {
 
-        mShoppingLists = new ArrayList<ShoppingList>();
+    private UserData(Context context) {
+        // If signed in do shit
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            getListsFromFirebase();
+            getFoodsFromFirebase();
+        }
+
+        //adding dummy food items
+        mFoodItems = new ArrayList<FoodItem>();
         for (int j = 0; j < 5; j++) {
-            List<ShoppingListItem> shoppingListItems = new ArrayList<ShoppingListItem>();
+            List<FoodItem> FoodItems = new ArrayList<FoodItem>();
             for (int i = 0; i < 10; i++) {
-                String name = "List item - " + i;
-                Boolean checked = i % 2 == 0;
-                shoppingListItems.add(new ShoppingListItem(name, checked));
+                String name = "Food item - " + i;
+                FoodItems.add(new FoodItem(name));
             }
 
-            mShoppingLists.add(new ShoppingList("List " + j, shoppingListItems));
+            mFoodItems.add(new FoodItem());
         }
     }
 
@@ -63,8 +77,9 @@ public class UserData {
         mShoppingLists.add(shoppingList);
     }
 
-    public void updateFromFirebase(FirebaseUser user) {
+    public void getListsFromFirebase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         // Get shopping lists
         DatabaseReference ref = database.getReference("lists/" + user.getUid());
@@ -80,13 +95,13 @@ public class UserData {
 
                     for (DataSnapshot item : list.child("items").getChildren()) {
                         ShoppingListItem shoppingListItem = new ShoppingListItem();
+
+                        shoppingListItem.setName(item.child("title").getValue().toString());
+                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
                         shoppingListItem.setFirebaseId(item.getKey());
+                        shoppingListItem.setRef(item.getRef());
 
-//                        shoppingListItem.setName(item.child("title").getValue().toString());
-//                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
-
-                        shoppingList.addShoppingListItem(item.child("title").getValue().toString(),
-                                (boolean) item.child("checked").getValue());
+                        shoppingList.addShoppingListItem(shoppingListItem);
                     }
                     shoppingLists.add(shoppingList);
                 }
@@ -98,6 +113,47 @@ public class UserData {
 
             }
         });
+    }
+
+    public void getFoodsFromFirebase() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+        refFood.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                for (DataSnapshot food : dataSnapshot.getChildren()) {
+                    FoodItem foodItem = new FoodItem();
+
+                    foodItem.setFirebaseId(food.getKey());
+                    foodItem.setName(food.child("name").getValue().toString());
+
+                    try{
+                        Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(expDate);
+                        foodItem.setExpiration(cal);
+                    }
+                    catch(Exception e){
+                    }
+
+                    foodItems.add(foodItem);
+                }
+                mFoodItems = foodItems;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void updateFromFirebase(FirebaseUser user) {
+        getListsFromFirebase();
+        getFoodsFromFirebase();
     }
 
     public List<FoodItem> getFoodItems() {
@@ -113,7 +169,35 @@ public class UserData {
         return null;
     }
 
-    public void addFoodItems(FoodItem afoodItem) {
-        mFoodItems.add(afoodItem);
+    public void addFoodItem(FoodItem aFoodItem) {
+        //local change
+        mFoodItems.add(aFoodItem);
+
+        //update firebase with converted foodItem
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        //generate key beforehand so we know firebase key locally without having to close and reopen My Cupboard
+        String key = ref.push().getKey();
+        ref.child(key).setValue(aFoodItem);
+        aFoodItem.setFirebaseId(key);
+    }
+
+    public void editFoodItemQuantity(FoodItem aFoodItem){
+        //update firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + getUser().getUid() + "/" + aFoodItem.getFirebaseId());
+        Map<String, Object> update = new HashMap<>();
+        update.put("quantity",aFoodItem.getQuantity());
+        ref.updateChildren(update);
+    }
+
+    public void removeFoodItem(FoodItem aFoodItem){
+        //local change
+        mFoodItems.remove(aFoodItem);
+
+        //update firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + aFoodItem.getFirebaseId());
+        ref.removeValue();
     }
 }
