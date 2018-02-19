@@ -1,0 +1,99 @@
+package com.thecupboardapp.cupboard;
+
+import android.app.Fragment;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Created by Jacob Strom on 2/13/2018.
+ */
+
+public class ExpiringFoodsFragment extends Fragment {
+
+    private List<FoodItem> mFoods;
+    private TextView mNextExpiring;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+
+        View view= inflater.inflate(R.layout.dashboard_expriring_fragment, container, false);
+        //if (UserData.get)
+        mFoods = UserData.get(getActivity()).getFoodItems();
+        //Collections.sort(mFoods);
+        //FoodItem mExpFood1 = ;
+        mNextExpiring = (TextView) view.findViewById(R.id.next_expiring);
+        if (mFoods!=null) {
+            Log.d("mFoods", "not null");
+            FoodItem f = mFoods.get(0);
+            //mNextExpiring.setText(f.getName());
+        }
+        else {
+            Log.d("mFoods", "mFoods equals null");
+            //Log.d("mFoods", "UID = );
+            String s = "vngfdkaln";
+            mNextExpiring.setText(s);
+        }
+
+        return view;
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+        ExpiringFoodsFragment f = (ExpiringFoodsFragment) getFragmentManager()
+                .findFragmentById(R.id.expiring_foods_fragment);
+        if (f != null)
+            getFragmentManager().beginTransaction().remove(f).commit();
+    }
+    /*public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //getActivity().setTitle(R.string.);
+        mNextExpiring = (TextView) getActivity().findViewById(R.id.next_expiring);
+        mNextExpiring.setText("change");
+    }
+    /*public void setNextExpiring(){
+        mNextExpiring = (TextView) getActivity().findViewById(R.id.next_expiring);
+        mNextExpiring.setText("change");
+    }
+
+    //@Override
+    /*public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mFoods = UserData.get(getActivity()).getFoodItems();
+        mNextExpiring = (TextView) getActivity().findViewById(R.id.next_expiring);
+        //Collections.sort(mFoods);
+        //FoodItem mExpFood1 = ;
+        //final TextView mNextExpiring = (TextView) getActivity().findViewById(R.id.next_expiring);
+        //Log.d("createView", mFoods.get(0).getName());
+        //mNextExpiring.setText("change");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //mNextExpiring.setText("change");
+    }
+
+    /*public FoodItem NextThreeExpiring() {
+        mFoods = UserData.get(getActivity()).getFoodItems();
+        Collections.sort(mFoods);
+
+
+    }*/
+}
