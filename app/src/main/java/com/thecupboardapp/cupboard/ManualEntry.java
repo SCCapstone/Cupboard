@@ -32,20 +32,25 @@ public class ManualEntry extends AppCompatActivity {
         final int requestCode = intent.getIntExtra("requestCode", NEW_ENTRY_REQUEST);
         EditText edittext= (EditText) findViewById(R.id.editText3);
         ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
+        EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
         final String foodName;
         final long foodExpires;
+        final float foodQuantity;
         if(requestCode == NEW_ENTRY_REQUEST){
             setTitle("New Food Item");
             foodName = "";
             foodExpires = NO_EXP_DATE;
+            foodQuantity = 0;
         }
         else{ //requestCode == UPDATE_ENTRY_REQUEST
             setTitle("Edit Food Item");
             foodName = intent.getStringExtra("foodName");
             foodExpires = intent.getLongExtra("foodExpires",NO_EXP_DATE);
+            foodQuantity = intent.getFloatExtra("foodQuantity",0);
             edittext.setText(foodName);
             Date expDate = new Date(foodExpires);
             myCalendar.setTime(expDate);
+            editTextQuantity.setText(Float.toString(foodQuantity));
         }
 
 
@@ -65,8 +70,10 @@ public class ManualEntry extends AppCompatActivity {
             public void onClick(View v) {
                 EditText edittext= (EditText) findViewById(R.id.editText3);
                 EditText edittext2= (EditText) findViewById(R.id.editText5);
+                EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
                 String theName = edittext.getText().toString();
                 String theDate = edittext2.getText().toString();
+                String theQuantity = editTextQuantity.getText().toString();
 
                 Intent resultInt = new Intent();
                 resultInt.putExtra("Result", "Done");
@@ -77,7 +84,12 @@ public class ManualEntry extends AppCompatActivity {
                         Date expDate = new Date(NO_EXP_DATE);
                         myCalendar.setTime(expDate);
                     }
-                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar);
+                    if(theQuantity.isEmpty()){
+                        theQuantity = "1";
+                    }
+                    float theQuantityFloat = Float.parseFloat(theQuantity);
+
+                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat);
 
                     Calendar theDateAdded = Calendar.getInstance();
                     theDateAdded.getTime();

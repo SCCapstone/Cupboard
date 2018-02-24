@@ -181,6 +181,7 @@ public class CupboardFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), ManualEntry.class);
                     intent.putExtra("foodName", foodToUpdate.getName());
                     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
+                    intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
                     intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
                     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
                 }
