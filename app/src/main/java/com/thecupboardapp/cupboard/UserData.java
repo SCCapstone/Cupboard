@@ -132,9 +132,9 @@ public class UserData {
 
                     try{
                         Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(expDate);
-                        foodItem.setExpiration(cal);
+                        foodItem.setExpiration(expDate);
+                        Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
+                        foodItem.setDateAdded(dateAdded);
                     }
                     catch(Exception e){
                     }
@@ -215,6 +215,7 @@ public class UserData {
         mFoodItems.set(i, newFoodItem);
 
         String key = oldFoodItem.getFirebaseId();
+        newFoodItem.setFirebaseId(key);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + key);
 

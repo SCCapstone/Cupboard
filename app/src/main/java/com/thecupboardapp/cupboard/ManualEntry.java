@@ -85,8 +85,6 @@ public class ManualEntry extends AppCompatActivity {
 
                     if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
                     else if(requestCode == UPDATE_ENTRY_REQUEST) {
-                        //FoodItem oldFoodItem = CupboardFragment.getFood(foodName);
-                        //FoodItem oldFoodItem = UserData.get(getActivity()).getFood(foodName);
                         FoodItem oldFoodItem = UserData.get(ManualEntry.this).getFoodItem(foodName);
                         UserData.get(ManualEntry.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
                     }

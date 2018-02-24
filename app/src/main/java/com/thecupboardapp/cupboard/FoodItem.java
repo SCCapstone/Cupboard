@@ -5,6 +5,7 @@ import com.google.firebase.database.Exclude;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -20,6 +21,7 @@ public class FoodItem implements Comparable<FoodItem> {
     private String mCategory;
     private Calendar mExpiration;
     private Calendar mDateAdded;
+    private SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
     public FoodItem() {
         mId = UUID.randomUUID();
@@ -66,8 +68,20 @@ public class FoodItem implements Comparable<FoodItem> {
         mExpiration = expiration;
     }
 
+    @Exclude
+    public void setExpiration(Date expiration){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(expiration);
+        mExpiration = cal;
+    }
+
     public long getExpirationAsLong(){
         return mExpiration.getTimeInMillis();
+    }
+
+    @Exclude
+    public String getExpirationAsString(){
+        return sdf.format(mExpiration.getTime());
     }
 
     public String getUnits() {
@@ -99,9 +113,25 @@ public class FoodItem implements Comparable<FoodItem> {
         return mDateAdded;
     }
 
+    public long getDateAddedAsLong(){
+        return mDateAdded.getTimeInMillis();
+    }
+
+    @Exclude
+    public String getDateAddedAsString() {
+        return sdf.format(mDateAdded.getTime());
+    }
+
     @Exclude
     public void setDateAdded(Calendar dateAdded) {
         mDateAdded = dateAdded;
+    }
+
+    @Exclude
+    public void setDateAdded(Date dateAdded){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateAdded);
+        mDateAdded = cal;
     }
 
     public int compareTo(FoodItem f2) {

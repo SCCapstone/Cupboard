@@ -68,23 +68,20 @@ public class CupboardFragment extends Fragment {
         getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
-        //CHANGE SECOND SIZE WHEN READY TO ADD MORE INFO
         children = new String[mFoodItems.size()][1];
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
 
-            String expInfo = "Expires: ";
+            String info = "Expires: ";
+            if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE) {info = info.concat("Never");}
+            else {info = info.concat(mFoodItems.get(i).getExpirationAsString());}
 
-            if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE){
-                expInfo = expInfo.concat("Never");
-            }
-            else {
-                Calendar cal = mFoodItems.get(i).getExpiration();
-                SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-                expInfo = expInfo.concat(sdf.format(cal.getTime()));
-            }
-            children[i][0] = expInfo;
+            info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
+
+            children[i][0] = info;
+
+
         }
     }
 
@@ -112,8 +109,6 @@ public class CupboardFragment extends Fragment {
             }
         });
     }
-
-
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
         private final LayoutInflater inf;
@@ -182,10 +177,7 @@ public class CupboardFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //Toast.makeText(v.getContext(),"Need to update " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    //FoodItem foodToUpdate = getFood(getGroup(groupPosition).toString());
                     FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                    //UserData.get(getActivity()).updateFoodItem(foodToDelete);
-                    //onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
                     Intent intent = new Intent(getActivity(), ManualEntry.class);
                     intent.putExtra("foodName", foodToUpdate.getName());
                     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
