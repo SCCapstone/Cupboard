@@ -168,7 +168,7 @@ public class CupboardFragment extends Fragment {
                 holder = new ViewHolder();
 
                 holder.text = (TextView) convertView.findViewById(R.id.lblListItem);
-                holder.editButton = (Button) convertView.findViewById(R.id.edit_food_button);
+                holder.editButton = (ImageButton) convertView.findViewById(R.id.edit_food_button);
                 holder.addToListButton = (ImageButton) convertView.findViewById(R.id.add_food_to_list_button);
                 convertView.setTag(holder);
             } else {
@@ -200,13 +200,24 @@ public class CupboardFragment extends Fragment {
                     final ShoppingListItem foodToAdd = new ShoppingListItem(foodName);
 
                     final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
+                    final CharSequence choices[] = new CharSequence[lists.length+1];
+                    for(int i=0;i<choices.length;i++){
+                        if (i!=choices.length-1) choices[i] = lists[i];
+                        else choices[i] = "Add to a New List";
+                    }
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                     builder.setTitle("Which list would you like to add " + foodName + " to?");
-                    builder.setItems(lists, new DialogInterface.OnClickListener() {
+                    builder.setItems(choices, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //user clicked on lists[which]
-                            ShoppingList list = UserData.get(getActivity()).getShoppingList(lists[which].toString());
+                            //user clicked on choices[which]
+                            ShoppingList list;
+                            if (which==choices.length-1) {
+                                list = new ShoppingList();
+                                UserData.get(getActivity()).addShoppingList(list);
+                            }
+                            else
+                            list = UserData.get(getActivity()).getShoppingList(choices[which].toString());
                             list.addShoppingListItem(foodToAdd);
                         }
                     });
@@ -228,7 +239,7 @@ public class CupboardFragment extends Fragment {
 
                 holder = new ViewHolder();
                 holder.text = (TextView) convertView.findViewById(R.id.lblListHeader);
-                holder.deleteButton = (Button) convertView.findViewById(R.id.delete_food_button);
+                holder.deleteButton = (ImageButton) convertView.findViewById(R.id.delete_food_button);
                 holder.numPicker = (NumberPicker) convertView.findViewById(R.id.numPicker);
                 convertView.setTag(holder);
             } else {
@@ -268,9 +279,9 @@ public class CupboardFragment extends Fragment {
 
         private class ViewHolder {
             TextView text;
-            Button deleteButton;
+            ImageButton deleteButton;
             NumberPicker numPicker;
-            Button editButton;
+            ImageButton editButton;
             ImageButton addToListButton;
         }
     }
