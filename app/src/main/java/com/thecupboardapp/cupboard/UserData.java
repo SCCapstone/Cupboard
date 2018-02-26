@@ -64,9 +64,28 @@ public class UserData {
         return mShoppingLists;
     }
 
+    public CharSequence[] getShoppingListsNames(){
+        CharSequence[] listsNames = new CharSequence[mShoppingLists.size()];
+        int i = 0;
+        for (ShoppingList item : mShoppingLists){
+            listsNames[i]=item.getName();
+            i++;
+        }
+        return listsNames;
+    }
+
     public ShoppingList getShoppingList(UUID id) {
         for (ShoppingList item : mShoppingLists) {
             if (item.getId().equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public ShoppingList getShoppingList(String name) {
+        for (ShoppingList item : mShoppingLists) {
+            if (item.getName().equals(name)) {
                 return item;
             }
         }

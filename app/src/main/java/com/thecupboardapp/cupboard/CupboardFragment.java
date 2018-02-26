@@ -1,6 +1,8 @@
 package com.thecupboardapp.cupboard;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -166,6 +169,7 @@ public class CupboardFragment extends Fragment {
 
                 holder.text = (TextView) convertView.findViewById(R.id.lblListItem);
                 holder.editButton = (Button) convertView.findViewById(R.id.edit_food_button);
+                holder.addToListButton = (ImageButton) convertView.findViewById(R.id.add_food_to_list_button);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -184,6 +188,31 @@ public class CupboardFragment extends Fragment {
                     intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
                     intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
                     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
+                }
+            });
+
+            holder.addToListButton.setFocusable(false);
+            holder.addToListButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Toast.makeText(v.getContext(),"Need to add to a list: " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
+                    String foodName = getGroup(groupPosition).toString();
+                    final ShoppingListItem foodToAdd = new ShoppingListItem(foodName);
+
+                    final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Which list would you like to add " + foodName + " to?");
+                    builder.setItems(lists, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //user clicked on lists[which]
+                            ShoppingList list = UserData.get(getActivity()).getShoppingList(lists[which].toString());
+                            list.addShoppingListItem(foodToAdd);
+                        }
+                    });
+                    builder.show();
+
+
                 }
             });
 
@@ -242,6 +271,7 @@ public class CupboardFragment extends Fragment {
             Button deleteButton;
             NumberPicker numPicker;
             Button editButton;
+            ImageButton addToListButton;
         }
     }
 }
