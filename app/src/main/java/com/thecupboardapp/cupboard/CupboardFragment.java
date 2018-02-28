@@ -22,6 +22,14 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +61,7 @@ public class CupboardFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         updateFoods();
+        setListener();
     }
 
     @Override
@@ -67,7 +76,25 @@ public class CupboardFragment extends Fragment {
         }
     }
 
-    private void updateFoods() {
+    public void setListener(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+        refFood.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void updateFoods() {
         getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
@@ -219,6 +246,7 @@ public class CupboardFragment extends Fragment {
                             else
                             list = UserData.get(getActivity()).getShoppingList(choices[which].toString());
                             list.addShoppingListItem(foodToAdd);
+                            Toast.makeText(getContext(),"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
                         }
                     });
                     builder.show();
@@ -247,13 +275,35 @@ public class CupboardFragment extends Fragment {
             }
             holder.numPicker.setMinValue(1);
             holder.numPicker.setMaxValue(1000);
+            //next line doesn't appear to work
             holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
-            holder.numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            holder.numPicker.setClickable(true);
+            holder.numPicker.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                    foodToBeChanged.setQuantity(newVal);
-                    UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
+                public void onClick(View v) {
+                    final NumberPicker numberPicker = new NumberPicker(getActivity());
+                    final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
+                        @Override
+                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                            FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
+                            foodToBeChanged.setQuantity(newVal);
+                            UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
+                        }
+                    };
+                    numberPicker.setMinValue(1);
+                    numberPicker.setMaxValue(1000);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setView(numberPicker);
+                    builder.setTitle("Change the quantity");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dialogHost.onPositiveButton(numberPicker.getValue());
+                            valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
+                        }
+                    });
+                    builder.setView(numberPicker);
+                    builder.show();
                 }
             });
             holder.numPicker.setFocusable(false);

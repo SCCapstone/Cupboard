@@ -139,7 +139,7 @@ public class UserData {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addListenerForSingleValueEvent(new ValueEventListener() {
+        refFood.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<FoodItem> foodItems = new ArrayList<FoodItem>();
