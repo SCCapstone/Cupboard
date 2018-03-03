@@ -1,5 +1,7 @@
 package com.thecupboardapp.cupboard;
 
+import android.util.Log;
+
 import com.google.firebase.database.Exclude;
 
 import java.text.SimpleDateFormat;
@@ -27,6 +29,10 @@ public class FoodItem implements Comparable<FoodItem> {
         mId = UUID.randomUUID();
         mName = "apple";
         mQuantity = 1;
+        Date exp = new Date(2001,1,1);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(exp);
+        mExpiration = cal;
 
     }
 
@@ -79,6 +85,7 @@ public class FoodItem implements Comparable<FoodItem> {
     public void setExpiration(Date expiration){
         Calendar cal = Calendar.getInstance();
         cal.setTime(expiration);
+        Log.d("set expiration", "done");
         mExpiration = cal;
     }
 

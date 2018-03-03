@@ -9,7 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Created by Kyle on 1/13/2018.
@@ -30,11 +35,15 @@ public class HomeFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.home_fragment, container, false);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mNextExpiring = (TextView) v.findViewById(R.id.next_expiring);
         Log.d("mNextExpiring", mNextExpiring.toString());
-        //UserData.get(getActivity()).updateFromFirebase();
+        UserData.get(getActivity()).updateFromFirebase(user);
         mFoods = UserData.get(getActivity()).getFoodItems();
-        //Collections.sort(mFoods);
+        //UserData.get(getA)
+        Collections.sort(mFoods);
         //FoodItem mExpFood1 = ;
 
         if (mFoods!=null) {
@@ -43,7 +52,12 @@ public class HomeFragment extends Fragment{
             for (FoodItem food: mFoods) {
                 Log.d("mFoods", food.getName());
             }
-            mNextExpiring.setText(f.getName());
+            String mNextThreeExpiring = "";
+            for (int i = 0; i < 3; ++i){
+                mNextThreeExpiring += mFoods.get(i).getName();
+                mNextThreeExpiring += "\n";
+            }
+            mNextExpiring.setText(mNextThreeExpiring);
         }
         else {
             Log.d("mFoods", "mFoods equals null");

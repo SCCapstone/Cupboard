@@ -148,9 +148,13 @@ public class UserData {
 
                     foodItem.setFirebaseId(food.getKey());
                     foodItem.setName(food.child("name").getValue().toString());
+                    Log.d("getFoods", food.child("name").getValue().toString());
 
                     try{
+                        Log.d("getFoods", "entering try block");
+                        Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
                         Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+
                         foodItem.setExpiration(expDate);
                         Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
                         foodItem.setDateAdded(dateAdded);
@@ -171,6 +175,7 @@ public class UserData {
     }
 
     public void updateFromFirebase(FirebaseUser user) {
+        Log.d("UserData", "Update from Firebase");
         getListsFromFirebase();
         getFoodsFromFirebase();
     }
