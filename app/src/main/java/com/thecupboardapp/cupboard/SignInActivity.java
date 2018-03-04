@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity {
-
     private final String TAG = "SignInActivity";
     private FirebaseAuth mAuth;
 
@@ -33,6 +32,9 @@ public class SignInActivity extends AppCompatActivity {
     private EditText mPasswordEditText;
     private Button mSignInButton;
     private Button mCreateAccountButton;
+
+    static final int SIGN_IN_RESULT_CODE = 1;
+    static final int NEW_ACCOUNT_RESULT_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,10 +133,8 @@ public class SignInActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(SignInActivity.this, "Signed in!",
-                                Toast.LENGTH_SHORT).show();
-
                         UserData.get(SignInActivity.this).updateFromFirebase(mAuth.getCurrentUser());
+                        setResult(SIGN_IN_RESULT_CODE);
                         finish();
                     } else {
                         Toast.makeText(SignInActivity.this, task.getException().getMessage(),
@@ -154,8 +154,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(SignInActivity.this, "Account created!",
-                            Toast.LENGTH_SHORT).show();
+                    setResult(NEW_ACCOUNT_RESULT_CODE);
                     finish();
                 } else {
                     Toast.makeText(SignInActivity.this, task.getException().getMessage(),
