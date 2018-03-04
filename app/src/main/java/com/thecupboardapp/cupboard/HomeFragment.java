@@ -24,7 +24,9 @@ import java.util.Collections;
 public class HomeFragment extends Fragment{
 
     private List<FoodItem> mFoods;
+    private List<ShoppingList> mLists;
     private TextView mNextExpiring;
+    private TextView mLastModifiedList;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,20 +40,31 @@ public class HomeFragment extends Fragment{
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //FoodItem f = new FoodItem();
+        //UserData.get(getActivity()).addFoodItem(f);
+
         mNextExpiring = (TextView) v.findViewById(R.id.next_expiring);
+        mLastModifiedList = (TextView) v.findViewById(R.id.last_modified_list);
         Log.d("mNextExpiring", mNextExpiring.toString());
         UserData.get(getActivity()).updateFromFirebase(user);
+        //UserData.get(getActivity()).removeFoodItem(f);
+        updateNextExpiring();
+        updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
+        return v;
+    }
+
+    private void updateNextExpiring() {
         mFoods = UserData.get(getActivity()).getFoodItems();
         //UserData.get(getA)
         Collections.sort(mFoods);
         //FoodItem mExpFood1 = ;
 
         if (mFoods!=null) {
-            Log.d("mFoods", "not null");
+            /*Log.d("mFoods", "not null");
             FoodItem f = mFoods.get(0);
             for (FoodItem food: mFoods) {
                 Log.d("mFoods", food.getName());
-            }
+            }*/
             String mNextThreeExpiring = "";
             for (int i = 0; i < 3; ++i){
                 mNextThreeExpiring += mFoods.get(i).getName();
@@ -60,11 +73,26 @@ public class HomeFragment extends Fragment{
             mNextExpiring.setText(mNextThreeExpiring);
         }
         else {
-            Log.d("mFoods", "mFoods equals null");
+            //Log.d("mFoods", "mFoods equals null");
             //Log.d("mFoods", "UID = );
             String s = "foods doesn't exist";
             mNextExpiring.setText(s);
         }
-        return v;
+    }
+
+    private void updateLastModifiedList() {
+        mLists = UserData.get(getActivity()).getShoppingLists();
+        Collections.sort(mLists);
+        String s = "";
+
+        s = mLists.get(0).getName() + "\n";
+        List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
+        for ( ShoppingListItem item : items) {
+            s += item.getName() + "\n";
+        }
+
+
+        mLastModifiedList.setText(s);
+
     }
 }

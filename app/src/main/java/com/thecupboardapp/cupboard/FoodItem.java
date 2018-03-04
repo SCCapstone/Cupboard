@@ -85,7 +85,7 @@ public class FoodItem implements Comparable<FoodItem> {
     public void setExpiration(Date expiration){
         Calendar cal = Calendar.getInstance();
         cal.setTime(expiration);
-        Log.d("set expiration", "done");
+        //Log.d("set expiration", "done");
         mExpiration = cal;
     }
 
@@ -129,6 +129,7 @@ public class FoodItem implements Comparable<FoodItem> {
 
     public long getDateAddedAsLong(){
         return mDateAdded.getTimeInMillis();
+        //return 7;
     }
 
     @Exclude

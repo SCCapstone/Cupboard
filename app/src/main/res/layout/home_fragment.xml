@@ -21,6 +21,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="expiring food" />
+
+            <TextView
+                android:id="@+id/last_modified_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="last modified list"/>
+
         </LinearLayout>
 
     </ScrollView>

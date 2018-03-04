@@ -58,6 +58,10 @@ public class UserData {
 
             mFoodItems.add(new FoodItem());
         }
+        mShoppingLists = new ArrayList<ShoppingList>();
+        for ( int j = 0; j < 5; ++j) {
+            mShoppingLists.add(new ShoppingList());
+        }
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -94,6 +98,14 @@ public class UserData {
 
     public void addShoppingList(ShoppingList shoppingList){
         mShoppingLists.add(shoppingList);
+
+        //update firebase with converted foodItem
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("lists/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        //generate key beforehand so we know firebase key locally without having to close and reopen My Cupboard
+        String key = ref.push().getKey();
+        ref.child(key).setValue(shoppingList);
+        shoppingList.setFirebaseId(key);
     }
 
     public void getListsFromFirebase() {
@@ -110,12 +122,12 @@ public class UserData {
                     ShoppingList shoppingList = new ShoppingList();
 
                     shoppingList.setFirebaseId(list.getKey());
-                    shoppingList.setName(list.child("title").getValue().toString());
+                    shoppingList.setName(list.child("name").getValue().toString());
 
-                    for (DataSnapshot item : list.child("items").getChildren()) {
+                    for (DataSnapshot item : list.child("shoppingListItems").getChildren()) {
                         ShoppingListItem shoppingListItem = new ShoppingListItem();
 
-                        shoppingListItem.setName(item.child("title").getValue().toString());
+                        shoppingListItem.setName(item.child("name").getValue().toString());
                         shoppingListItem.setChecked((boolean) item.child("checked").getValue());
                         shoppingListItem.setFirebaseId(item.getKey());
                         shoppingListItem.setRef(item.getRef());
@@ -148,11 +160,11 @@ public class UserData {
 
                     foodItem.setFirebaseId(food.getKey());
                     foodItem.setName(food.child("name").getValue().toString());
-                    Log.d("getFoods", food.child("name").getValue().toString());
+                    //Log.d("getFoods", food.child("name").getValue().toString());
 
                     try{
-                        Log.d("getFoods", "entering try block");
-                        Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
+                        //Log.d("getFoods", "entering try block");
+                        //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
                         Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
 
                         foodItem.setExpiration(expDate);

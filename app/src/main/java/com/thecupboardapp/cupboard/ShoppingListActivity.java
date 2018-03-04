@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Calendar;
+
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +77,7 @@ public class ShoppingListActivity extends AppCompatActivity {
             mShoppingList = UserData.get(this).getShoppingList(shoppingListId);
             setTitle(UserData.get(this).getShoppingList(shoppingListId).getName());
         }
-
+        mShoppingList.setLastModified(System.currentTimeMillis());
         mRecyclerView = (RecyclerView) findViewById(R.id.shopping_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(ShoppingListActivity.this));
 
