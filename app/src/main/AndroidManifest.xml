@@ -27,7 +27,8 @@
         <activity android:name=".ManualEntry">
         </activity>
 
-        <activity android:name=".SignInActivity">
+        <activity android:name=".SignInActivity"
+            android:windowSoftInputMode="adjustResize">
 
         </activity>
     </application>
