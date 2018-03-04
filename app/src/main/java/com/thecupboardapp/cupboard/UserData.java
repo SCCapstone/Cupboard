@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.security.auth.callback.Callback;
+
 /**
  * Created by Kyle on 1/15/2018.
  */
@@ -186,6 +188,8 @@ public class UserData {
         });
     }
 
+
+
     public void updateFromFirebase(FirebaseUser user) {
         Log.d("UserData", "Update from Firebase");
         getListsFromFirebase();
@@ -194,6 +198,10 @@ public class UserData {
 
     public List<FoodItem> getFoodItems() {
         return mFoodItems;
+    }
+
+    public void setFoodItems(List<FoodItem> foodItems) {
+        mFoodItems = foodItems;
     }
 
     public FoodItem getFoodItem(UUID id) {

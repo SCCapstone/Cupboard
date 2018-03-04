@@ -11,8 +11,14 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Collections;
 
@@ -27,6 +33,7 @@ public class HomeFragment extends Fragment{
     private List<ShoppingList> mLists;
     private TextView mNextExpiring;
     private TextView mLastModifiedList;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +47,45 @@ public class HomeFragment extends Fragment{
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+        refFood.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                for (DataSnapshot food : dataSnapshot.getChildren()) {
+                    FoodItem foodItem = new FoodItem();
+
+                    foodItem.setFirebaseId(food.getKey());
+                    foodItem.setName(food.child("name").getValue().toString());
+                    //Log.d("getFoods", food.child("name").getValue().toString());
+
+                    try{
+                        //Log.d("getFoods", "entering try block");
+                        //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
+                        Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+
+                        foodItem.setExpiration(expDate);
+                        Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
+                        foodItem.setDateAdded(dateAdded);
+                    }
+                    catch(Exception e){
+                    }
+
+                    foodItems.add(foodItem);
+                }
+                UserData.get(getContext()).setFoodItems(foodItems);
+
+                updateNextExpiring();
+                updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         //FoodItem f = new FoodItem();
         //UserData.get(getActivity()).addFoodItem(f);
 
@@ -47,9 +93,7 @@ public class HomeFragment extends Fragment{
         mLastModifiedList = (TextView) v.findViewById(R.id.last_modified_list);
         Log.d("mNextExpiring", mNextExpiring.toString());
         UserData.get(getActivity()).updateFromFirebase(user);
-        //UserData.get(getActivity()).removeFoodItem(f);
-        updateNextExpiring();
-        updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
+
         return v;
     }
 
