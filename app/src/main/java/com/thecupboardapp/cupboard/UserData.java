@@ -49,7 +49,7 @@ public class UserData {
 
         //adding dummy food items
         mFoodItems = new ArrayList<FoodItem>();
-        for (int j = 0; j < 5; j++) {
+        /*for (int j = 0; j < 5; j++) {
             List<FoodItem> FoodItems = new ArrayList<FoodItem>();
             for (int i = 0; i < 10; i++) {
                 String name = "Food item - " + i;
@@ -57,11 +57,11 @@ public class UserData {
             }
 
             mFoodItems.add(new FoodItem());
-        }
+        }*/
         mShoppingLists = new ArrayList<ShoppingList>();
-        for ( int j = 0; j < 5; ++j) {
+        /*for ( int j = 0; j < 5; ++j) {
             mShoppingLists.add(new ShoppingList());
-        }
+        }*/
     }
 
     public List<ShoppingList> getShoppingLists() {

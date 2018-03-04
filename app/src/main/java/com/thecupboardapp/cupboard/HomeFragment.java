@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment{
         Collections.sort(mFoods);
         //FoodItem mExpFood1 = ;
 
-        if (mFoods!=null) {
+        if (!mFoods.isEmpty()) {
             /*Log.d("mFoods", "not null");
             FoodItem f = mFoods.get(0);
             for (FoodItem food: mFoods) {
@@ -75,21 +75,30 @@ public class HomeFragment extends Fragment{
         else {
             //Log.d("mFoods", "mFoods equals null");
             //Log.d("mFoods", "UID = );
-            String s = "foods doesn't exist";
+            String s = "no foods";
             mNextExpiring.setText(s);
         }
     }
 
     private void updateLastModifiedList() {
         mLists = UserData.get(getActivity()).getShoppingLists();
-        Collections.sort(mLists);
         String s = "";
 
-        s = mLists.get(0).getName() + "\n";
-        List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
-        for ( ShoppingListItem item : items) {
-            s += item.getName() + "\n";
+        if (mLists.isEmpty()) {
+            s = "create a list";
         }
+
+        else {
+            Collections.sort(mLists);
+
+
+            s = mLists.get(0).getName() + "\n";
+            List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
+            for ( ShoppingListItem item : items) {
+                s += item.getName() + "\n";
+            }
+        }
+
 
 
         mLastModifiedList.setText(s);
