@@ -72,7 +72,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-
         UserData.get(this);
     }
 

@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +41,9 @@ public class SignInActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        mEmail = "";
+        mPassword = "";
+
         mEmailEditText = (EditText) findViewById(R.id.sign_in_email);
         mPasswordEditText = (EditText) findViewById(R.id.sign_in_password);
         mSignInButton = (Button) findViewById(R.id.button_sign_in);
@@ -46,9 +51,7 @@ public class SignInActivity extends AppCompatActivity {
 
         mEmailEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // nope
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -56,16 +59,12 @@ public class SignInActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // not gonna happen
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         mPasswordEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // nope again
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -73,45 +72,57 @@ public class SignInActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // uh uh
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(verifyEmail(mEmail)) signIn();
-                else Toast.makeText(SignInActivity.this, "Please enter a valid email address",
-                        Toast.LENGTH_SHORT).show();
+            signIn();
             }
         });
 
         mCreateAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "mcreateacc clicked");
+                createAccount();
             }
         });
     }
 
+    // Create an intent for this
     public static Intent newIntent(Context packageContext) {
         Intent intent = new Intent(packageContext, SignInActivity.class);
         return intent;
     }
 
+    // Unit test?
     public static boolean verifyEmail(String email){
         if (email.contains(Character.toString('@'))
                 && email.contains(Character.toString('.'))) return true;
         else return false;
     }
 
-    private void signIn() {
-
-        // Error catch
-        if (mEmail == null || mPassword == null) {
-            Toast.makeText(SignInActivity.this, "Please enter all fields",
+    // If the fields are good, they wil
+    private boolean verifyFields() {
+        // Check if email field or password is filled out
+        if (TextUtils.isEmpty(mEmail) || TextUtils.isEmpty(mPassword)) {
+            Toast.makeText(this, "Please enter all fields!", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
+            Toast.makeText(this, "Invalid email address", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (mPassword.length() < 8) {
+            Toast.makeText(this, "Password must be 8 characters long",
                     Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void signIn() {
+        // check the fields
+        if (!verifyFields()) {
             return;
         }
 
@@ -120,23 +131,37 @@ public class SignInActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success");
-
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        Toast.makeText(SignInActivity.this, "id: " + user.getUid(),
+                        Toast.makeText(SignInActivity.this, "Signed in!",
                                 Toast.LENGTH_SHORT).show();
 
-                        UserData.get(SignInActivity.this).updateFromFirebase(user);
-
-//                        updateUI(user);
+                        UserData.get(SignInActivity.this).updateFromFirebase(mAuth.getCurrentUser());
+                        finish();
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(SignInActivity.this, "Authentication failed.",
+                        Toast.makeText(SignInActivity.this, task.getException().getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
             });
+    }
+
+    private void createAccount(){
+        // check the fields
+        if (!verifyFields()) {
+            return;
+        }
+
+        mAuth.createUserWithEmailAndPassword(mEmail, mPassword).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(SignInActivity.this, "Account created!",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(SignInActivity.this, task.getException().getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
