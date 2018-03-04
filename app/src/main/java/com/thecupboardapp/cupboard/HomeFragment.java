@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment{
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addValueEventListener(new ValueEventListener() {
+        refFood.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<FoodItem> foodItems = new ArrayList<FoodItem>();
