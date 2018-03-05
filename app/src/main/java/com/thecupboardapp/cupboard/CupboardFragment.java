@@ -1,6 +1,7 @@
 package com.thecupboardapp.cupboard;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -260,7 +261,7 @@ public class CupboardFragment extends Fragment {
 
         @Override
         public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+            final ViewHolder holder;
 
             if (convertView == null) {
                 convertView = inf.inflate(R.layout.list_group, parent, false);
@@ -275,13 +276,51 @@ public class CupboardFragment extends Fragment {
             }
             holder.numPicker.setMinValue(1);
             holder.numPicker.setMaxValue(1000);
-            //next line doesn't appear to work
             holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
             holder.numPicker.setClickable(true);
-            holder.numPicker.setOnClickListener(new View.OnClickListener() {
+            holder.numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+               public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                   FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
+                   foodToBeChanged.setQuantity(newVal);
+                   UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
+               }
+            });
+            /*holder.numPicker.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final NumberPicker numberPicker = new NumberPicker(getActivity());
+                    final Dialog d = new Dialog(getContext());
+                    d.setTitle("number Picker");
+                    d.setContentView(R.layout.dialogpicker);
+                    Button b1 = (Button) d.findViewById(R.id.button1);
+                    Button b2 = (Button) d.findViewById(R.id.button2);
+                    final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+                    np.setMaxValue(1000); // max value 100
+                    np.setMinValue(0);   // min value 0
+                    np.setValue(holder.numPicker.getValue());
+                    //np.setWrapSelectorWheel(false);
+                    //np.setOnValueChangedListener(np);
+                    b1.setOnClickListener(new Button.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v) {
+                            FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
+                            foodToBeChanged.setQuantity(np.getValue());
+                            Log.d("npval: ", Integer.toString(np.getValue()));
+                            UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
+                            holder.numPicker.setValue(np.getValue());
+                            //tv.setText(String.valueOf(np.getValue())); //set the value to textview
+                            d.dismiss();
+                        }
+                    });
+                    b2.setOnClickListener(new Button.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v) {
+                            d.dismiss(); // dismiss the dialog
+                        }
+                    });
+                    d.show();
+                    *//*final NumberPicker numberPicker = new NumberPicker(getActivity());
                     final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
                         @Override
                         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -300,12 +339,14 @@ public class CupboardFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             //dialogHost.onPositiveButton(numberPicker.getValue());
                             valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
+
                         }
                     });
                     builder.setView(numberPicker);
-                    builder.show();
+                    builder.show();*//*
                 }
-            });
+            });*/
+            holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
             holder.numPicker.setFocusable(false);
             holder.text.setText(getGroup(groupPosition).toString());
             holder.deleteButton.setFocusable(false);
