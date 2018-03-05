@@ -24,10 +24,13 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "HomeActivity";
+
     private ImageView mNavHeader;
 
     private TextView navEmail;
     private TextView navId;
+
+    static final int SIGN_IN_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +74,9 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = SignInActivity.newIntent(HomeActivity.this);
-                // startActivity(intent);
-                startActivityForResult(intent, 99);
+                startActivityForResult(intent, SIGN_IN_REQUEST_CODE);
             }
         });
-
 
         UserData.get(this);
     }
@@ -102,11 +103,21 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fm = getSupportFragmentManager();
-        Log.d(TAG, "result code: " + resultCode);
-        Log.d(TAG, "request code: " + requestCode);
+
+        Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
 
         // Set the header for information
-        if (resultCode == 99) {
+        if (requestCode == SIGN_IN_REQUEST_CODE) {
+            switch (resultCode) {
+                case SignInActivity.SIGN_IN_RESULT_CODE:
+                    Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+                    break;
+                case SignInActivity.NEW_ACCOUNT_RESULT_CODE:
+                    Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    return;
+            }
             navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
         }

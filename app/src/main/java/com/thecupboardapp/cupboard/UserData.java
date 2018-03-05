@@ -42,8 +42,10 @@ public class UserData {
 
 
     private UserData(Context context) {
-        // If signed in do shit
+        mShoppingLists = new ArrayList<ShoppingList>();
+        mFoodItems = new ArrayList<FoodItem>();
 
+        // If signed in do shit
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             getListsFromFirebase();
             getFoodsFromFirebase();
