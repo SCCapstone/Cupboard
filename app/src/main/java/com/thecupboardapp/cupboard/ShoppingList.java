@@ -83,7 +83,7 @@ public class ShoppingList implements Comparable<ShoppingList> {
         }
     }
 
-    /*public int compareTo(ShoppingList s2) {
+    public int compareTo(ShoppingList s2) {
         long l = s2.getLastModified()- this.getLastModified();
         //return Math.toIntExact(Long.parseLong(f1.getExpiration()) - Long.parseLong(f2.getExpiration()));
         //return safeLongToInt(l);
@@ -96,13 +96,13 @@ public class ShoppingList implements Comparable<ShoppingList> {
                     (l + " cannot be cast to int without changing its value.");
         }
         return (int) l;
-    }*/
+    }
 
-    public int compareTo(ShoppingList s2) {
+    /*public int compareTo(ShoppingList s2) {
         long l = s2.getLastModified() - this.getLastModified();
         //return Math.toIntExact(Long.parseLong(f1.getExpiration()) - Long.parseLong(f2.getExpiration()));
         if (l<0) return -1;
         else if(l>0) return 1;
         else return 0;//values equal
-    }
+    }*/
 }
