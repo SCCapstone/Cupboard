@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -56,6 +59,14 @@ public class ShoppingListsFragment extends Fragment{
         }
     }
 
+    @Override
+    public void onResume() {
+        mAdapter = new ShoppingListAdapter(mShoppingLists);
+        mShoppingListsRecyclerView.setAdapter(mAdapter);
+
+        super.onResume();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,8 +93,14 @@ public class ShoppingListsFragment extends Fragment{
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int pos = viewHolder.getAdapterPosition();
+                ShoppingList list = mShoppingLists.get(pos);
+
                 mShoppingLists.remove(pos);
                 mAdapter.notifyItemRemoved(pos);
+
+                FirebaseDatabase.getInstance().getReference().child("lists")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child(list.getFirebaseId()).removeValue();
 
                 Toast.makeText(getActivity(), "List Removed", Toast.LENGTH_SHORT).show();
             }
@@ -92,7 +109,7 @@ public class ShoppingListsFragment extends Fragment{
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
 
         itemTouchHelper.attachToRecyclerView(mShoppingListsRecyclerView);
-        updateUI();
+
         return v;
     }
 
@@ -156,3 +173,5 @@ public class ShoppingListsFragment extends Fragment{
         }
     }
 }
+
+

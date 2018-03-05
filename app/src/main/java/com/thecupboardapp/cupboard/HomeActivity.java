@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity
         Log.d("HomeActivity", "before userdata stuff");
         UserData userData = UserData.get(this);
         if(userData != null) {
-            userData.updateFromFirebase(FirebaseAuth.getInstance().getCurrentUser());
+            userData.updateFromFirebase();
         }
 
         //         Set the home screen to be up first
@@ -94,13 +94,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fm = getSupportFragmentManager();
@@ -122,21 +115,6 @@ public class HomeActivity extends AppCompatActivity
             navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

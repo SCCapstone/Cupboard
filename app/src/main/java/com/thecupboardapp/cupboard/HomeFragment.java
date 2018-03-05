@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment{
         mNextExpiring = (TextView) v.findViewById(R.id.next_expiring);
         mLastModifiedList = (TextView) v.findViewById(R.id.last_modified_list);
         Log.d("mNextExpiring", mNextExpiring.toString());
-        UserData.get(getActivity()).updateFromFirebase(user);
+        UserData.get(getActivity()).updateFromFirebase();
 
         return v;
     }

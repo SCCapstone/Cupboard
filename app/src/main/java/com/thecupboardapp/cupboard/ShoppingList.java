@@ -16,16 +16,13 @@ public class ShoppingList implements Comparable<ShoppingList> {
     private String mFirebaseId;
     private String mName;
     private List<ShoppingListItem> mShoppingShoppingListItems;
-    private long mLastModified;
+    private Long lastModified;
 
     public ShoppingList() {
        mId = UUID.randomUUID();
        mName = "New Shopping List";
        mShoppingShoppingListItems = new ArrayList<ShoppingListItem>();
-       Date exp = new Date(2001,1,1);
-       Calendar cal = Calendar.getInstance();
-       cal.setTime(exp);
-       mLastModified = cal.getTimeInMillis();
+       lastModified = System.currentTimeMillis();
     }
 
     public ShoppingList(String name, List<ShoppingListItem> items) {
@@ -54,13 +51,6 @@ public class ShoppingList implements Comparable<ShoppingList> {
         mFirebaseId = firebaseId;
     }
 
-    public long getLastModified() {
-        return mLastModified;
-    }
-
-    public void setLastModified(long time) {
-        mLastModified = time;
-    }
 
     public List<ShoppingListItem> getShoppingListItems() {
         return mShoppingShoppingListItems;
@@ -96,5 +86,13 @@ public class ShoppingList implements Comparable<ShoppingList> {
                     (l + " cannot be cast to int without changing its value.");
         }
         return (int) l;
+    }
+
+    public Long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Long lastModified) {
+        this.lastModified = lastModified;
     }
 }
