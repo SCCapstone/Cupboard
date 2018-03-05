@@ -34,6 +34,7 @@ public class UserData {
     private static UserData sUserData;
     private List<ShoppingList> mShoppingLists;
     private List<FoodItem> mFoodItems;
+    private List<String> mRecipes;
 
     public static UserData get(Context context) {
         if (sUserData == null) {
@@ -46,6 +47,7 @@ public class UserData {
     private UserData(Context context) {
         mShoppingLists = new ArrayList<ShoppingList>();
         mFoodItems = new ArrayList<FoodItem>();
+        mRecipes = new ArrayList<String>();
 
         // If signed in do shit
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {

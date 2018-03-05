@@ -18,8 +18,6 @@ public class RecipesFragment extends Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.title_recipes);
-
-//        FragmentManager fm = fragment
     }
 
     @Nullable

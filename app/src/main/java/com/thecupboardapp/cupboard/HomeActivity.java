@@ -140,13 +140,15 @@ public class HomeActivity extends AppCompatActivity
                 fragment = new CupboardFragment();
             }
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        } else if (id == R.id.nav_recipes) {
-            fragment = fm.findFragmentById(R.id.recipes_fragment);
-            if (fragment == null) {
-                fragment = new RecipesFragment();
-            }
-            fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        } else if (id == R.id.nav_lists) {
+        }
+        // else if (id == R.id.nav_recipes) {
+        //     fragment = fm.findFragmentById(R.id.recipes_fragment);
+        //     if (fragment == null) {
+        //         fragment = new RecipesFragment();
+        //     }
+        //     fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        // }
+        else if (id == R.id.nav_lists) {
             fragment = fm.findFragmentById(R.id.lists_fragment);
             if (fragment == null) {
                 fragment = new ShoppingListsFragment();
