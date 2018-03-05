@@ -110,8 +110,10 @@ public class HomeFragment extends Fragment{
             }*/
             String mNextThreeExpiring = "";
             for (int i = 0; i < 3; ++i){
-                mNextThreeExpiring += mFoods.get(i).getName();
-                mNextThreeExpiring += "\n";
+                if (mFoods.get(i) != null) {
+                    mNextThreeExpiring += mFoods.get(i).getName();
+                    mNextThreeExpiring += "\n";
+                }
             }
             mNextExpiring.setText(mNextThreeExpiring);
         }
