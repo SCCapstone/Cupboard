@@ -77,16 +77,19 @@ public class ShoppingList implements Comparable<ShoppingList> {
         long l = s2.getLastModified()- this.getLastModified();
         //return Math.toIntExact(Long.parseLong(f1.getExpiration()) - Long.parseLong(f2.getExpiration()));
         //return safeLongToInt(l);
-        return (int) l;
+        int retVal = 0;
+        if (l > 0)  retVal = 1;
+        else if (l < 0) retVal = -1;
+        return retVal;
     }
 
-    private static int safeLongToInt(long l) {
+    /*private static int safeLongToInt(long l) {
         if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
             throw new IllegalArgumentException
                     (l + " cannot be cast to int without changing its value.");
         }
         return (int) l;
-    }
+    }*/
 
     public Long getLastModified() {
         return lastModified;

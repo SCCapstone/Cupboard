@@ -101,48 +101,59 @@ public class HomeFragment extends Fragment{
         //UserData.get(getA)
         Collections.sort(mFoods);
         //FoodItem mExpFood1 = ;
-
-        if (!mFoods.isEmpty()) {
+        try {
+            if (!mFoods.isEmpty()) {
             /*Log.d("mFoods", "not null");
             FoodItem f = mFoods.get(0);
             for (FoodItem food: mFoods) {
                 Log.d("mFoods", food.getName());
             }*/
-            String mNextThreeExpiring = "";
-            for (int i = 0; i < 3; ++i){
-                if (mFoods.size() <  i) {
-                    mNextThreeExpiring += mFoods.get(i).getName();
-                    mNextThreeExpiring += "\n";
+                String mNextThreeExpiring = "";
+                for (int i = 0; i < 3; ++i){
+                    if (mFoods.size() >  i) {
+                        mNextThreeExpiring += mFoods.get(i).getName();
+                        mNextThreeExpiring += "\n";
+                    }
                 }
+                mNextExpiring.setText(mNextThreeExpiring);
             }
-            mNextExpiring.setText(mNextThreeExpiring);
+            else {
+                //Log.d("mFoods", "mFoods equals null");
+                //Log.d("mFoods", "UID = );
+                String s = "no foods";
+                mNextExpiring.setText(s);
+            }
         }
-        else {
-            //Log.d("mFoods", "mFoods equals null");
-            //Log.d("mFoods", "UID = );
-            String s = "no foods";
-            mNextExpiring.setText(s);
+        catch (Exception e) {
+            mNextExpiring.setText("error in next expiring");
         }
+
     }
 
     private void updateLastModifiedList() {
         mLists = UserData.get(getActivity()).getShoppingLists();
         String s = "";
 
-        if (mLists.isEmpty()) {
-            s = "create a list";
-        }
+        try {
+            if (mLists.isEmpty()) {
+                s = "create a list";
+            }
 
-        else {
-            Collections.sort(mLists);
+            else {
+                Collections.sort(mLists);
 
 
-            s = mLists.get(0).getName() + "\n";
-            List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
-            for ( ShoppingListItem item : items) {
-                s += item.getName() + "\n";
+                s = mLists.get(0).getName() + "\n";
+                List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
+                for ( ShoppingListItem item : items) {
+                    s += item.getName() + "\n";
+                }
             }
         }
+        catch (Exception e) {
+            s = "something went wrong";
+        }
+
 
 
 
