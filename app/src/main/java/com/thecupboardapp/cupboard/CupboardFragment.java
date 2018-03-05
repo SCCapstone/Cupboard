@@ -314,6 +314,7 @@ public class CupboardFragment extends Fragment {
             //next line doesn't appear to work
             holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
             holder.numPicker.setClickable(true);
+            holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
             holder.numPicker.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
