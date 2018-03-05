@@ -47,45 +47,44 @@ public class HomeFragment extends Fragment{
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+            refFood.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                    for (DataSnapshot food : dataSnapshot.getChildren()) {
+                        FoodItem foodItem = new FoodItem();
 
-        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<FoodItem> foodItems = new ArrayList<FoodItem>();
-                for (DataSnapshot food : dataSnapshot.getChildren()) {
-                    FoodItem foodItem = new FoodItem();
+                        foodItem.setFirebaseId(food.getKey());
+                        foodItem.setName(food.child("name").getValue().toString());
+                        //Log.d("getFoods", food.child("name").getValue().toString());
 
-                    foodItem.setFirebaseId(food.getKey());
-                    foodItem.setName(food.child("name").getValue().toString());
-                    //Log.d("getFoods", food.child("name").getValue().toString());
+                        try {
+                            //Log.d("getFoods", "entering try block");
+                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
+                            Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
 
-                    try{
-                        //Log.d("getFoods", "entering try block");
-                        //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
-                        Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+                            foodItem.setExpiration(expDate);
+                            Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
+                            foodItem.setDateAdded(dateAdded);
+                        } catch (Exception e) {
+                        }
 
-                        foodItem.setExpiration(expDate);
-                        Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
-                        foodItem.setDateAdded(dateAdded);
+                        foodItems.add(foodItem);
                     }
-                    catch(Exception e){
-                    }
+                    UserData.get(getContext()).setFoodItems(foodItems);
 
-                    foodItems.add(foodItem);
+                    updateNextExpiring();
+                    updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
                 }
-                UserData.get(getContext()).setFoodItems(foodItems);
 
-                updateNextExpiring();
-                updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+                }
+            });
+        }
         //FoodItem f = new FoodItem();
         //UserData.get(getActivity()).addFoodItem(f);
 

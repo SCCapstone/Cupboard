@@ -117,6 +117,7 @@ public class UserData {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         // Get shopping lists
+        if(user != null) {
         DatabaseReference ref = database.getReference("lists/" + user.getUid());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -148,46 +149,47 @@ public class UserData {
 
             }
         });
+        }
     }
 
     public void getFoodsFromFirebase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+            refFood.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                    for (DataSnapshot food : dataSnapshot.getChildren()) {
+                        FoodItem foodItem = new FoodItem();
 
-        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<FoodItem> foodItems = new ArrayList<FoodItem>();
-                for (DataSnapshot food : dataSnapshot.getChildren()) {
-                    FoodItem foodItem = new FoodItem();
+                        foodItem.setFirebaseId(food.getKey());
+                        foodItem.setName(food.child("name").getValue().toString());
+                        //Log.d("getFoods", food.child("name").getValue().toString());
 
-                    foodItem.setFirebaseId(food.getKey());
-                    foodItem.setName(food.child("name").getValue().toString());
-                    //Log.d("getFoods", food.child("name").getValue().toString());
+                        try {
+                            //Log.d("getFoods", "entering try block");
+                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
+                            Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
 
-                    try{
-                        //Log.d("getFoods", "entering try block");
-                        //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
-                        Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+                            foodItem.setExpiration(expDate);
+                            Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
+                            foodItem.setDateAdded(dateAdded);
+                        } catch (Exception e) {
+                        }
 
-                        foodItem.setExpiration(expDate);
-                        Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
-                        foodItem.setDateAdded(dateAdded);
+                        foodItems.add(foodItem);
                     }
-                    catch(Exception e){
-                    }
-
-                    foodItems.add(foodItem);
+                    mFoodItems = foodItems;
                 }
-                mFoodItems = foodItems;
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
 

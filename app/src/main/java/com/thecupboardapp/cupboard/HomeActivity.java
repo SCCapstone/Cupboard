@@ -41,8 +41,9 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         Log.d("HomeActivity", "before userdata stuff");
         UserData userData = UserData.get(this);
-        userData.updateFromFirebase(FirebaseAuth.getInstance().getCurrentUser());
-
+        if(userData != null) {
+            userData.updateFromFirebase(FirebaseAuth.getInstance().getCurrentUser());
+        }
 
         //         Set the home screen to be up first
         FragmentManager fm = getSupportFragmentManager();
