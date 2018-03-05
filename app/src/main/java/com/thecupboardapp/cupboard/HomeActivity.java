@@ -34,11 +34,15 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("HomeActivity", "Launch");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //UserData.
+        Log.d("HomeActivity", "before userdata stuff");
+        UserData userData = UserData.get(this);
+        userData.updateFromFirebase(FirebaseAuth.getInstance().getCurrentUser());
+
 
         //         Set the home screen to be up first
         FragmentManager fm = getSupportFragmentManager();

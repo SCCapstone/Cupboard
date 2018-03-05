@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.security.auth.callback.Callback;
+
 /**
  * Created by Kyle on 1/15/2018.
  */
@@ -51,7 +53,7 @@ public class UserData {
 
         //adding dummy food items
         mFoodItems = new ArrayList<FoodItem>();
-        for (int j = 0; j < 5; j++) {
+        /*for (int j = 0; j < 5; j++) {
             List<FoodItem> FoodItems = new ArrayList<FoodItem>();
             for (int i = 0; i < 10; i++) {
                 String name = "Food item - " + i;
@@ -59,7 +61,11 @@ public class UserData {
             }
 
             mFoodItems.add(new FoodItem());
-        }
+        }*/
+        mShoppingLists = new ArrayList<ShoppingList>();
+        /*for ( int j = 0; j < 5; ++j) {
+            mShoppingLists.add(new ShoppingList());
+        }*/
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -158,9 +164,13 @@ public class UserData {
 
                     foodItem.setFirebaseId(food.getKey());
                     foodItem.setName(food.child("name").getValue().toString());
+                    //Log.d("getFoods", food.child("name").getValue().toString());
 
                     try{
+                        //Log.d("getFoods", "entering try block");
+                        //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
                         Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+
                         foodItem.setExpiration(expDate);
                         Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
                         foodItem.setDateAdded(dateAdded);
@@ -180,13 +190,20 @@ public class UserData {
         });
     }
 
+
+
     public void updateFromFirebase(FirebaseUser user) {
+        Log.d("UserData", "Update from Firebase");
         getListsFromFirebase();
         getFoodsFromFirebase();
     }
 
     public List<FoodItem> getFoodItems() {
         return mFoodItems;
+    }
+
+    public void setFoodItems(List<FoodItem> foodItems) {
+        mFoodItems = foodItems;
     }
 
     public FoodItem getFoodItem(UUID id) {
