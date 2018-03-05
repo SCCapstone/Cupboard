@@ -95,4 +95,5 @@ public class ShoppingList implements Comparable<ShoppingList> {
     public void setLastModified(Long lastModified) {
         this.lastModified = lastModified;
     }
+    
 }
