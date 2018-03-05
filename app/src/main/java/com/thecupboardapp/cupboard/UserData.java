@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.security.auth.callback.Callback;
+
 /**
  * Created by Kyle on 1/15/2018.
  */
@@ -53,7 +55,7 @@ public class UserData {
 
         //adding dummy food items
         mFoodItems = new ArrayList<FoodItem>();
-        for (int j = 0; j < 5; j++) {
+        /*for (int j = 0; j < 5; j++) {
             List<FoodItem> FoodItems = new ArrayList<FoodItem>();
             for (int i = 0; i < 10; i++) {
                 String name = "Food item - " + i;
@@ -61,7 +63,11 @@ public class UserData {
             }
 
             mFoodItems.add(new FoodItem());
-        }
+        }*/
+        mShoppingLists = new ArrayList<ShoppingList>();
+        /*for ( int j = 0; j < 5; ++j) {
+            mShoppingLists.add(new ShoppingList());
+        }*/
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -113,6 +119,7 @@ public class UserData {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         // Get shopping lists
+        if(user != null) {
         DatabaseReference ref = database.getReference("lists/" + user.getUid());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -144,53 +151,67 @@ public class UserData {
 
             }
         });
+        }
     }
 
     public void getFoodsFromFirebase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+            refFood.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                    for (DataSnapshot food : dataSnapshot.getChildren()) {
+                        FoodItem foodItem = new FoodItem();
 
-        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<FoodItem> foodItems = new ArrayList<FoodItem>();
-                for (DataSnapshot food : dataSnapshot.getChildren()) {
-                    FoodItem foodItem = new FoodItem();
+                        foodItem.setFirebaseId(food.getKey());
+                        foodItem.setName(food.child("name").getValue().toString());
+                        //Log.d("getFoods", food.child("name").getValue().toString());
 
-                    foodItem.setFirebaseId(food.getKey());
-                    foodItem.setName(food.child("name").getValue().toString());
+                        try {
+                            //Log.d("getFoods", "entering try block");
+                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
+                            Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
 
-                    try{
-                        Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
-                        foodItem.setExpiration(expDate);
-                        Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
-                        foodItem.setDateAdded(dateAdded);
+                            foodItem.setExpiration(expDate);
+                            Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
+                            foodItem.setDateAdded(dateAdded);
+                        } catch (Exception e) {
+                        }
+
+                        foodItems.add(foodItem);
                     }
-                    catch(Exception e){
-                    }
-
-                    foodItems.add(foodItem);
+                    mFoodItems = foodItems;
                 }
                 mFoodItems = foodItems;
                 sortFoodItems("alphabetically");
                 //sortFoodItems("expiresSoon");
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
+
+
     public void updateFromFirebase(FirebaseUser user) {
+        Log.d("UserData", "Update from Firebase");
         getListsFromFirebase();
         getFoodsFromFirebase();
     }
 
     public List<FoodItem> getFoodItems() {
         return mFoodItems;
+    }
+
+    public void setFoodItems(List<FoodItem> foodItems) {
+        mFoodItems = foodItems;
     }
 
     public FoodItem getFoodItem(UUID id) {
