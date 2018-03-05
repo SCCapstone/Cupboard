@@ -152,14 +152,9 @@ public class FoodItem implements Comparable<FoodItem> {
     public int compareTo(FoodItem f2) {
         long l = this.getExpirationAsLong() - f2.getExpirationAsLong();
         //return Math.toIntExact(Long.parseLong(f1.getExpiration()) - Long.parseLong(f2.getExpiration()));
-        return safeLongToInt(l);
-    }
-    private static int safeLongToInt(long l) {
-        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException
-                    (l + " cannot be cast to int without changing its value.");
-        }
-        return (int) l;
+        if (l<0) return -1;
+        else if(l>0) return 1;
+        else return 0;//values equal
     }
 
 
