@@ -145,14 +145,17 @@ public class CupboardFragment extends Fragment {
             info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
 
             children[i][0] = info;
-
-
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
+            return v;
+        }
+
         View v = inflater.inflate(R.layout.cupboard_fragment, container, false);
         return v;
     }

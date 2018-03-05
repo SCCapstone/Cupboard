@@ -134,11 +134,13 @@ public class HomeActivity extends AppCompatActivity
             }
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
         } else if (id == R.id.nav_cupboard) { // Handle cupboard
-            fragment = fm.findFragmentById(R.id.cupboard_fragment);
-            if (fragment == null) {
-                fragment = new CupboardFragment();
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                fragment = fm.findFragmentById(R.id.cupboard_fragment);
+                if (fragment == null) {
+                    fragment = new CupboardFragment();
+                }
+                fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
             }
-            fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
         }
         // else if (id == R.id.nav_recipes) {
         //     fragment = fm.findFragmentById(R.id.recipes_fragment);

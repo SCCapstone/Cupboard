@@ -63,15 +63,21 @@ public class ShoppingListsFragment extends Fragment{
 
     @Override
     public void onResume() {
-        mAdapter = new ShoppingListAdapter(mShoppingLists);
-        mShoppingListsRecyclerView.setAdapter(mAdapter);
-
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            mAdapter = new ShoppingListAdapter(mShoppingLists);
+            mShoppingListsRecyclerView.setAdapter(mAdapter);
+        }
         super.onResume();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
+            return v;
+        }
+
         View v = inflater.inflate(R.layout.shopping_lists_fragment, container, false);
 
         mAddListFAB = (FloatingActionButton) v.findViewById(R.id.add_list_fab);
