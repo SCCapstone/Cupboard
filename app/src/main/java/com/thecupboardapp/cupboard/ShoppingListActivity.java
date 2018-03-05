@@ -115,10 +115,19 @@ public class ShoppingListActivity extends AppCompatActivity {
                 Map<String, Object> values = new HashMap<String, Object>();
                 values.put("name", item.getName());
                 values.put("checked", item.isChecked());
-                items.put(item.getFirebaseId(), values);
+                if (item.getFirebaseId() == null) {
+                    String id = FirebaseDatabase.getInstance().getReference().child("lists")
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child(mShoppingList.getFirebaseId()).push().getKey();
+                    items.put(id, values);
+                } else {
+                    items.put(item.getFirebaseId(), values);
+                }
+
             }
 
             list.put("items", items);
+            Log.d(TAG, list.toString());
             FirebaseDatabase.getInstance().getReference().child("lists")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .child(mShoppingList.getFirebaseId()).updateChildren(list);
