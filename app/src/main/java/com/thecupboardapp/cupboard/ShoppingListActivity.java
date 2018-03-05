@@ -74,7 +74,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStop() {
+    public void onPause() {
         Intent resultInt = new Intent();
         resultInt.putExtra("Result", "Done");
 
@@ -101,6 +101,8 @@ public class ShoppingListActivity extends AppCompatActivity {
 
             UserData.get(this).addShoppingList(mShoppingList);
             setResult(RESULT_OK, resultInt);
+            finish();
+            Log.d(TAG, "onStop: settting result ok");
 
         } else {
             Map<String, Object> list = new HashMap<String, Object>();
@@ -117,15 +119,12 @@ public class ShoppingListActivity extends AppCompatActivity {
             }
 
             list.put("items", items);
-
-            Log.d(TAG, list.toString());
-
             FirebaseDatabase.getInstance().getReference().child("lists")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .child(mShoppingList.getFirebaseId()).updateChildren(list);
         }
 
-        super.onStop();
+        super.onPause();
     }
 
     public static Intent newIntent(Context packageContext, UUID shoppingListId) {

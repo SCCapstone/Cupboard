@@ -49,11 +49,13 @@ public class ShoppingListsFragment extends Fragment{
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: resultcode: " + resultCode);
         if (requestCode == NEW_LIST_REQUEST) {
             if (resultCode == RESULT_OK) {
                 mAdapter.notifyDataSetChanged();
                 Log.d(TAG, "new list result OK!");
             } else {
+                mAdapter.notifyDataSetChanged();
                 Log.d(TAG, "new list result not ok");
             }
         }
