@@ -159,7 +159,7 @@ public class UserData {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null) {
             DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-            refFood.addValueEventListener(new ValueEventListener() {
+            refFood.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<FoodItem> foodItems = new ArrayList<FoodItem>();
@@ -184,11 +184,9 @@ public class UserData {
                         foodItems.add(foodItem);
                     }
                     mFoodItems = foodItems;
+                    sortFoodItems("alphabetically");
+                    //sortFoodItems("expiresSoon");
                 }
-                mFoodItems = foodItems;
-                sortFoodItems("alphabetically");
-                //sortFoodItems("expiresSoon");
-            }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
