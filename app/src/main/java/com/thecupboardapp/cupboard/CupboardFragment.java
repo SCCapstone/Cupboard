@@ -11,6 +11,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -20,7 +23,6 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +55,6 @@ public class CupboardFragment extends Fragment {
     private String[][] children;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
-    private Spinner mSpinner;
     private int NEW_ENTRY_REQUEST = 0;
     private int UPDATE_ENTRY_REQUEST = 1;
     long NO_EXP_DATE = 4133987474999L;
@@ -65,6 +66,37 @@ public class CupboardFragment extends Fragment {
 
         updateFoods();
         setListener();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        inflater.inflate(R.menu.cupboard_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.menu_sort_alphabetically:
+                sortAlphabetically();
+                return true;
+            case R.id.menu_sort_expires_soon:
+                sortExpiresSoon();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void sortAlphabetically(){
+        UserData.get(getActivity()).sortFoodItems("alphabetically");
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+    }
+
+    public void sortExpiresSoon(){
+        UserData.get(getActivity()).sortFoodItems("expiresSoon");
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
     }
 
     @Override
@@ -142,13 +174,6 @@ public class CupboardFragment extends Fragment {
             }
         });
 
-        mSpinner = (Spinner)view.findViewById(R.id.sort_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.sort_choices, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        mSpinner.setAdapter(adapter);
     }
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
