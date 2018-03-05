@@ -43,7 +43,6 @@ public class UserData {
         return sUserData;
     }
 
-
     private UserData(Context context) {
         mShoppingLists = new ArrayList<ShoppingList>();
         mFoodItems = new ArrayList<FoodItem>();
@@ -53,6 +52,12 @@ public class UserData {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             updateFromFirebase();
         }
+    }
+
+    public void reset() {
+        mShoppingLists = new ArrayList<ShoppingList>();
+        mFoodItems = new ArrayList<FoodItem>();
+        mRecipes = new ArrayList<String>();
     }
 
     public List<ShoppingList> getShoppingLists() {

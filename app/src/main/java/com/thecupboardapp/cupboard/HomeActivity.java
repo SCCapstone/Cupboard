@@ -112,8 +112,7 @@ public class HomeActivity extends AppCompatActivity
                 default:
                     return;
             }
-            navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            recreate();
         }
     }
 
@@ -160,6 +159,9 @@ public class HomeActivity extends AppCompatActivity
 
             navEmail.setText(R.string.nav_header_title);
             navId.setText(R.string.nav_header_subtitle);
+
+            UserData.get(this).reset();
+            recreate();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
