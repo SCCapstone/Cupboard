@@ -133,7 +133,7 @@ public class SignInActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        UserData.get(SignInActivity.this).updateFromFirebase(mAuth.getCurrentUser());
+                        UserData.get(SignInActivity.this).updateFromFirebase();
                         setResult(SIGN_IN_RESULT_CODE);
                         finish();
                     } else {
