@@ -13,6 +13,7 @@ public class ShoppingList {
     private String mFirebaseId;
     private String mName;
     private List<ShoppingListItem> mShoppingShoppingListItems;
+    private Long lastModified;
 
     public ShoppingList() {
        mId = UUID.randomUUID();
@@ -65,5 +66,13 @@ public class ShoppingList {
         if (index != -1) {
             mShoppingShoppingListItems.remove(index);
         }
+    }
+
+    public Long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Long lastModified) {
+        this.lastModified = lastModified;
     }
 }
