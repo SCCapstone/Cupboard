@@ -11,8 +11,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
@@ -62,6 +66,37 @@ public class CupboardFragment extends Fragment {
 
         updateFoods();
         setListener();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        inflater.inflate(R.menu.cupboard_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.menu_sort_alphabetically:
+                sortAlphabetically();
+                return true;
+            case R.id.menu_sort_expires_soon:
+                sortExpiresSoon();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void sortAlphabetically(){
+        UserData.get(getActivity()).sortFoodItems("alphabetically");
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+    }
+
+    public void sortExpiresSoon(){
+        UserData.get(getActivity()).sortFoodItems("expiresSoon");
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
     }
 
     @Override
@@ -138,6 +173,7 @@ public class CupboardFragment extends Fragment {
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
         });
+
     }
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {

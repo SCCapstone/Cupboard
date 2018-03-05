@@ -15,6 +15,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -183,6 +185,10 @@ public class UserData {
                     }
                     mFoodItems = foodItems;
                 }
+                mFoodItems = foodItems;
+                sortFoodItems("alphabetically");
+                //sortFoodItems("expiresSoon");
+            }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -272,5 +278,19 @@ public class UserData {
         update.put("quantity", newFoodItem.getQuantity());
         update.put("expirationAsLong", newFoodItem.getExpirationAsLong());
         ref.updateChildren(update);
+    }
+
+    public void sortFoodItems(final String sortMethod){
+        if (mFoodItems.size() > 0) {
+            Collections.sort(mFoodItems, new Comparator<FoodItem>() {
+                @Override
+                public int compare(final FoodItem object1, final FoodItem object2) {
+                    if (sortMethod.equals("alphabetically"))
+                    return object1.getName().compareToIgnoreCase(object2.getName());
+                    //sortMethod.equals("expiresSoon")
+                    else return Long.compare(object1.getExpirationAsLong(),object2.getExpirationAsLong());
+                }
+            });
+        }
     }
 }

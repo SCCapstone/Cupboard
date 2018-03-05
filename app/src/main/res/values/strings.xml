@@ -30,5 +30,7 @@
     <string name="button_create_account">Create Account</string>
     <string name="description_delete_item">Delete item</string>
 
+    <string-array name="sort_choices"><item>Alphabetically</item><item>Expiration</item></string-array>
+
 
 </resources>
