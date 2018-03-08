@@ -1,25 +1,19 @@
 package com.thecupboardapp.cupboard;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
@@ -34,11 +28,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -263,7 +252,7 @@ public class CupboardFragment extends Fragment {
                 public void onClick(View v) {
                     //Toast.makeText(v.getContext(),"Need to add to a list: " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
                     String foodName = getGroup(groupPosition).toString();
-                    final ShoppingListItem foodToAdd = new ShoppingListItem(foodName);
+                    final SListItem foodToAdd = new SListItem(foodName);
 
                     final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
                     final CharSequence choices[] = new CharSequence[lists.length+1];
@@ -277,9 +266,9 @@ public class CupboardFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //user clicked on choices[which]
-                            ShoppingList list;
+                            SList list;
                             if (which==choices.length-1) {
-                                list = new ShoppingList();
+                                list = new SList();
                                 UserData.get(getActivity()).addShoppingList(list);
                             }
                             else

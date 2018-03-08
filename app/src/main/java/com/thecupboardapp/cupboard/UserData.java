@@ -1,7 +1,6 @@
 package com.thecupboardapp.cupboard;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -11,10 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.security.auth.callback.Callback;
-
 /**
  * Created by Kyle on 1/15/2018.
  */
@@ -32,7 +26,7 @@ import javax.security.auth.callback.Callback;
 public class UserData {
     private static final String TAG = "UserData";
     private static UserData sUserData;
-    private List<ShoppingList> mShoppingLists;
+    private List<SList> mSLists;
     private List<FoodItem> mFoodItems;
     private List<String> mRecipes;
 
@@ -44,7 +38,7 @@ public class UserData {
     }
 
     private UserData(Context context) {
-        mShoppingLists = new ArrayList<ShoppingList>();
+        mSLists = new ArrayList<SList>();
         mFoodItems = new ArrayList<FoodItem>();
         mRecipes = new ArrayList<String>();
 
@@ -55,27 +49,27 @@ public class UserData {
     }
 
     public void reset() {
-        mShoppingLists = new ArrayList<ShoppingList>();
+        mSLists = new ArrayList<SList>();
         mFoodItems = new ArrayList<FoodItem>();
         mRecipes = new ArrayList<String>();
     }
 
-    public List<ShoppingList> getShoppingLists() {
-        return mShoppingLists;
+    public List<SList> getSLists() {
+        return mSLists;
     }
 
     public CharSequence[] getShoppingListsNames(){
-        CharSequence[] listsNames = new CharSequence[mShoppingLists.size()];
+        CharSequence[] listsNames = new CharSequence[mSLists.size()];
         int i = 0;
-        for (ShoppingList item : mShoppingLists){
+        for (SList item : mSLists){
             listsNames[i]=item.getName();
             i++;
         }
         return listsNames;
     }
 
-    public ShoppingList getShoppingList(UUID id) {
-        for (ShoppingList item : mShoppingLists) {
+    public SList getShoppingList(UUID id) {
+        for (SList item : mSLists) {
             if (item.getId().equals(id)) {
                 return item;
             }
@@ -83,8 +77,8 @@ public class UserData {
         return null;
     }
 
-    public ShoppingList getShoppingList(String name) {
-        for (ShoppingList item : mShoppingLists) {
+    public SList getShoppingList(String name) {
+        for (SList item : mSLists) {
             if (item.getName().equals(name)) {
                 return item;
             }
@@ -92,8 +86,8 @@ public class UserData {
         return null;
     }
 
-    public void addShoppingList(ShoppingList shoppingList){
-        mShoppingLists.add(shoppingList);
+    public void addShoppingList(SList sList){
+        mSLists.add(sList);
     }
 
     public void getListsFromFirebase() {
@@ -106,27 +100,27 @@ public class UserData {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<ShoppingList> shoppingLists = new ArrayList<ShoppingList>();
+                List<SList> sLists = new ArrayList<SList>();
                 for (DataSnapshot list : dataSnapshot.getChildren()) {
-                    ShoppingList shoppingList = new ShoppingList();
+                    SList sList = new SList();
 
-                    shoppingList.setFirebaseId(list.getKey());
-                    shoppingList.setName(list.child("name").getValue().toString());
-                    shoppingList.setLastModified((Long) list.child("lastModified").getValue());
+                    sList.setFirebaseId(list.getKey());
+                    sList.setName(list.child("name").getValue().toString());
+                    sList.setLastModified((Long) list.child("lastModified").getValue());
 
                     for (DataSnapshot item : list.child("items").getChildren()) {
-                        ShoppingListItem shoppingListItem = new ShoppingListItem();
+                        SListItem sListItem = new SListItem();
 
-                        shoppingListItem.setName(item.child("name").getValue().toString());
-                        shoppingListItem.setChecked((boolean) item.child("checked").getValue());
-                        shoppingListItem.setFirebaseId(item.getKey());
-                        shoppingListItem.setRef(item.getRef());
+                        sListItem.setName(item.child("name").getValue().toString());
+                        sListItem.setChecked((boolean) item.child("checked").getValue());
+                        sListItem.setFirebaseId(item.getKey());
+                        sListItem.setRef(item.getRef());
 
-                        shoppingList.addShoppingListItem(shoppingListItem);
+                        sList.addShoppingListItem(sListItem);
                     }
-                    shoppingLists.add(shoppingList);
+                    sLists.add(sList);
                 }
-                mShoppingLists = shoppingLists;
+                mSLists = sLists;
             }
 
             @Override

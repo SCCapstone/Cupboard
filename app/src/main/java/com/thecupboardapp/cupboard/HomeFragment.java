@@ -30,7 +30,7 @@ import java.util.Collections;
 public class HomeFragment extends Fragment{
 
     private List<FoodItem> mFoods;
-    private List<ShoppingList> mLists;
+    private List<SList> mLists;
     private TextView mNextExpiring;
     private TextView mLastModifiedList;
 
@@ -136,7 +136,7 @@ public class HomeFragment extends Fragment{
     }
 
     private void updateLastModifiedList() {
-        mLists = UserData.get(getActivity()).getShoppingLists();
+        mLists = UserData.get(getActivity()).getSLists();
         String s = "";
 
         try {
@@ -149,8 +149,8 @@ public class HomeFragment extends Fragment{
 
 
                 s = mLists.get(0).getName() + "\n";
-                List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
-                for ( ShoppingListItem item : items) {
+                List<SListItem> items = mLists.get(0).getShoppingListItems();
+                for ( SListItem item : items) {
                     s += item.getName() + "\n";
                 }
             }

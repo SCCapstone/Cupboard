@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ShoppingListActivity"
+            android:name=".SListActivity"
             android:parentActivityName=".HomeActivity">
 
         </activity>

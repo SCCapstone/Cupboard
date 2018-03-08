@@ -9,26 +9,26 @@ import java.util.UUID;
  * Created by Kyle on 1/12/2018.
  */
 
-public class ShoppingListItem {
+public class SListItem {
     @Exclude private UUID mId;
     @Exclude private String mFirebaseId;
     private String mName;
     private boolean mIsChecked;
     private DatabaseReference mRef;
 
-    public ShoppingListItem() {
+    public SListItem() {
         mId = UUID.randomUUID();
         mIsChecked = false;
         mName = "";
     }
 
-    public ShoppingListItem(String name) {
+    public SListItem(String name) {
         mId = UUID.randomUUID();
         mName = name;
         mIsChecked = false;
     }
 
-    public ShoppingListItem(String name, boolean isChecked) {
+    public SListItem(String name, boolean isChecked) {
         mId = UUID.randomUUID();
         mName = name;
         mIsChecked = isChecked;

@@ -2,7 +2,6 @@ package com.thecupboardapp.cupboard;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -27,12 +26,12 @@ import static android.app.Activity.RESULT_OK;
  * Created by Kyle on 1/12/2018.
  */
 
-public class ShoppingListsFragment extends Fragment{
-    private final String TAG = "ShoppingListsFragment";
+public class SListsFragment extends Fragment{
+    private final String TAG = "SListsFragment";
 
     private FloatingActionButton mAddListFAB;
     private RecyclerView mShoppingListsRecyclerView;
-    private List<ShoppingList> mShoppingLists;
+    private List<SList> mSLists;
     private ShoppingListAdapter mAdapter;
 
     static final int NEW_LIST_REQUEST = 1;
@@ -44,7 +43,7 @@ public class ShoppingListsFragment extends Fragment{
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.title_lists);
 
-        mShoppingLists = UserData.get(getActivity()).getShoppingLists();
+        mSLists = UserData.get(getActivity()).getSLists();
     }
 
     @Override
@@ -64,7 +63,7 @@ public class ShoppingListsFragment extends Fragment{
     @Override
     public void onResume() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            mAdapter = new ShoppingListAdapter(mShoppingLists);
+            mAdapter = new ShoppingListAdapter(mSLists);
             mShoppingListsRecyclerView.setAdapter(mAdapter);
         }
         super.onResume();
@@ -84,7 +83,7 @@ public class ShoppingListsFragment extends Fragment{
         mAddListFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ShoppingListActivity.class);
+                Intent intent = new Intent(getActivity(), SListActivity.class);
                 intent.putExtra(NEW_LIST_REQUEST_ID, NEW_LIST_REQUEST);
                 startActivityForResult(intent, NEW_LIST_REQUEST);
             }
@@ -101,9 +100,9 @@ public class ShoppingListsFragment extends Fragment{
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int pos = viewHolder.getAdapterPosition();
-                ShoppingList list = mShoppingLists.get(pos);
+                SList list = mSLists.get(pos);
 
-                mShoppingLists.remove(pos);
+                mSLists.remove(pos);
                 mAdapter.notifyItemRemoved(pos);
 
                 FirebaseDatabase.getInstance().getReference().child("lists")
@@ -123,7 +122,7 @@ public class ShoppingListsFragment extends Fragment{
 
     private void updateUI() {
         if (mAdapter == null) {
-            mAdapter = new ShoppingListAdapter(mShoppingLists);
+            mAdapter = new ShoppingListAdapter(mSLists);
             mShoppingListsRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.notifyDataSetChanged();
@@ -133,7 +132,7 @@ public class ShoppingListsFragment extends Fragment{
     private class ShoppingListHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
-        private ShoppingList mShoppingList;
+        private SList mSList;
         private TextView mTitleTextView;
 
         public ShoppingListHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -143,24 +142,24 @@ public class ShoppingListsFragment extends Fragment{
             mTitleTextView = (TextView) itemView.findViewById(R.id.shopping_list_title);
         }
 
-        public void bind(ShoppingList shoppingList) {
-            mShoppingList = shoppingList;
-            mTitleTextView.setText(mShoppingList.getName());
+        public void bind(SList sList) {
+            mSList = sList;
+            mTitleTextView.setText(mSList.getName());
         }
 
         @Override
         public void onClick(View view) {
-            Intent intent = ShoppingListActivity.newIntent(getActivity(), mShoppingList.getId());
+            Intent intent = SListActivity.newIntent(getActivity(), mSList.getId());
             startActivity(intent);
         }
     }
 
     private class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListHolder> {
 
-        private List<ShoppingList> mShoppingLists;
+        private List<SList> mSLists;
 
-        public ShoppingListAdapter(List<ShoppingList> shoppingLists) {
-            mShoppingLists = shoppingLists;
+        public ShoppingListAdapter(List<SList> sLists) {
+            mSLists = sLists;
         }
 
         @Override
@@ -171,13 +170,13 @@ public class ShoppingListsFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(ShoppingListHolder holder, int position) {
-            ShoppingList shoppingList = mShoppingLists.get(position);
-            holder.bind(shoppingList);
+            SList sList = mSLists.get(position);
+            holder.bind(sList);
         }
 
         @Override
         public int getItemCount() {
-            return mShoppingLists.size();
+            return mSLists.size();
         }
     }
 }

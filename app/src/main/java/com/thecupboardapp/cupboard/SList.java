@@ -1,8 +1,6 @@
 package com.thecupboardapp.cupboard;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,24 +9,24 @@ import java.util.UUID;
  * Edited by Jacob Strom on 3/3/2018.
  */
 
-public class ShoppingList implements Comparable<ShoppingList> {
+public class SList implements Comparable<SList> {
     private UUID mId;
     private String mFirebaseId;
     private String mName;
-    private List<ShoppingListItem> mShoppingShoppingListItems;
+    private List<SListItem> mShoppingSListItems;
     private Long lastModified;
 
-    public ShoppingList() {
+    public SList() {
        mId = UUID.randomUUID();
        mName = "New Shopping List";
-       mShoppingShoppingListItems = new ArrayList<ShoppingListItem>();
+       mShoppingSListItems = new ArrayList<SListItem>();
        lastModified = System.currentTimeMillis();
     }
 
-    public ShoppingList(String name, List<ShoppingListItem> items) {
+    public SList(String name, List<SListItem> items) {
         mId = UUID.randomUUID();
         mName = name;
-        mShoppingShoppingListItems = items;
+        mShoppingSListItems = items;
     }
 
     public UUID getId() {
@@ -52,28 +50,28 @@ public class ShoppingList implements Comparable<ShoppingList> {
     }
 
 
-    public List<ShoppingListItem> getShoppingListItems() {
-        return mShoppingShoppingListItems;
+    public List<SListItem> getShoppingListItems() {
+        return mShoppingSListItems;
     }
 
-    public void addShoppingListItem(ShoppingListItem item){
-        mShoppingShoppingListItems.add(item);
+    public void addShoppingListItem(SListItem item){
+        mShoppingSListItems.add(item);
     }
 
     public void removeShoppingListItem(UUID id) {
         int index = -1;
-        for (int i = 0; i < mShoppingShoppingListItems.size(); i++) {
-            if (id == mShoppingShoppingListItems.get(i).getId()) {
+        for (int i = 0; i < mShoppingSListItems.size(); i++) {
+            if (id == mShoppingSListItems.get(i).getId()) {
                 index = i;
             }
         }
 
         if (index != -1) {
-            mShoppingShoppingListItems.remove(index);
+            mShoppingSListItems.remove(index);
         }
     }
 
-    public int compareTo(ShoppingList s2) {
+    public int compareTo(SList s2) {
         long l = s2.getLastModified()- this.getLastModified();
         //return Math.toIntExact(Long.parseLong(f1.getExpiration()) - Long.parseLong(f2.getExpiration()));
         //return safeLongToInt(l);

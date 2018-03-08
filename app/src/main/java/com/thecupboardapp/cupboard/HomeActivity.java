@@ -11,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -152,7 +151,7 @@ public class HomeActivity extends AppCompatActivity
         else if (id == R.id.nav_lists) {
             fragment = fm.findFragmentById(R.id.lists_fragment);
             if (fragment == null) {
-                fragment = new ShoppingListsFragment();
+                fragment = new SListsFragment();
             }
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
         } else if (id == R.id.nav_logout) {

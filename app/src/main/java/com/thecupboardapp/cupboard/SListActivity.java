@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -36,11 +35,11 @@ import java.util.UUID;
 
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
 
-public class ShoppingListActivity extends AppCompatActivity {
+public class SListActivity extends AppCompatActivity {
     private static final String EXTRA_SHOPPING_LIST_ID =
             "com.thecupboardapp.cupboard.shopping_list_id";
-    private String TAG = "ShoppingListActivity";
-    private ShoppingList mShoppingList;
+    private String TAG = "SListActivity";
+    private SList mSList;
     private RecyclerView mRecyclerView;
     private ShoppingListItemAdapter mAdapter;
 
@@ -54,16 +53,16 @@ public class ShoppingListActivity extends AppCompatActivity {
         UUID shoppingListId = (UUID) getIntent().getSerializableExtra(EXTRA_SHOPPING_LIST_ID);
 
         if (shoppingListId == null) {
-            mShoppingList = new ShoppingList();
-            mShoppingList.getShoppingListItems().add(new ShoppingListItem());
+            mSList = new SList();
+            mSList.getShoppingListItems().add(new SListItem());
             setTitle("New Shopping List");
         } else {
-            mShoppingList = UserData.get(this).getShoppingList(shoppingListId);
+            mSList = UserData.get(this).getShoppingList(shoppingListId);
             setTitle(UserData.get(this).getShoppingList(shoppingListId).getName());
         }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.shopping_list_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(ShoppingListActivity.this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(SListActivity.this));
 
         updateUI();
     }
@@ -78,47 +77,47 @@ public class ShoppingListActivity extends AppCompatActivity {
         Intent resultInt = new Intent();
         resultInt.putExtra("Result", "Done");
 
-        int isNewList = getIntent().getIntExtra(ShoppingListsFragment.NEW_LIST_REQUEST_ID, 0);
+        int isNewList = getIntent().getIntExtra(SListsFragment.NEW_LIST_REQUEST_ID, 0);
 
-        if (isNewList == ShoppingListsFragment.NEW_LIST_REQUEST) {
+        if (isNewList == SListsFragment.NEW_LIST_REQUEST) {
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("lists")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .push();
 
 
-            ref.child("name").setValue(mShoppingList.getName());
+            ref.child("name").setValue(mSList.getName());
             ref.child("lastModified").setValue(System.currentTimeMillis());
-            for (ShoppingListItem item: mShoppingList.getShoppingListItems()) {
+            for (SListItem item: mSList.getShoppingListItems()) {
                 DatabaseReference listref = ref.child("items").push();
                 item.setFirebaseId(listref.getKey());
                 listref.child("name").setValue(item.getName());
                 listref.child("checked").setValue(item.isChecked());
             }
 
-            mShoppingList.setFirebaseId(ref.getKey());
-            mShoppingList.setLastModified(System.currentTimeMillis());
+            mSList.setFirebaseId(ref.getKey());
+            mSList.setLastModified(System.currentTimeMillis());
 
-            UserData.get(this).addShoppingList(mShoppingList);
+            UserData.get(this).addShoppingList(mSList);
             setResult(RESULT_OK, resultInt);
             finish();
             Log.d(TAG, "onStop: settting result ok");
 
         } else {
             Map<String, Object> list = new HashMap<String, Object>();
-            list.put("name", mShoppingList.getName());
+            list.put("name", mSList.getName());
             list.put("lastModified", System.currentTimeMillis());
-            mShoppingList.setLastModified(System.currentTimeMillis());
+            mSList.setLastModified(System.currentTimeMillis());
 
             Map<String, Object> items = new HashMap<String, Object>();
-            for (ShoppingListItem item: mShoppingList.getShoppingListItems()) {
+            for (SListItem item: mSList.getShoppingListItems()) {
                 Map<String, Object> values = new HashMap<String, Object>();
                 values.put("name", item.getName());
                 values.put("checked", item.isChecked());
                 if (item.getFirebaseId() == null) {
                     String id = FirebaseDatabase.getInstance().getReference().child("lists")
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child(mShoppingList.getFirebaseId()).push().getKey();
+                            .child(mSList.getFirebaseId()).push().getKey();
                     items.put(id, values);
                 } else {
                     items.put(item.getFirebaseId(), values);
@@ -130,14 +129,14 @@ public class ShoppingListActivity extends AppCompatActivity {
             Log.d(TAG, list.toString());
             FirebaseDatabase.getInstance().getReference().child("lists")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .child(mShoppingList.getFirebaseId()).updateChildren(list);
+                    .child(mSList.getFirebaseId()).updateChildren(list);
         }
 
         super.onPause();
     }
 
     public static Intent newIntent(Context packageContext, UUID shoppingListId) {
-        Intent intent = new Intent(packageContext, ShoppingListActivity.class);
+        Intent intent = new Intent(packageContext, SListActivity.class);
         intent.putExtra(EXTRA_SHOPPING_LIST_ID, shoppingListId);
         return intent;
     }
@@ -155,14 +154,14 @@ public class ShoppingListActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.edit_title) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             final EditText edittext = new EditText(this);
-            edittext.setText(mShoppingList.getName());
+            edittext.setText(mSList.getName());
             alert.setTitle("Title");
             alert.setView(edittext);
 
             alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    ShoppingListActivity.this.setTitle(edittext.getText().toString());
-                    mShoppingList.setName(edittext.getText().toString());
+                    SListActivity.this.setTitle(edittext.getText().toString());
+                    mSList.setName(edittext.getText().toString());
                 }
             });
 
@@ -182,7 +181,7 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     private void updateUI() {
         if (mAdapter == null) {
-            mAdapter = new ShoppingListItemAdapter(mShoppingList.getShoppingListItems());
+            mAdapter = new ShoppingListItemAdapter(mSList.getShoppingListItems());
             mRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.notifyDataSetChanged();
@@ -190,7 +189,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     }
 
     private class ShoppingListItemHolder extends RecyclerView.ViewHolder {
-        private ShoppingListItem mShoppingListItem;
+        private SListItem mSListItem;
         private EditText mShoppingListItemEditText;
         private CheckBox mShoppingListItemCheckBox;
         private ImageButton mShoppingListItemDeleteButton;
@@ -207,16 +206,16 @@ public class ShoppingListActivity extends AppCompatActivity {
             }
         }
 
-        public void bind(ShoppingListItem item) {
-            mShoppingListItem = item;
-            mShoppingListItemEditText.setText(mShoppingListItem.getName());
-            mShoppingListItemCheckBox.setChecked(mShoppingListItem.isChecked());
+        public void bind(SListItem item) {
+            mSListItem = item;
+            mShoppingListItemEditText.setText(mSListItem.getName());
+            mShoppingListItemCheckBox.setChecked(mSListItem.isChecked());
 
             // Change the value of the check in the data
             mShoppingListItemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mShoppingListItem.setChecked(isChecked);
+                    mSListItem.setChecked(isChecked);
                 }
             });
 
@@ -229,7 +228,7 @@ public class ShoppingListActivity extends AppCompatActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    mShoppingListItem.setName(s.toString());
+                    mSListItem.setName(s.toString());
                 }
 
                 @Override
@@ -243,10 +242,10 @@ public class ShoppingListActivity extends AppCompatActivity {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == IME_ACTION_NEXT) {
-                        ShoppingListItem item = new ShoppingListItem();
+                        SListItem item = new SListItem();
                         item.setFirebaseId(FirebaseDatabase.getInstance().getReference().push().getKey());
 
-                        mShoppingList.getShoppingListItems().add(getAdapterPosition() + 1, item);
+                        mSList.getShoppingListItems().add(getAdapterPosition() + 1, item);
                         mAdapter.notifyItemInserted(getAdapterPosition() + 1);
                         mRecyclerView.scrollToPosition(getAdapterPosition() + 1);
                         mIsEnterPressed = true;
@@ -259,7 +258,7 @@ public class ShoppingListActivity extends AppCompatActivity {
             mShoppingListItemDeleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mShoppingList.getShoppingListItems().remove(getAdapterPosition());
+                    mSList.getShoppingListItems().remove(getAdapterPosition());
                     mAdapter.notifyItemRemoved(getAdapterPosition());
                 }
             });
@@ -269,27 +268,27 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     private class ShoppingListItemAdapter extends RecyclerView.Adapter<ShoppingListItemHolder> {
 
-        private List<ShoppingListItem> mShoppingListItems;
+        private List<SListItem> mSListItems;
 
-        public ShoppingListItemAdapter(List<ShoppingListItem> items) {
-            mShoppingListItems = items;
+        public ShoppingListItemAdapter(List<SListItem> items) {
+            mSListItems = items;
         }
 
         @Override
         public ShoppingListItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(ShoppingListActivity.this);
+            LayoutInflater layoutInflater = LayoutInflater.from(SListActivity.this);
             return new ShoppingListItemHolder(layoutInflater, parent);
         }
 
         @Override
         public void onBindViewHolder(ShoppingListItemHolder holder, int position) {
-            ShoppingListItem item = mShoppingListItems.get(position);
+            SListItem item = mSListItems.get(position);
             holder.bind(item);
         }
 
         @Override
         public int getItemCount() {
-            return mShoppingListItems.size();
+            return mSListItems.size();
         }
 
         @Override
