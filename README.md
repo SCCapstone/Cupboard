@@ -63,3 +63,12 @@ Try some of these things:
 1. In Android Studio, with the project open, navigate to Cupboard/app/java/com.thecupboardapp.cupboard (androidTest)
 2. After building and syncing gradle, run each individual test by clicking the play button.
 3. A successful test will yeild a full green bar
+
+
+## Stetho for SQLite Database Viewing
+1. Open Chrome and navigate to `chrome://inspect/#devices`.
+2. Click **inspect** for `com.thecupboardapp.cupboard`.
+3. Navigate to **Resources** tab.
+4. Navigate to **Web SQL** and find db file.
+
+More info here: [Stetho](http://facebook.github.io/stetho/)

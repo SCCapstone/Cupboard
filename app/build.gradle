@@ -43,6 +43,9 @@ dependencies {
     testImplementation "android.arch.persistence.room:testing:1.0.0"
     /* END Room Database Dependencies */
 
+    // Stetho debug bridge for viewing SQL tables
+    compile 'com.facebook.stetho:stetho:1.5.0'
+
     /* START Firebase Dependencies */
     // Firebase Authentication
     implementation 'com.google.firebase:firebase-auth:11.8.0'
