@@ -1,4 +1,4 @@
-package com.thecupboardapp.cupboard;
+package com.thecupboardapp.cupboard.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,7 +18,6 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +26,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.thecupboardapp.cupboard.models.FoodItem;
+import com.thecupboardapp.cupboard.R;
+import com.thecupboardapp.cupboard.UserData;
+import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
 
 import java.util.List;
 
@@ -160,7 +163,7 @@ public class CupboardFragment extends Fragment {
         manEntFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ManualEntry.class);
+                Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
                 intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
@@ -237,7 +240,7 @@ public class CupboardFragment extends Fragment {
                 public void onClick(View v) {
                     //Toast.makeText(v.getContext(),"Need to update " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
                     FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                    Intent intent = new Intent(getActivity(), ManualEntry.class);
+                    Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
                     intent.putExtra("foodName", foodToUpdate.getName());
                     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
                     intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
@@ -247,41 +250,41 @@ public class CupboardFragment extends Fragment {
             });
 
             holder.addToListButton.setFocusable(false);
-            holder.addToListButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Toast.makeText(v.getContext(),"Need to add to a list: " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    String foodName = getGroup(groupPosition).toString();
-                    final SListItem foodToAdd = new SListItem(foodName);
-
-                    final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
-                    final CharSequence choices[] = new CharSequence[lists.length+1];
-                    for(int i=0;i<choices.length;i++){
-                        if (i!=choices.length-1) choices[i] = lists[i];
-                        else choices[i] = "Add to a New List";
-                    }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                    builder.setTitle("Which list would you like to add " + foodName + " to?");
-                    builder.setItems(choices, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //user clicked on choices[which]
-                            SList list;
-                            if (which==choices.length-1) {
-                                list = new SList();
-                                UserData.get(getActivity()).addShoppingList(list);
-                            }
-                            else
-                            list = UserData.get(getActivity()).getShoppingList(choices[which].toString());
-                            list.addShoppingListItem(foodToAdd);
-                            Toast.makeText(getContext(),"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    builder.show();
-
-
-                }
-            });
+            // holder.addToListButton.setOnClickListener(new View.OnClickListener() {
+            //     @Override
+            //     public void onClick(View v) {
+            //         //Toast.makeText(v.getContext(),"Need to add to a list: " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
+            //         String foodName = getGroup(groupPosition).toString();
+            //         final SListItem foodToAdd = new SListItem(foodName);
+            //
+            //         final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
+            //         final CharSequence choices[] = new CharSequence[lists.length+1];
+            //         for(int i=0;i<choices.length;i++){
+            //             if (i!=choices.length-1) choices[i] = lists[i];
+            //             else choices[i] = "Add to a New List";
+            //         }
+            //         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            //         builder.setTitle("Which list would you like to add " + foodName + " to?");
+            //         builder.setItems(choices, new DialogInterface.OnClickListener() {
+            //             @Override
+            //             public void onClick(DialogInterface dialog, int which) {
+            //                 //user clicked on choices[which]
+            //                 SList list;
+            //                 if (which==choices.length-1) {
+            //                     list = new SList();
+            //                     UserData.get(getActivity()).addShoppingList(list);
+            //                 }
+            //                 else
+            //                 list = UserData.get(getActivity()).getShoppingList(choices[which].toString());
+            //                 list.addShoppingListItem(foodToAdd);
+            //                 Toast.makeText(getContext(),"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
+            //             }
+            //         });
+            //         builder.show();
+            //
+            //
+            //     }
+            // });
 
             return convertView;
         }

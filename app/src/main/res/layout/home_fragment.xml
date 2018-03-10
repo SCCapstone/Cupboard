@@ -28,7 +28,16 @@
                 android:layout_height="match_parent"
                 android:text="last modified list"/>
 
+            <Button
+                android:id="@+id/test_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test"/>
+            <Button
+                android:id="@+id/test_button_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete DB"/>
         </LinearLayout>
-
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

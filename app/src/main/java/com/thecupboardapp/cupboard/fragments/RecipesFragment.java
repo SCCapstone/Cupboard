@@ -1,4 +1,4 @@
-package com.thecupboardapp.cupboard;
+package com.thecupboardapp.cupboard.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.thecupboardapp.cupboard.R;
 
 /**
  * Created by Kyle on 1/12/2018.

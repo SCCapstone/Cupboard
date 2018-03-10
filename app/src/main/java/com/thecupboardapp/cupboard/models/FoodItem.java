@@ -1,12 +1,9 @@
-package com.thecupboardapp.cupboard;
-
-import android.util.Log;
+package com.thecupboardapp.cupboard.models;
 
 import com.google.firebase.database.Exclude;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.UUID;
 

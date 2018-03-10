@@ -1,4 +1,4 @@
-package com.thecupboardapp.cupboard;
+package com.thecupboardapp.cupboard.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -11,13 +11,17 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.thecupboardapp.cupboard.models.FoodItem;
+import com.thecupboardapp.cupboard.R;
+import com.thecupboardapp.cupboard.UserData;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class ManualEntry extends AppCompatActivity {
+public class ManualEntryActivity extends AppCompatActivity {
 
     Calendar myCalendar = Calendar.getInstance();
     long NO_EXP_DATE = 4133987474999L;
@@ -58,7 +62,7 @@ public class ManualEntry extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                new DatePickerDialog(ManualEntry.this, date, myCalendar
+                new DatePickerDialog(ManualEntryActivity.this, date, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
@@ -95,10 +99,10 @@ public class ManualEntry extends AppCompatActivity {
                     theDateAdded.getTime();
                     theFoodToBeAdded.setDateAdded(theDateAdded);
 
-                    if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
+                    if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntryActivity.this).addFoodItem(theFoodToBeAdded);
                     else if(requestCode == UPDATE_ENTRY_REQUEST) {
-                        FoodItem oldFoodItem = UserData.get(ManualEntry.this).getFoodItem(foodName);
-                        UserData.get(ManualEntry.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
+                        FoodItem oldFoodItem = UserData.get(ManualEntryActivity.this).getFoodItem(foodName);
+                        UserData.get(ManualEntryActivity.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
                     }
                     //go to the next screen passing FoodItem in...
                     setResult(RESULT_OK, resultInt);
@@ -126,7 +130,7 @@ public class ManualEntry extends AppCompatActivity {
     }
 
     public static Intent newIntent(Context packageContext, UUID manualEntryId) {
-        Intent intent = new Intent(packageContext, ManualEntry.class);
+        Intent intent = new Intent(packageContext, ManualEntryActivity.class);
         return intent;
     }
 

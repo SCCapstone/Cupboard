@@ -9,6 +9,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.thecupboardapp.cupboard.database.Repository;
+import com.thecupboardapp.cupboard.models.FoodItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,9 +28,10 @@ import java.util.UUID;
 public class UserData {
     private static final String TAG = "UserData";
     private static UserData sUserData;
-    private List<SList> mSLists;
     private List<FoodItem> mFoodItems;
     private List<String> mRecipes;
+
+    public Repository db;
 
     public static UserData get(Context context) {
         if (sUserData == null) {
@@ -38,9 +41,17 @@ public class UserData {
     }
 
     private UserData(Context context) {
-        mSLists = new ArrayList<SList>();
         mFoodItems = new ArrayList<FoodItem>();
         mRecipes = new ArrayList<String>();
+
+        // db = Room.databaseBuilder(context, Repository.class, "cupboard_db").build();
+
+        // final com.thecupboardapp.cupboard.models.SList list = new com.thecupboardapp.cupboard.models.SList("another", 6);
+        // list.setId(1);
+
+        // db.sListDao().getAll().subscribe(lists -> {
+        //     Log.d(TAG, "UserData: size of all = " + lists.size());
+        // });
 
         // If signed in do shit
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -49,87 +60,50 @@ public class UserData {
     }
 
     public void reset() {
-        mSLists = new ArrayList<SList>();
         mFoodItems = new ArrayList<FoodItem>();
         mRecipes = new ArrayList<String>();
     }
 
-    public List<SList> getSLists() {
-        return mSLists;
-    }
-
-    public CharSequence[] getShoppingListsNames(){
-        CharSequence[] listsNames = new CharSequence[mSLists.size()];
-        int i = 0;
-        for (SList item : mSLists){
-            listsNames[i]=item.getName();
-            i++;
-        }
-        return listsNames;
-    }
-
-    public SList getShoppingList(UUID id) {
-        for (SList item : mSLists) {
-            if (item.getId().equals(id)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    public SList getShoppingList(String name) {
-        for (SList item : mSLists) {
-            if (item.getName().equals(name)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    public void addShoppingList(SList sList){
-        mSLists.add(sList);
-    }
-
-    public void getListsFromFirebase() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        // Get shopping lists
-        if(user != null) {
-        DatabaseReference ref = database.getReference("lists/" + user.getUid());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<SList> sLists = new ArrayList<SList>();
-                for (DataSnapshot list : dataSnapshot.getChildren()) {
-                    SList sList = new SList();
-
-                    sList.setFirebaseId(list.getKey());
-                    sList.setName(list.child("name").getValue().toString());
-                    sList.setLastModified((Long) list.child("lastModified").getValue());
-
-                    for (DataSnapshot item : list.child("items").getChildren()) {
-                        SListItem sListItem = new SListItem();
-
-                        sListItem.setName(item.child("name").getValue().toString());
-                        sListItem.setChecked((boolean) item.child("checked").getValue());
-                        sListItem.setFirebaseId(item.getKey());
-                        sListItem.setRef(item.getRef());
-
-                        sList.addShoppingListItem(sListItem);
-                    }
-                    sLists.add(sList);
-                }
-                mSLists = sLists;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        }
-    }
+    // public void getListsFromFirebase() {
+    //     FirebaseDatabase database = FirebaseDatabase.getInstance();
+    //     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    //
+    //     // Get shopping lists
+    //     if(user != null) {
+    //     DatabaseReference ref = database.getReference("lists/" + user.getUid());
+    //     ref.addListenerForSingleValueEvent(new ValueEventListener() {
+    //         @Override
+    //         public void onDataChange(DataSnapshot dataSnapshot) {
+    //             List<SList> sLists = new ArrayList<SList>();
+    //             for (DataSnapshot list : dataSnapshot.getChildren()) {
+    //                 SList sList = new SList();
+    //
+    //                 sList.setFirebaseId(list.getKey());
+    //                 sList.setName(list.child("name").getValue().toString());
+    //                 sList.setLastModified((Long) list.child("lastModified").getValue());
+    //
+    //                 for (DataSnapshot item : list.child("items").getChildren()) {
+    //                     SListItem sListItem = new SListItem();
+    //
+    //                     sListItem.setName(item.child("name").getValue().toString());
+    //                     sListItem.setChecked((boolean) item.child("checked").getValue());
+    //                     sListItem.setFirebaseId(item.getKey());
+    //                     sListItem.setRef(item.getRef());
+    //
+    //                     sList.addShoppingListItem(sListItem);
+    //                 }
+    //                 sLists.add(sList);
+    //             }
+    //             mSLists = sLists;
+    //         }
+    //
+    //         @Override
+    //         public void onCancelled(DatabaseError databaseError) {
+    //
+    //         }
+    //     });
+    //     }
+    // }
 
     public void getFoodsFromFirebase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -176,7 +150,7 @@ public class UserData {
 
 
     public void updateFromFirebase() {
-        getListsFromFirebase();
+        // getListsFromFirebase();
         getFoodsFromFirebase();
     }
 

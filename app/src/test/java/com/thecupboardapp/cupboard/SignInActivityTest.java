@@ -1,18 +1,10 @@
 package com.thecupboardapp.cupboard;
 
-import android.content.Context;
-import android.test.UiThreadTest;
+import org.junit.Test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static org.mockito.Mockito.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import android.content.SharedPreferences;
+
+import com.thecupboardapp.cupboard.activities.SignInActivity;
 
 import static org.junit.Assert.*;
 

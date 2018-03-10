@@ -1,4 +1,4 @@
-package com.thecupboardapp.cupboard;
+package com.thecupboardapp.cupboard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.thecupboardapp.cupboard.fragments.CupboardFragment;
+import com.thecupboardapp.cupboard.fragments.HomeFragment;
+import com.thecupboardapp.cupboard.R;
+import com.thecupboardapp.cupboard.fragments.SListsFragment;
+import com.thecupboardapp.cupboard.UserData;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
