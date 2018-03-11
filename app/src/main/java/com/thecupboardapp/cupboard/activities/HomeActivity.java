@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,61 +28,44 @@ public class HomeActivity extends AppCompatActivity
 
     private final String TAG = "HomeActivity";
 
-    private ImageView mNavHeader;
-
-    private TextView navEmail;
-    private TextView navId;
-
     static final int SIGN_IN_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("HomeActivity", "Launch");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Log.d("HomeActivity", "before userdata stuff");
-        UserData userData = UserData.get(this);
-        if(userData != null) {
-            userData.updateFromFirebase();
-        }
 
-        //         Set the home screen to be up first
+        UserData.get(this);
+
+        // Set the home screen to be up first
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction().add(R.id.fragment_container, new HomeFragment()).commit();
 
         // Set up the navigation drawer.
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         // Add the toggle to the appbar.
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View headerview = navigationView.getHeaderView(0);
-
-        navEmail = (TextView) headerview.findViewById(R.id.nav_header_email);
-        navId = (TextView) headerview.findViewById(R.id.nav_header_id);
+        NavigationView navView = findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
+        View headerView = navView.getHeaderView(0);
 
         // Set the email and id if the user is logged in
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            setHeaderText(email, id);
         }
 
-        headerview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = SignInActivity.newIntent(HomeActivity.this);
-                startActivityForResult(intent, SIGN_IN_REQUEST_CODE);
-            }
+        headerView.setOnClickListener(v -> {
+            Intent intent = SignInActivity.newIntent(HomeActivity.this);
+            startActivityForResult(intent, SIGN_IN_REQUEST_CODE);
         });
-
-        UserData.get(this);
     }
 
     @Override
@@ -124,57 +106,58 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment;
+        Fragment fragment = null;
 
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        // Navigate to the correct fragment
-        if (id == R.id.nav_home) {
-            fragment = fm.findFragmentById(R.id.home_fragment);
-            if (fragment == null) {
-                Log.d(TAG, "null fragment home fragment");
+        switch(item.getItemId()) {
+            case R.id.nav_home: {
                 fragment = new HomeFragment();
+                break;
             }
-            fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        } else if (id == R.id.nav_cupboard) { // Handle cupboard
-            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                fragment = fm.findFragmentById(R.id.cupboard_fragment);
-                if (fragment == null) {
-                    fragment = new CupboardFragment();
-                }
-                fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
+            case R.id.nav_cupboard: {
+                fragment = new CupboardFragment();
+                break;
             }
-        }
-        // else if (id == R.id.nav_recipes) {
-        //     fragment = fm.findFragmentById(R.id.recipes_fragment);
-        //     if (fragment == null) {
-        //         fragment = new RecipesFragment();
-        //     }
-        //     fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        // }
-        else if (id == R.id.nav_lists) {
-            fragment = fm.findFragmentById(R.id.lists_fragment);
-            if (fragment == null) {
+            // case R.id.nav_recipes: {
+            //     fragment = new RecipesFragment();
+            //     break;
+            // }
+            case R.id.nav_lists: {
                 fragment = new SListsFragment();
+                break;
             }
+            case R.id.nav_logout: {
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
+
+                String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                setHeaderText(email, id);
+
+                UserData.get(this).reset();
+                recreate();
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        if (fragment != null) {
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        } else if (id == R.id.nav_logout) {
-            FirebaseAuth.getInstance().signOut();
-            Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
-
-            navEmail.setText(R.string.nav_header_title);
-            navId.setText(R.string.nav_header_subtitle);
-
-            UserData.get(this).reset();
-            recreate();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private void setHeaderText(String primaryText, String secondaryText) {
+        NavigationView navView = findViewById(R.id.nav_view);
+        View headerView = navView.getHeaderView(0);
+        TextView primaryEditText = headerView.findViewById(R.id.nav_header_primary);
+        TextView secondaryEditText = headerView.findViewById(R.id.nav_header_secondary);
 
-
+        primaryEditText.setText(primaryText);
+        secondaryEditText.setText(secondaryText);
+    }
 }
