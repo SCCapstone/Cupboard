@@ -66,7 +66,7 @@ Try some of these things:
 
 
 ## Stetho for SQLite Database Viewing
-1. Open Chrome and navigate to `chrome://inspect/#devices`.
+1. Open Chrome and navigate to <a href="chrome://inspect/#devices" target="_blank">chrome://inspect/#devices</a>.
 2. Click **inspect** for `com.thecupboardapp.cupboard`.
 3. Navigate to **Resources** tab.
 4. Navigate to **Web SQL** and find db file.
