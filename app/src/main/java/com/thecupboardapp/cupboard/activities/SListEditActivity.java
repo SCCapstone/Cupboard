@@ -2,15 +2,12 @@ package com.thecupboardapp.cupboard.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,17 +17,13 @@ import android.widget.EditText;
 
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.models.SList;
-import com.thecupboardapp.cupboard.models.SListItem;
 import com.thecupboardapp.cupboard.models.SListItemAdapter;
 import com.thecupboardapp.cupboard.models.SListItemViewModel;
 import com.thecupboardapp.cupboard.models.SListViewModel;
 
-import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class SListEditActivity extends AppCompatActivity {
@@ -48,14 +41,12 @@ public class SListEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shopping_list);
+        setContentView(R.layout.activity_slist_edit);
 
         mRecyclerView = findViewById(R.id.shopping_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(SListEditActivity.this));
 
         extra = getIntent().getIntExtra(EXTRA_ID, -1);
-
-        Log.d(TAG, "onCreate: " + extra);
 
         SListItemViewModel itemViewModel = ViewModelProviders.of(this).get(SListItemViewModel.class);
         itemViewModel.SListViewModelFactory(this);

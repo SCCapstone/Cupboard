@@ -51,9 +51,6 @@ public class SListViewModel extends ViewModel{
         });
     }
 
-    public void updateOrder(List<SList> newListOrder){
-    }
-
     public void sortAlphabetical() {
         AsyncTask.execute(() -> {
             mRepository.sListDao().getAllSingle().subscribe(sLists -> {

@@ -25,8 +25,6 @@ import com.thecupboardapp.cupboard.adapters.SListAdapter;
 import com.thecupboardapp.cupboard.models.SListViewModel;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
 
-import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -45,7 +43,6 @@ public class SListsFragment extends Fragment{
 
     private FloatingActionButton mNewListFAB;
     private RecyclerView mSListsRecyclerView;
-    private List<SList> mSLists;
     private SListAdapter mAdapter;
     private SListViewModel mSListViewModel;
     private Disposable mDisposableSList;
@@ -84,16 +81,12 @@ public class SListsFragment extends Fragment{
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(sLists -> {
-                    if (mSLists == null) {
+                    if (mAdapter == null) {
                         Log.d(TAG, "onStart: first run null");
-                        mSLists = sLists;
-                        mAdapter = new SListAdapter(mSLists);
+                        mAdapter = new SListAdapter(sLists);
                         mSListsRecyclerView.setAdapter(mAdapter);
                     } else {
-                        Log.d(TAG, "onStart: subscribed data changed");
-                        mSLists.clear();
-                        mSLists.addAll(sLists);
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.swap(sLists);
                     }
         });
 
@@ -164,11 +157,8 @@ public class SListsFragment extends Fragment{
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int pos = viewHolder.getAdapterPosition();
-                SList list = mSLists.get(pos);
-
-                mSLists.remove(pos);
-                mAdapter.notifyItemRemoved(pos);
-                mSListViewModel.removeList(list);
+                SList list = mAdapter.getSLists().get(pos);
+                ViewModelProviders.of(getActivity()).get(SListViewModel.class).removeList(list);
 
                 Toast.makeText(getActivity(), "List Removed", Toast.LENGTH_SHORT).show();
             }
