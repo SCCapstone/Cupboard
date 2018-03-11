@@ -13,6 +13,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -59,6 +62,7 @@ public class SListsFragment extends Fragment{
         Log.d(TAG, "onCreateView: ");
         View v = inflater.inflate(R.layout.shopping_lists_fragment, container, false);
         getActivity().setTitle(R.string.title_lists);
+        setHasOptionsMenu(true);
 
         mNewListFAB = v.findViewById(R.id.add_list_fab);
         mSListsRecyclerView = v.findViewById(R.id.shopping_lists_recycler_view);
@@ -95,6 +99,24 @@ public class SListsFragment extends Fragment{
         });
 
         super.onStart();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.slist_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sort_alphabetically:
+                ViewModelProviders.of(getActivity()).get(SListViewModel.class).alphabetize();
+                return true;
+            default:
+                break;
+        }
+        return false;
     }
 
     @Override

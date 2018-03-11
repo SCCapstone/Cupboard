@@ -49,7 +49,7 @@ public class UserData {
         // final com.thecupboardapp.cupboard.models.SList list = new com.thecupboardapp.cupboard.models.SList("another", 6);
         // list.setId(1);
 
-        // db.sListDao().getAll().subscribe(lists -> {
+        // db.sListDao().getAllFlowable().subscribe(lists -> {
         //     Log.d(TAG, "UserData: size of all = " + lists.size());
         // });
 

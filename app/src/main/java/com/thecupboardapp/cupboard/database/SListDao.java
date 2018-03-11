@@ -20,8 +20,11 @@ import io.reactivex.Single;
 
 @Dao
 public interface SListDao {
+    @Query("SELECT * FROM slists ORDER BY `index` ASC")
+    Flowable<List<SList>> getAllFlowable();
+
     @Query("SELECT * FROM slists")
-    Flowable<List<SList>> getAll();
+    Single<List<SList>> getAllSingle();
 
     @Insert
     void insertAll(SList... sLists);
@@ -34,6 +37,12 @@ public interface SListDao {
 
     @Update
     void update(SList slist);
+
+    @Update
+    void update(SList... sLists);
+
+    @Update
+    void update(List<SList> sLists);
 
     @Query("SELECT * FROM slists WHERE id = :id LIMIT 1")
     Flowable<SList> getFlowableListById(int id);
