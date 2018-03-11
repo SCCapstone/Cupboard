@@ -5,5 +5,7 @@
     <item android:id="@+id/menu_sort_alphabetically"
         android:title="Sort Alphabetically" />
     <item android:id="@+id/menu_sort_last_modified"
-        android:title="Sort By Date Modified" />
+        android:title="Sort by Last Modified" />
+    <item android:id="@+id/menu_sort_date_created"
+        android:title="Sort by Date Created" />
 </menu>

@@ -117,6 +117,10 @@ public class SListsFragment extends Fragment{
                 ViewModelProviders.of(getActivity())
                         .get(SListViewModel.class).sort(SListViewModel.SORT_LAST_MODIFIED);
                 return true;
+            case R.id.menu_sort_date_created:
+                ViewModelProviders.of(getActivity())
+                        .get(SListViewModel.class).sort(SListViewModel.SORT_DATE_CREATED);
+                return true;
             default:
                 break;
         }

@@ -8,11 +8,9 @@ import android.util.Log;
 import com.thecupboardapp.cupboard.database.Repository;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by Kyle on 3/9/2018.
@@ -25,6 +23,7 @@ public class SListViewModel extends ViewModel{
 
     public static final int SORT_ALPHABETICAL = 0;
     public static final int SORT_LAST_MODIFIED = 1;
+    public static final int SORT_DATE_CREATED = 2;
 
     public void SListViewModelFactory(Context context) {
         mRepository = Repository.getDatabase(context);
@@ -77,6 +76,10 @@ public class SListViewModel extends ViewModel{
                     }
                     case SORT_LAST_MODIFIED: {
                         Collections.sort(sLists, (sList, t1) -> Long.compare(t1.getLastModified(), sList.getLastModified()));
+                        break;
+                    }
+                    case SORT_DATE_CREATED: {
+                        Collections.sort(sLists, (sList, t1) -> sList.getId() - t1.getId());
                         break;
                     }
                 }

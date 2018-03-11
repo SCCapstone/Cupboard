@@ -2,6 +2,7 @@ package com.thecupboardapp.cupboard.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -82,11 +83,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        FragmentManager fm = getSupportFragmentManager();
 
-        Log.d(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
-
-        // Set the header for information
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             switch (resultCode) {
                 case SignInActivity.SIGN_IN_RESULT_CODE:
@@ -104,7 +101,7 @@ public class HomeActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = null;
 
