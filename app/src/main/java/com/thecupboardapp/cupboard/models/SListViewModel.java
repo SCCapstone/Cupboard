@@ -23,6 +23,9 @@ public class SListViewModel extends ViewModel{
     private Flowable<List<SList>> mSListFlowable;
     private Repository mRepository;
 
+    public static final int SORT_ALPHABETICAL = 0;
+    public static final int SORT_LAST_MODIFIED = 1;
+
     public void SListViewModelFactory(Context context) {
         mRepository = Repository.getDatabase(context);
         mSListFlowable = mRepository.sListDao().getAllFlowable();
@@ -52,10 +55,31 @@ public class SListViewModel extends ViewModel{
     public void updateOrder(List<SList> newListOrder){
     }
 
-    public void alphabetize() {
+    public void sortAlphabetical() {
         AsyncTask.execute(() -> {
             mRepository.sListDao().getAllSingle().subscribe(sLists -> {
                 Collections.sort(sLists, (sList, t1) -> sList.getName().compareToIgnoreCase(t1.getName()));
+                for (int i = 0; i < sLists.size(); i++) {
+                    sLists.get(i).setIndex(i);
+                }
+                mRepository.sListDao().update(sLists);
+            });
+        });
+    }
+
+    public void sort(int method){
+        AsyncTask.execute(() -> {
+            mRepository.sListDao().getAllSingle().subscribe(sLists -> {
+                switch (method) {
+                    case SORT_ALPHABETICAL: {
+                        Collections.sort(sLists, (sList, t1) -> sList.getName().compareToIgnoreCase(t1.getName()));
+                        break;
+                    }
+                    case SORT_LAST_MODIFIED: {
+                        Collections.sort(sLists, (sList, t1) -> Long.compare(t1.getLastModified(), sList.getLastModified()));
+                        break;
+                    }
+                }
                 for (int i = 0; i < sLists.size(); i++) {
                     sLists.get(i).setIndex(i);
                 }

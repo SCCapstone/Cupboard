@@ -1,6 +1,5 @@
 package com.thecupboardapp.cupboard.fragments;
 
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -111,7 +110,12 @@ public class SListsFragment extends Fragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sort_alphabetically:
-                ViewModelProviders.of(getActivity()).get(SListViewModel.class).alphabetize();
+                ViewModelProviders.of(getActivity())
+                        .get(SListViewModel.class).sort(SListViewModel.SORT_ALPHABETICAL);
+                return true;
+            case R.id.menu_sort_last_modified:
+                ViewModelProviders.of(getActivity())
+                        .get(SListViewModel.class).sort(SListViewModel.SORT_LAST_MODIFIED);
                 return true;
             default:
                 break;
