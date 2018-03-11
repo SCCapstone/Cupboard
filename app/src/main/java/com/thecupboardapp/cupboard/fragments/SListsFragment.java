@@ -98,18 +98,6 @@ public class SListsFragment extends Fragment{
     }
 
     @Override
-    public void onResume() {
-        Log.d(TAG, "onResume: ");
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause: ");
-        super.onPause();
-    }
-
-    @Override
     public void onStop() {
         Log.d(TAG, "onStop: Dispose");
         mDisposableSList.dispose();

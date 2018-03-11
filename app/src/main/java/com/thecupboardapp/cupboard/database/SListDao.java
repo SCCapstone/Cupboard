@@ -35,6 +35,9 @@ public interface SListDao {
     @Update
     void update(SList slist);
 
-    @Query("SELECT * FROM slists WHERE id = :id")
-    Single<SList> getListById(int id);
+    @Query("SELECT * FROM slists WHERE id = :id LIMIT 1")
+    Flowable<SList> getFlowableListById(int id);
+
+    @Query("SELECT * FROM slists WHERE id = :id LIMIT 1")
+    Single<SList> getSingleListById(int id);
 }

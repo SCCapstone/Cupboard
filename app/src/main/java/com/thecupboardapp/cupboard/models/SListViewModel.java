@@ -1,10 +1,8 @@
 package com.thecupboardapp.cupboard.models;
 
 import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.thecupboardapp.cupboard.database.Repository;
@@ -19,7 +17,6 @@ import io.reactivex.Flowable;
 
 public class SListViewModel extends ViewModel{
     private final String TAG = "SListViewModel";
-
     private Flowable<List<SList>> mSListFlowable;
     private Repository mRepository;
 
@@ -32,8 +29,14 @@ public class SListViewModel extends ViewModel{
         return mSListFlowable;
     }
 
-    public void updateList(SList list){
-
+    public void updateListTitle(int id, String name){
+        Log.d(TAG, "updateListTitle: ");
+        AsyncTask.execute(() -> {
+            mRepository.sListDao().getSingleListById(id).subscribe(sList -> {
+                sList.setName(name);
+                mRepository.sListDao().update(sList);
+            });
+        });
     }
 
     public void removeList(SList sList){
@@ -43,12 +46,16 @@ public class SListViewModel extends ViewModel{
     }
 
     public void updateOrder(List<SList> newListOrder){
-
     }
 
     public void newList(SList sList) {
         AsyncTask.execute(() -> {
             mRepository.sListDao().insertAll(sList);
         });
+    }
+
+    public Flowable<SList> getListById(int id) {
+        Log.d(TAG, "getFlowableListById: ");
+        return mRepository.sListDao().getFlowableListById(id);
     }
 }

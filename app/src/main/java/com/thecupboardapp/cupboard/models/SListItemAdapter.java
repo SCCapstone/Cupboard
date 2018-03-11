@@ -14,7 +14,6 @@ import java.util.List;
  */
 
 public class SListItemAdapter extends RecyclerView.Adapter<SListItemHolder> {
-
     private List<SListItem> mSListItems;
 
     public SListItemAdapter(List<SListItem> items) {
@@ -46,5 +45,14 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemHolder> {
             holder.itemView.findViewById(R.id.shopping_list_item_name).requestFocus();
             SListEditActivity.mIsEnterPressed = false;
         }
+    }
+
+    public void clear() {
+        mSListItems.clear();
+    }
+
+    public void updateList(List<SListItem> sListItems) {
+        mSListItems.clear();
+        mSListItems.addAll(sListItems);
     }
 }

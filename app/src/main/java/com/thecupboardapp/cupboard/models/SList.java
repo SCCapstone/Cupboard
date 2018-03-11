@@ -61,6 +61,11 @@ public class SList {
         this.lastModified = lastModified;
     }
 
+    @Ignore
+    public void setLastModifiedNow() {
+        this.lastModified = System.currentTimeMillis();
+    }
+
     public String getFirebaseKey() {
         return firebaseKey;
     }
