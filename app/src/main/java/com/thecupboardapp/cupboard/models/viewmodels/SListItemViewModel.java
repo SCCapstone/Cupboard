@@ -1,9 +1,10 @@
-package com.thecupboardapp.cupboard.models;
+package com.thecupboardapp.cupboard.models.viewmodels;
 
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.thecupboardapp.cupboard.database.Repository;
+import com.thecupboardapp.cupboard.models.SListItem;
 
 import java.util.List;
 

@@ -65,7 +65,7 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
         private ImageButton mSListItemDeleteButton;
 
         SListItemHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.shopping_list_item_holder, parent, false));
+            super(inflater.inflate(R.layout.slist_item_holder, parent, false));
 
             mSListItemEditText = itemView.findViewById(R.id.shopping_list_item_name);
             mSListItemCheckBox = itemView.findViewById(R.id.shopping_list_item_checkbox);

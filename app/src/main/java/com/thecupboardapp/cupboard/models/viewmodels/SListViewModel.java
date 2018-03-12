@@ -1,4 +1,4 @@
-package com.thecupboardapp.cupboard.models;
+package com.thecupboardapp.cupboard.models.viewmodels;
 
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.thecupboardapp.cupboard.database.Repository;
+import com.thecupboardapp.cupboard.models.SList;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,18 +49,6 @@ public class SListViewModel extends ViewModel{
     public void removeList(SList sList){
         AsyncTask.execute(() -> {
             mRepository.sListDao().delete(sList);
-        });
-    }
-
-    public void sortAlphabetical() {
-        AsyncTask.execute(() -> {
-            mRepository.sListDao().getAllSingle().subscribe(sLists -> {
-                Collections.sort(sLists, (sList, t1) -> sList.getName().compareToIgnoreCase(t1.getName()));
-                for (int i = 0; i < sLists.size(); i++) {
-                    sLists.get(i).setIndex(i);
-                }
-                mRepository.sListDao().update(sLists);
-            });
         });
     }
 

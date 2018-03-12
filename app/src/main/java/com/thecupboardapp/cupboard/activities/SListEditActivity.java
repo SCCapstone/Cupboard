@@ -18,8 +18,8 @@ import android.widget.EditText;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.adapters.SListItemAdapter;
 import com.thecupboardapp.cupboard.models.SList;
-import com.thecupboardapp.cupboard.models.SListItemViewModel;
-import com.thecupboardapp.cupboard.models.SListViewModel;
+import com.thecupboardapp.cupboard.models.viewmodels.SListItemViewModel;
+import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

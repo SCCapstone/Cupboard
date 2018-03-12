@@ -106,7 +106,7 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
         private TextView mTitleTextView;
 
         public SListHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.shopping_list_title_holder, parent, false));
+            super(inflater.inflate(R.layout.slist_holder, parent, false));
 
             mTitleTextView = itemView.findViewById(R.id.shopping_list_title);
         }

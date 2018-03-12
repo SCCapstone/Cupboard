@@ -23,7 +23,7 @@ import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
 import com.thecupboardapp.cupboard.adapters.SListAdapter;
 import com.thecupboardapp.cupboard.models.SList;
-import com.thecupboardapp.cupboard.models.SListViewModel;
+import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -56,7 +56,7 @@ public class SListsFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
-        View v = inflater.inflate(R.layout.shopping_lists_fragment, container, false);
+        View v = inflater.inflate(R.layout.slists_fragment, container, false);
         getActivity().setTitle(R.string.title_lists);
         setHasOptionsMenu(true);
 
