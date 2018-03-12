@@ -26,10 +26,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
+import com.thecupboardapp.cupboard.models.FoodItem;
 
 import java.util.List;
 

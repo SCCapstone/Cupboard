@@ -20,10 +20,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.thecupboardapp.cupboard.R;
-import com.thecupboardapp.cupboard.models.SList;
-import com.thecupboardapp.cupboard.adapters.SListAdapter;
-import com.thecupboardapp.cupboard.models.SListViewModel;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
+import com.thecupboardapp.cupboard.adapters.SListAdapter;
+import com.thecupboardapp.cupboard.models.SList;
+import com.thecupboardapp.cupboard.models.SListViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -148,7 +148,7 @@ public class SListsFragment extends Fragment{
     }
 
     private ItemTouchHelper createItemTouchHelper() {
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;

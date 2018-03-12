@@ -13,9 +13,9 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.database.Repository;
+import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
 

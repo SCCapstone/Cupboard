@@ -8,8 +8,8 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 
-import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.R;
+import com.thecupboardapp.cupboard.models.FoodItem;
 
 import java.util.List;
 

@@ -2,7 +2,6 @@ package com.thecupboardapp.cupboard.models;
 
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
-import android.os.AsyncTask;
 
 import com.thecupboardapp.cupboard.database.Repository;
 

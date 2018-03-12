@@ -2,16 +2,20 @@ package com.thecupboardapp.cupboard.models;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
  * Created by Kyle on 3/8/2018.
  */
 
+@IgnoreExtraProperties
 @Entity(tableName = "slists")
 public class SList {
+    @Exclude
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -21,6 +25,7 @@ public class SList {
     @ColumnInfo(name = "last_modified")
     private long lastModified;
 
+    @Exclude
     @ColumnInfo(name = "firebase_key")
     private String firebaseKey;
 

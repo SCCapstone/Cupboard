@@ -3,10 +3,9 @@ package com.thecupboardapp.cupboard.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,11 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.thecupboardapp.cupboard.R;
+import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.fragments.CupboardFragment;
 import com.thecupboardapp.cupboard.fragments.HomeFragment;
-import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.fragments.SListsFragment;
-import com.thecupboardapp.cupboard.UserData;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -125,12 +124,6 @@ public class HomeActivity extends AppCompatActivity
             case R.id.nav_logout: {
                 FirebaseAuth.getInstance().signOut();
                 Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
-
-                String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                setHeaderText(email, id);
-
                 UserData.get(this).reset();
                 recreate();
                 break;

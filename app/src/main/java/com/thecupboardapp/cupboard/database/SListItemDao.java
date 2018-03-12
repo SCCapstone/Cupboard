@@ -11,7 +11,6 @@ import com.thecupboardapp.cupboard.models.SListItem;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 
 
 /**

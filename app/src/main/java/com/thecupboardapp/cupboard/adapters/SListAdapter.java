@@ -1,27 +1,30 @@
 package com.thecupboardapp.cupboard.adapters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
-import com.thecupboardapp.cupboard.fragments.SListsFragment;
-import com.thecupboardapp.cupboard.models.SListHolder;
 import com.thecupboardapp.cupboard.models.SList;
 
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Kyle on 3/9/2018.
  */
 
-public class SListAdapter extends RecyclerView.Adapter<SListHolder> {
+public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder> {
     private static final String TAG = "SListAdapter";
     private List<SList> mSLists;
 
@@ -52,15 +55,20 @@ public class SListAdapter extends RecyclerView.Adapter<SListHolder> {
     }
 
     public void swap(List<SList> sLists) {
-        SListDiffCallback callback = new SListDiffCallback(this.mSLists, sLists);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
-        mSLists.clear();
-        mSLists.addAll(sLists);
-        diffResult.dispatchUpdatesTo(this);
+        Log.d(TAG, "swap: ");
+        Observable.just(new Object())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(o -> {
+                    SListDiffCallback callback = new SListDiffCallback(this.mSLists, sLists);
+                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
+                    mSLists.clear();
+                    mSLists.addAll(sLists);
+                    diffResult.dispatchUpdatesTo(this);
+                });
     }
 
     private class SListDiffCallback extends DiffUtil.Callback {
-
         private List<SList> oldLists;
         private List<SList> newLists;
 
@@ -81,7 +89,6 @@ public class SListAdapter extends RecyclerView.Adapter<SListHolder> {
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            /* Look at this first */
             return oldLists.get(oldItemPosition).getIndex() == newLists.get(newItemPosition).getIndex();
         }
 
@@ -91,6 +98,37 @@ public class SListAdapter extends RecyclerView.Adapter<SListHolder> {
             SList newList = newLists.get(newItemPosition);
 
             return oldList.getName().equals(newList.getName());
+        }
+    }
+
+    static class SListHolder extends RecyclerView.ViewHolder {
+        private static final String TAG = "SListHolder";
+        private TextView mTitleTextView;
+
+        public SListHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.shopping_list_title_holder, parent, false));
+
+            mTitleTextView = itemView.findViewById(R.id.shopping_list_title);
+        }
+
+        public void bind(SList sList) {
+            mTitleTextView.setText(sList.getName());
+
+            mTitleTextView.setOnClickListener(view -> {
+                Intent intent = SListEditActivity.newIntent(view.getContext(), sList.getId());
+                view.getContext().startActivity(intent);
+            });
+
+            mTitleTextView.setOnLongClickListener(view -> {
+                String name = mTitleTextView.getText().toString();
+                String[] options = {"option 1"};
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle(String.format("\"%s\" Options", name));
+                builder.setItems(options, (dialog, which) -> Log.d(TAG, "onClick:"));
+                builder.show();
+                return true;
+            });
         }
     }
 }
