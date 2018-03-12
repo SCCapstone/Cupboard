@@ -32,7 +32,7 @@ public interface SListItemDao {
     void deleteAll();
 
     @Update
-    void update(SListItem sListItem);
+    void update(List<SListItem> sListItems);
 
     @Query("SELECT * FROM slist_items WHERE parent_id = :id")
     Flowable<List<SListItem>> getSListItemById(int id);

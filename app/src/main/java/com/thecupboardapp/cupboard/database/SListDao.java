@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.thecupboardapp.cupboard.models.SList;
+import com.thecupboardapp.cupboard.models.SListItem;
 
 import java.util.List;
 

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.thecupboardapp.cupboard.database.Repository;
 import com.thecupboardapp.cupboard.models.SList;
+import com.thecupboardapp.cupboard.models.SListItem;
 
 import java.util.Collections;
 import java.util.List;

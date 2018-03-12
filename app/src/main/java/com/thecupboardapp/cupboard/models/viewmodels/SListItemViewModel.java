@@ -2,6 +2,7 @@ package com.thecupboardapp.cupboard.models.viewmodels;
 
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.os.AsyncTask;
 
 import com.thecupboardapp.cupboard.database.Repository;
 import com.thecupboardapp.cupboard.models.SListItem;
@@ -26,5 +27,11 @@ public class SListItemViewModel extends ViewModel{
 
     public Flowable<List<SListItem>> getListItemsById(int id){
         return mRepository.sListItemDao().getSListItemById(id);
+    }
+
+    public void update(List<SListItem> sListItems) {
+        AsyncTask.execute(() -> {
+            mRepository.sListItemDao().update(sListItems);
+        });
     }
 }

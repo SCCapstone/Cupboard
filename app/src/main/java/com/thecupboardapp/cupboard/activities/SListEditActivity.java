@@ -2,6 +2,7 @@ package com.thecupboardapp.cupboard.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -52,6 +53,7 @@ public class SListEditActivity extends AppCompatActivity {
         itemViewModel.SListViewModelFactory(this);
         Disposable disposableItems = itemViewModel.getListItemsById(extra)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(sListItems -> {
                     if (mAdapter == null) {
                         Log.d(TAG, "onCreate: null adapter");
@@ -80,11 +82,6 @@ public class SListEditActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        if (extra == -1 ) {
-            SListViewModel mSListViewModel = ViewModelProviders.of(this).get(SListViewModel.class);
-            mSListViewModel.newList(new SList("activity list", 99));
-        }
-
         mDisposables.dispose();
         super.onStop();
     }
@@ -117,6 +114,22 @@ public class SListEditActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Save Changes?");
+
+        alert.setPositiveButton("YES", (dialog, whichButton) -> {
+            ViewModelProviders.of(this).get(SListItemViewModel.class).update(mAdapter.getSListItems());
+            super.onBackPressed();
+        });
+
+        alert.setNeutralButton("BACK", (dialogInterface, i) -> {});
+        alert.setNegativeButton("NO", (dialog, whichButton) -> super.onBackPressed());
+        alert.show();
     }
 
     private void editTitle(){
