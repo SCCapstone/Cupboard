@@ -144,11 +144,11 @@ public class CupboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
+            View v = inflater.inflate(R.layout.fragment_sign_in, container, false);
             return v;
         }
 
-        View v = inflater.inflate(R.layout.cupboard_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_cupboard, container, false);
         return v;
     }
 

@@ -8,7 +8,7 @@
     android:orientation="horizontal">
 
     <CheckBox
-        android:id="@+id/shopping_list_item_checkbox"
+        android:id="@+id/slist_item_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -19,7 +19,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/shopping_list_item_name"
+        android:labelFor="@id/slist_item_name"
+        android:id="@+id/slist_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
 
@@ -29,19 +30,20 @@
         android:imeOptions="actionNext"
         android:inputType="text"
         android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="@+id/shopping_list_item_checkbox"
-        app:layout_constraintEnd_toStartOf="@+id/shopping_list_item_delete"
-        app:layout_constraintStart_toEndOf="@+id/shopping_list_item_checkbox"
-        app:layout_constraintTop_toTopOf="@+id/shopping_list_item_checkbox"
+        app:layout_constraintBottom_toBottomOf="@+id/slist_item_checkbox"
+        app:layout_constraintEnd_toStartOf="@+id/slist_item_delete"
+        app:layout_constraintStart_toEndOf="@+id/slist_item_checkbox"
+        app:layout_constraintTop_toTopOf="@+id/slist_item_checkbox"
         app:layout_constraintVertical_bias="0.571" />
 
     <ImageButton xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/shopping_list_item_delete"
+        android:id="@+id/slist_item_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:background="@drawable/ic_clear"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/shopping_list_item_name" />
+        app:layout_constraintTop_toTopOf="@+id/slist_item_name"
+        android:contentDescription="@string/icon_delete_description" />
 
 </android.support.constraint.ConstraintLayout>

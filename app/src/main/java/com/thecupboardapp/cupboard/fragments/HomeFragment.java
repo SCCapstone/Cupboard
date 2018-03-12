@@ -45,12 +45,7 @@ public class HomeFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
-            return v;
-        }
-
-        View v = inflater.inflate(R.layout.home_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

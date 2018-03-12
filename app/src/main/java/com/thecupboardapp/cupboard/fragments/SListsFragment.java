@@ -56,7 +56,7 @@ public class SListsFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
-        View v = inflater.inflate(R.layout.slists_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_slists, container, false);
         getActivity().setTitle(R.string.title_lists);
         setHasOptionsMenu(true);
 
