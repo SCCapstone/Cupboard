@@ -36,6 +36,9 @@ public class SListItem {
     @ColumnInfo(name = "parent_id")
     private int parentId;
 
+    @ColumnInfo(name = "index")
+    private int index;
+
     public SListItem() {
     }
 
@@ -48,6 +51,12 @@ public class SListItem {
         this.name = name;
         this.checked = checked;
         this.firebaseKey = firebaseId;
+    }
+
+    public SListItem(String name, Boolean checked, int index) {
+        this.name = name;
+        this.checked = checked;
+        this.index = index;
     }
 
     public int getId() {
@@ -90,6 +99,14 @@ public class SListItem {
         this.parentId = parentId;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     @Ignore
     @Override
     public String toString() {
@@ -101,5 +118,4 @@ public class SListItem {
 
         return str;
     }
-
 }

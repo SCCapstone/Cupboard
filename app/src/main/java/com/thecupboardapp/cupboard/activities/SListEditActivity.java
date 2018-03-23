@@ -127,7 +127,11 @@ public class SListEditActivity extends AppCompatActivity {
             super.onBackPressed();
         });
 
-        alert.setNeutralButton("BACK", (dialogInterface, i) -> {});
+        alert.setNeutralButton("DEBUG", (dialogInterface, i) -> {
+            SList sList = new SList("debug test", 20);
+            ViewModelProviders.of(this).get(SListViewModel.class).newList(sList);
+            super.onBackPressed();
+        });
         alert.setNegativeButton("NO", (dialog, whichButton) -> super.onBackPressed());
         alert.show();
     }
@@ -135,7 +139,7 @@ public class SListEditActivity extends AppCompatActivity {
     private void editTitle(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-        View v = getLayoutInflater().inflate(R.layout.dialog_slist_edit_title,null);
+        View v = getLayoutInflater().inflate(R.layout.dialog_slist_edit_title, null);
         EditText text = v.findViewById(R.id.slist_edit_title);
 
         alert.setTitle("Title");

@@ -19,16 +19,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:labelFor="@id/slist_item_name"
         android:id="@+id/slist_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:background="@null"
         android:imeOptions="actionNext"
         android:inputType="text"
+        android:labelFor="@id/slist_item_name"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@+id/slist_item_checkbox"
         app:layout_constraintEnd_toStartOf="@+id/slist_item_delete"
