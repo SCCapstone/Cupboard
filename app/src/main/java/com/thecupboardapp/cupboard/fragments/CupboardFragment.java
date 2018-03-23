@@ -56,8 +56,10 @@ public class CupboardFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        updateFoods();
-        setListener();
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+            updateFoods();
+            setListener();
+        }
         setHasOptionsMenu(true);
     }
 
@@ -107,18 +109,21 @@ public class CupboardFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
-            }
+        DatabaseReference refFood;
+        if (user!=null){
+            refFood = database.getReference("foods/" + user.getUid());
+            refFood.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     public void updateFoods() {
@@ -156,10 +161,13 @@ public class CupboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new ExpandableListAdapter(groups, children);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
-        lv.setAdapter(mAdapter);
-        lv.setGroupIndicator(null);
+        if (lv!=null){
+            lv.setAdapter(mAdapter);
+            lv.setGroupIndicator(null);
+        }
 
         manEntFAB = (FloatingActionButton)view.findViewById(R.id.add_food_fab);
+        if(manEntFAB!=null)
         manEntFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
