@@ -3,14 +3,26 @@ package com.thecupboardapp.cupboard;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -143,10 +155,74 @@ public class ManualEntry extends AppCompatActivity {
 
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.manual_entry_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.action_camera:
+                IntentIntegrator integrator = new IntentIntegrator(this);
+                integrator.initiateScan();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void updateLabel() {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         EditText edittext= (EditText) findViewById(R.id.editText5);
         edittext.setText(sdf.format(myCalendar.getTime()));
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+            String[] upcArr = scanResult.toString().split("\n");
+            String[] theUpc = upcArr[1].split(": ");
+            Log.i("theTag",theUpc[1]);
+            if (android.os.Build.VERSION.SDK_INT > 9)
+            {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            };
+            String theHTML = "";
+            try {
+                theHTML = getHTML("https://api.upcitemdb.com/prod/trial/lookup?upc=" + theUpc[1]);
+                Log.i("theHTML",theHTML);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String[] theHTMLarr = theHTML.split(":");
+            if(theHTMLarr[1].split(",")[0].replaceAll("\"","") != "INVALID_UPC") {
+                String[] theNamearr = theHTMLarr[6].split(",");
+                String theName = theNamearr[0];
+                theName = theName.replaceAll("\"", "");
+                EditText edittext= (EditText) findViewById(R.id.editText3);
+                edittext.setText(theName);
+                Log.i("tag2", theName);
+            }
+        }
+        // else continue with any other code you need in the method
+    }
+
+    public static String getHTML(String urlToRead) throws Exception {
+        StringBuilder result = new StringBuilder();
+        URL url = new URL(urlToRead);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+        rd.close();
+        return result.toString();
     }
 }

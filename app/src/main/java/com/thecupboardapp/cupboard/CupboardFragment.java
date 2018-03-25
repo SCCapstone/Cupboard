@@ -12,8 +12,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
@@ -63,6 +67,37 @@ public class CupboardFragment extends Fragment {
 
         updateFoods();
         setListener();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        inflater.inflate(R.menu.cupboard_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.menu_sort_alphabetically:
+                sortAlphabetically();
+                return true;
+            case R.id.menu_sort_expires_soon:
+                sortExpiresSoon();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void sortAlphabetically(){
+        UserData.get(getActivity()).sortFoodItems("alphabetically");
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+    }
+
+    public void sortExpiresSoon(){
+        UserData.get(getActivity()).sortFoodItems("expiresSoon");
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
     }
 
     @Override
@@ -111,14 +146,17 @@ public class CupboardFragment extends Fragment {
             info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
 
             children[i][0] = info;
-
-
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
+            return v;
+        }
+
         View v = inflater.inflate(R.layout.cupboard_fragment, container, false);
         return v;
     }
@@ -139,6 +177,7 @@ public class CupboardFragment extends Fragment {
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
         });
+
     }
 
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -278,6 +317,7 @@ public class CupboardFragment extends Fragment {
             holder.numPicker.setMaxValue(1000);
             holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
             holder.numPicker.setClickable(true);
+
             holder.numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                    FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
@@ -286,6 +326,8 @@ public class CupboardFragment extends Fragment {
                }
             });
             /*holder.numPicker.setOnClickListener(new View.OnClickListener() {
+            holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+            holder.numPicker.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final Dialog d = new Dialog(getContext());

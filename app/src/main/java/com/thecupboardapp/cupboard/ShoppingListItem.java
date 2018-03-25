@@ -1,6 +1,7 @@
 package com.thecupboardapp.cupboard;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 
 import java.util.UUID;
 
@@ -9,8 +10,8 @@ import java.util.UUID;
  */
 
 public class ShoppingListItem {
-    private UUID mId;
-    private String mFirebaseId;
+    @Exclude private UUID mId;
+    @Exclude private String mFirebaseId;
     private String mName;
     private boolean mIsChecked;
     private DatabaseReference mRef;

@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity
         Log.d("HomeActivity", "before userdata stuff");
         UserData userData = UserData.get(this);
         if(userData != null) {
-            userData.updateFromFirebase(FirebaseAuth.getInstance().getCurrentUser());
+            userData.updateFromFirebase();
         }
 
         //         Set the home screen to be up first
@@ -94,13 +94,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fm = getSupportFragmentManager();
@@ -119,24 +112,8 @@ public class HomeActivity extends AppCompatActivity
                 default:
                     return;
             }
-            navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            recreate();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -157,18 +134,22 @@ public class HomeActivity extends AppCompatActivity
             }
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
         } else if (id == R.id.nav_cupboard) { // Handle cupboard
-            fragment = fm.findFragmentById(R.id.cupboard_fragment);
-            if (fragment == null) {
-                fragment = new CupboardFragment();
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                fragment = fm.findFragmentById(R.id.cupboard_fragment);
+                if (fragment == null) {
+                    fragment = new CupboardFragment();
+                }
+                fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
             }
-            fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        } else if (id == R.id.nav_recipes) {
-            fragment = fm.findFragmentById(R.id.recipes_fragment);
-            if (fragment == null) {
-                fragment = new RecipesFragment();
-            }
-            fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-        } else if (id == R.id.nav_lists) {
+        }
+        // else if (id == R.id.nav_recipes) {
+        //     fragment = fm.findFragmentById(R.id.recipes_fragment);
+        //     if (fragment == null) {
+        //         fragment = new RecipesFragment();
+        //     }
+        //     fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        // }
+        else if (id == R.id.nav_lists) {
             fragment = fm.findFragmentById(R.id.lists_fragment);
             if (fragment == null) {
                 fragment = new ShoppingListsFragment();
@@ -180,6 +161,9 @@ public class HomeActivity extends AppCompatActivity
 
             navEmail.setText(R.string.nav_header_title);
             navId.setText(R.string.nav_header_subtitle);
+
+            UserData.get(this).reset();
+            recreate();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
