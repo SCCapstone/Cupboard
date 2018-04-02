@@ -120,6 +120,7 @@ public class UserData {
 
                         foodItem.setFirebaseId(food.getKey());
                         foodItem.setName(food.child("name").getValue().toString());
+                        foodItem.setQuantity(Float.parseFloat(food.child("quantity").getValue().toString()));
                         //Log.d("getFoods", food.child("name").getValue().toString());
 
                         try {

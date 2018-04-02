@@ -4,6 +4,7 @@
     <item
         android:title="SortSpinner"
         android:icon="@drawable/ic_menu_manage"
+        android:iconTint="#FFFFFF"
         app:showAsAction="ifRoom">
         <menu>
             <item
