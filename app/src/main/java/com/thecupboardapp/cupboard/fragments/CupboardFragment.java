@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
@@ -307,18 +308,14 @@ public class CupboardFragment extends Fragment {
                 holder = new ViewHolder();
                 holder.text = (TextView) convertView.findViewById(R.id.lblListHeader);
                 holder.deleteButton = (ImageButton) convertView.findViewById(R.id.delete_food_button);
-                holder.numPicker = (NumberPicker) convertView.findViewById(R.id.numPicker);
+                holder.quantityButton = (Button) convertView.findViewById(R.id.quantity_button);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.numPicker.setMinValue(1);
-            holder.numPicker.setMaxValue(1000);
-            //next line doesn't appear to work
-            holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
-            holder.numPicker.setClickable(true);
-            holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-            holder.numPicker.setOnClickListener(new View.OnClickListener() {
+            holder.quantityButton.setFocusable(false);
+            holder.quantityButton.setText(String.valueOf((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity())));
+            holder.quantityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final NumberPicker numberPicker = new NumberPicker(getActivity());
@@ -332,6 +329,7 @@ public class CupboardFragment extends Fragment {
                     };
                     numberPicker.setMinValue(1);
                     numberPicker.setMaxValue(1000);
+                    numberPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setView(numberPicker);
                     builder.setTitle("Change the quantity");
@@ -346,7 +344,6 @@ public class CupboardFragment extends Fragment {
                     builder.show();
                 }
             });
-            holder.numPicker.setFocusable(false);
             holder.text.setText(getGroup(groupPosition).toString());
             holder.deleteButton.setFocusable(false);
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -370,7 +367,7 @@ public class CupboardFragment extends Fragment {
         private class ViewHolder {
             TextView text;
             ImageButton deleteButton;
-            NumberPicker numPicker;
+            Button quantityButton;
             ImageButton editButton;
             ImageButton addToListButton;
         }
