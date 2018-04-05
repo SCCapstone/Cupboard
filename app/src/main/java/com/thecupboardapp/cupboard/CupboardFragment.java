@@ -22,8 +22,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +50,8 @@ import static android.app.Activity.RESULT_OK;
  * Created by Kyle on 1/12/2018.
  */
 
-public class CupboardFragment extends Fragment {
+public class CupboardFragment extends Fragment
+implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     View rootView;
     ExpandableListView lv;
@@ -74,6 +77,42 @@ public class CupboardFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.cupboard_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnCloseListener(this);
+        /*
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+        });*/
+
+    }
+
+    @Override
+    public boolean onClose() {
+        mAdapter.filterData("");
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        mAdapter.filterData(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        mAdapter.filterData(query);
+        return false;
     }
 
     @Override
@@ -408,6 +447,38 @@ public class CupboardFragment extends Fragment {
         @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
+        }
+
+        public void filterData(String query){
+
+            query = query.toLowerCase();
+            Log.v("MyListAdapter", String.valueOf(groups.length));
+            String[] newGroups = new String[groups.length];
+            ArrayList<String> newGroupsList = new ArrayList<>();
+
+            if(query.isEmpty()){
+                newGroups = groups;
+            }
+            else {
+
+                for(String foodName: groups){
+
+                    if(foodName.toLowerCase().contains(query)){
+                        newGroupsList.add(foodName);
+                    }
+
+                }
+                newGroups = new String[newGroupsList.size()];
+                for(int i=0;i<newGroupsList.size();i++){
+                    newGroups[i] = newGroupsList.get(i);
+                }
+
+            }
+
+            Log.v("MyListAdapter", String.valueOf(newGroupsList.size()));
+            groups = newGroups;
+            notifyDataSetChanged();
+
         }
 
         private class ViewHolder {
