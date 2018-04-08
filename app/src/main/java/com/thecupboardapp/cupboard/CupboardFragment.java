@@ -56,6 +56,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     View rootView;
     ExpandableListView lv;
     private String[] groups;
+    private String[] fullGroups;
     private String[][] children;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
@@ -145,7 +146,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             if (resultCode == RESULT_OK) {
                 updateFoods();
                 //mAdapter.notifyDataSetChanged();
-                mAdapter = new ExpandableListAdapter(groups, children);
+                mAdapter = new ExpandableListAdapter(groups, fullGroups, children);
                 lv.setAdapter(mAdapter);
             }
         }
@@ -173,10 +174,12 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
+        fullGroups = new String[mFoodItems.size()];
         children = new String[mFoodItems.size()][1];
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
+            fullGroups[i] = groups[i];
 
             String info = "Expires: ";
             if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE) {info = info.concat("Never");}
@@ -202,7 +205,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new ExpandableListAdapter(groups, children);
+        mAdapter = new ExpandableListAdapter(groups, fullGroups, children);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
         lv.setAdapter(mAdapter);
         lv.setGroupIndicator(null);
@@ -222,10 +225,12 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
         private final LayoutInflater inf;
         private String[] groups;
+        private String[] fullGroups;
         private String[][] children;
 
-        public ExpandableListAdapter(String[] groups, String[][] children) {
+        public ExpandableListAdapter(String[] groups, String[] fullGroups, String[][] children) {
             this.groups = groups;
+            this.fullGroups = fullGroups;
             this.children = children;
             inf = LayoutInflater.from(getActivity());
         }
@@ -457,11 +462,12 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             ArrayList<String> newGroupsList = new ArrayList<>();
 
             if(query.isEmpty()){
-                newGroups = groups;
+                updateFoods();
+                newGroups = fullGroups;
             }
             else {
 
-                for(String foodName: groups){
+                for(String foodName: fullGroups){
 
                     if(foodName.toLowerCase().contains(query)){
                         newGroupsList.add(foodName);
