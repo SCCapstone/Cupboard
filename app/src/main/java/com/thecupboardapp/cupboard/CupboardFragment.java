@@ -22,8 +22,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,11 +50,13 @@ import static android.app.Activity.RESULT_OK;
  * Created by Kyle on 1/12/2018.
  */
 
-public class CupboardFragment extends Fragment {
+public class CupboardFragment extends Fragment
+implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     View rootView;
     ExpandableListView lv;
     private String[] groups;
+    private String[] fullGroups;
     private String[][] children;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
@@ -74,6 +78,42 @@ public class CupboardFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.cupboard_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnCloseListener(this);
+        /*
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+        });*/
+
+    }
+
+    @Override
+    public boolean onClose() {
+        mAdapter.filterData("");
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        mAdapter.filterData(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        mAdapter.filterData(query);
+        return false;
     }
 
     @Override
@@ -106,7 +146,7 @@ public class CupboardFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 updateFoods();
                 //mAdapter.notifyDataSetChanged();
-                mAdapter = new ExpandableListAdapter(groups, children);
+                mAdapter = new ExpandableListAdapter(groups, fullGroups, children);
                 lv.setAdapter(mAdapter);
             }
         }
@@ -134,10 +174,12 @@ public class CupboardFragment extends Fragment {
         getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
+        fullGroups = new String[mFoodItems.size()];
         children = new String[mFoodItems.size()][1];
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
+            fullGroups[i] = groups[i];
 
             String info = "Expires: ";
             if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE) {info = info.concat("Never");}
@@ -163,7 +205,7 @@ public class CupboardFragment extends Fragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new ExpandableListAdapter(groups, children);
+        mAdapter = new ExpandableListAdapter(groups, fullGroups, children);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
         lv.setAdapter(mAdapter);
         lv.setGroupIndicator(null);
@@ -183,10 +225,12 @@ public class CupboardFragment extends Fragment {
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
         private final LayoutInflater inf;
         private String[] groups;
+        private String[] fullGroups;
         private String[][] children;
 
-        public ExpandableListAdapter(String[] groups, String[][] children) {
+        public ExpandableListAdapter(String[] groups, String[] fullGroups, String[][] children) {
             this.groups = groups;
+            this.fullGroups = fullGroups;
             this.children = children;
             inf = LayoutInflater.from(getActivity());
         }
@@ -408,6 +452,39 @@ public class CupboardFragment extends Fragment {
         @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
+        }
+
+        public void filterData(String query){
+
+            query = query.toLowerCase();
+            Log.v("MyListAdapter", String.valueOf(groups.length));
+            String[] newGroups = new String[groups.length];
+            ArrayList<String> newGroupsList = new ArrayList<>();
+
+            if(query.isEmpty()){
+                updateFoods();
+                newGroups = fullGroups;
+            }
+            else {
+
+                for(String foodName: fullGroups){
+
+                    if(foodName.toLowerCase().contains(query)){
+                        newGroupsList.add(foodName);
+                    }
+
+                }
+                newGroups = new String[newGroupsList.size()];
+                for(int i=0;i<newGroupsList.size();i++){
+                    newGroups[i] = newGroupsList.get(i);
+                }
+
+            }
+
+            Log.v("MyListAdapter", String.valueOf(newGroupsList.size()));
+            groups = newGroups;
+            notifyDataSetChanged();
+
         }
 
         private class ViewHolder {
