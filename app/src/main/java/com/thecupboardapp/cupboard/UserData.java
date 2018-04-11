@@ -152,7 +152,7 @@ public class UserData {
 
                         foodItem.setFirebaseId(food.getKey());
                         foodItem.setName(food.child("name").getValue().toString());
-                        //Log.d("getFoods", food.child("name").getValue().toString());
+                        if(food.hasChild("category")) foodItem.setCategory(food.child("category").getValue().toString());
 
                         try {
                             //Log.d("getFoods", "entering try block");
@@ -261,6 +261,7 @@ public class UserData {
         update.put("name", newFoodItem.getName());
         update.put("quantity", newFoodItem.getQuantity());
         update.put("expirationAsLong", newFoodItem.getExpirationAsLong());
+        update.put("category", newFoodItem.getCategory());
         ref.updateChildren(update);
     }
 

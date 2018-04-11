@@ -19,6 +19,18 @@
             <item
                 android:id="@+id/menu_sort_expires_soon"
                 android:title="Sort by Expiration" />
+            <item
+                android:id="@+id/menu_show_pantry"
+                android:title="Show Pantry" />
+            <item
+                android:id="@+id/menu_show_fridge"
+                android:title="Show Fridge" />
+            <item
+                android:id="@+id/menu_show_freezer"
+                android:title="Show Freezer" />
+            <item
+                android:id="@+id/menu_show_all"
+                android:title="Show All" />
         </menu>
     </item>
 </menu>
