@@ -1,11 +1,8 @@
 package com.thecupboardapp.cupboard;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -17,12 +14,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.support.v7.widget.SearchView;
@@ -37,11 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -54,13 +43,16 @@ public class CupboardFragment extends Fragment
 implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     ExpandableListView lv;
+    private String mCategoryShown = "";
     private String[] groups;
     private String[] fullGroups;
     private String[][] children;
+    private String[][] fullChildren;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
     private int NEW_ENTRY_REQUEST = 0;
     private int UPDATE_ENTRY_REQUEST = 1;
+    private int SHOW_REQUEST = 2;
     long NO_EXP_DATE = 4133987474999L;
     private List<FoodItem> mFoodItems;
 
@@ -81,7 +73,6 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
-
     }
 
     @Override
@@ -111,6 +102,18 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             case R.id.menu_sort_expires_soon:
                 sortExpiresSoon();
                 return true;
+            case R.id.menu_show_pantry:
+                showByCategory("Pantry");
+                return true;
+            case R.id.menu_show_fridge:
+                showByCategory("Fridge");
+                return true;
+            case R.id.menu_show_freezer:
+                showByCategory("Freezer");
+                return true;
+            case R.id.menu_show_all:
+                showAll();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -126,13 +129,45 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
     }
 
+    public void showByCategory(String aCategory){
+        String[] newGroups;
+        ArrayList<FoodItem> newGroupsList = new ArrayList<>();
+
+        for(FoodItem item: mFoodItems){
+
+            if(item.getCategory().equals(aCategory)){
+                newGroupsList.add(item);
+            }
+
+        }
+        newGroups = new String[newGroupsList.size()];
+        for(int i=0;i<newGroupsList.size();i++){
+            newGroups[i] = newGroupsList.get(i).getName();
+        }
+
+        mCategoryShown = aCategory;
+        groups = newGroups;
+        onActivityResult(SHOW_REQUEST,RESULT_OK,null);
+    }
+
+    public void showAll(){
+        mCategoryShown = "";
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 updateFoods();
                 //mAdapter.notifyDataSetChanged();
-                mAdapter = new ExpandableListAdapter(groups, fullGroups, children);
+                mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
+                lv.setAdapter(mAdapter);
+            }
+        }
+        else if(requestCode == SHOW_REQUEST){
+            if (resultCode == RESULT_OK) {
+                mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
                 lv.setAdapter(mAdapter);
             }
         }
@@ -162,6 +197,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         groups = new String[mFoodItems.size()];
         fullGroups = new String[mFoodItems.size()];
         children = new String[mFoodItems.size()][1];
+        fullChildren = new String[mFoodItems.size()][1];
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
@@ -174,7 +210,9 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
 
             children[i][0] = info;
+            fullChildren[i][0] = children[i][0];
         }
+        if(!mCategoryShown.equals("")) showByCategory(mCategoryShown);
     }
 
     @Nullable
@@ -191,7 +229,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new ExpandableListAdapter(groups, fullGroups, children);
+        mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
         lv.setAdapter(mAdapter);
         lv.setGroupIndicator(null);
@@ -213,11 +251,13 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         private String[] groups;
         private String[] fullGroups;
         private String[][] children;
+        private String[][] fullChildren;
 
-        public ExpandableListAdapter(String[] groups, String[] fullGroups, String[][] children) {
+        public ExpandableListAdapter(String[] groups, String[] fullGroups, String[][] children, String[][] fullChildren) {
             this.groups = groups;
             this.fullGroups = fullGroups;
             this.children = children;
+            this.fullChildren = fullChildren;
             inf = LayoutInflater.from(getActivity());
         }
 
@@ -356,69 +396,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                    UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
                }
             });
-            /*holder.numPicker.setOnClickListener(new View.OnClickListener() {
-            holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-            holder.numPicker.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final Dialog d = new Dialog(getContext());
-                    d.setTitle("number Picker");
-                    d.setContentView(R.layout.dialogpicker);
-                    Button b1 = (Button) d.findViewById(R.id.button1);
-                    Button b2 = (Button) d.findViewById(R.id.button2);
-                    final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
-                    np.setMaxValue(1000); // max value 100
-                    np.setMinValue(0);   // min value 0
-                    np.setValue(holder.numPicker.getValue());
-                    //np.setWrapSelectorWheel(false);
-                    //np.setOnValueChangedListener(np);
-                    b1.setOnClickListener(new Button.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v) {
-                            FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                            foodToBeChanged.setQuantity(np.getValue());
-                            Log.d("npval: ", Integer.toString(np.getValue()));
-                            UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
-                            holder.numPicker.setValue(np.getValue());
-                            //tv.setText(String.valueOf(np.getValue())); //set the value to textview
-                            d.dismiss();
-                        }
-                    });
-                    b2.setOnClickListener(new Button.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v) {
-                            d.dismiss(); // dismiss the dialog
-                        }
-                    });
-                    d.show();
-                    *//*final NumberPicker numberPicker = new NumberPicker(getActivity());
-                    final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
-                        @Override
-                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                            FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                            foodToBeChanged.setQuantity(newVal);
-                            UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
-                        }
-                    };
-                    numberPicker.setMinValue(1);
-                    numberPicker.setMaxValue(1000);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setView(numberPicker);
-                    builder.setTitle("Change the quantity");
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //dialogHost.onPositiveButton(numberPicker.getValue());
-                            valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
 
-                        }
-                    });
-                    builder.setView(numberPicker);
-                    builder.show();*//*
-                }
-            });*/
             holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
             holder.numPicker.setFocusable(false);
             holder.text.setText(getGroup(groupPosition).toString());
@@ -446,30 +424,36 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             query = query.toLowerCase();
             Log.v("MyListAdapter", String.valueOf(groups.length));
             String[] newGroups;
+            String[][] newChildren;
             ArrayList<String> newGroupsList = new ArrayList<>();
+            ArrayList<String> newChildrenList = new ArrayList<>();
 
             if(query.isEmpty()){
                 updateFoods();
                 newGroups = fullGroups;
+                newChildren = fullChildren;
             }
             else {
-
+                int i=0;
                 for(String foodName: fullGroups){
-
                     if(foodName.toLowerCase().contains(query)){
                         newGroupsList.add(foodName);
+                        newChildrenList.add(fullChildren[i][0]);
                     }
-
+                    i++;
                 }
                 newGroups = new String[newGroupsList.size()];
-                for(int i=0;i<newGroupsList.size();i++){
+                newChildren = new String[newChildrenList.size()][1];
+                for(i=0;i<newGroupsList.size();i++){
                     newGroups[i] = newGroupsList.get(i);
+                    newChildren[i][0] = newChildrenList.get(i);
                 }
 
             }
 
             Log.v("MyListAdapter", String.valueOf(newGroupsList.size()));
             groups = newGroups;
+            children = newChildren;
             notifyDataSetChanged();
 
         }

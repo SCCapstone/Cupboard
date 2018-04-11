@@ -261,6 +261,7 @@ public class UserData {
         update.put("name", newFoodItem.getName());
         update.put("quantity", newFoodItem.getQuantity());
         update.put("expirationAsLong", newFoodItem.getExpirationAsLong());
+        update.put("category", newFoodItem.getCategory());
         ref.updateChildren(update);
     }
 
