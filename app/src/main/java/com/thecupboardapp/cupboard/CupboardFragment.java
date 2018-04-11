@@ -53,7 +53,6 @@ import static android.app.Activity.RESULT_OK;
 public class CupboardFragment extends Fragment
 implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
-    View rootView;
     ExpandableListView lv;
     private String[] groups;
     private String[] fullGroups;
@@ -82,19 +81,6 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
-        /*
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                mAdapter.getFilter().filter(s);
-                return false;
-            }
-        });*/
 
     }
 
@@ -297,6 +283,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                     intent.putExtra("foodName", foodToUpdate.getName());
                     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
                     intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
+                    intent.putExtra("foodCategory", foodToUpdate.getCategory());
                     intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
                     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
                 }
@@ -458,7 +445,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
             query = query.toLowerCase();
             Log.v("MyListAdapter", String.valueOf(groups.length));
-            String[] newGroups = new String[groups.length];
+            String[] newGroups;
             ArrayList<String> newGroupsList = new ArrayList<>();
 
             if(query.isEmpty()){

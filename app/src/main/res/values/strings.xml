@@ -33,5 +33,7 @@
 
     <string-array name="sort_choices"><item>Alphabetically</item><item>Expiration</item></string-array>
 
+    <string-array name="food_categories"><item>Pantry</item><item>Fridge</item><item>Freezer</item></string-array>
+
 
 </resources>

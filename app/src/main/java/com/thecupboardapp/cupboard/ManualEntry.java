@@ -11,10 +11,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -29,12 +32,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class ManualEntry extends AppCompatActivity {
+public class ManualEntry extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Calendar myCalendar = Calendar.getInstance();
     long NO_EXP_DATE = 4133987474999L;
     private int NEW_ENTRY_REQUEST = 0;
     private int UPDATE_ENTRY_REQUEST = 1;
+    String mfoodCategory = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,24 +49,35 @@ public class ManualEntry extends AppCompatActivity {
         EditText edittext= (EditText) findViewById(R.id.editText3);
         ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
         EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
+
+        Spinner categorySpinner = (Spinner) findViewById(R.id.foodCategorySpinner);
+        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this, R.array.food_categories,android.R.layout.simple_spinner_item);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(categoryAdapter);
+        categorySpinner.setOnItemSelectedListener(this);
+
         final String foodName;
         final long foodExpires;
         final float foodQuantity;
+        final String foodCategory;
         if(requestCode == NEW_ENTRY_REQUEST){
             setTitle("New Food Item");
             foodName = "";
             foodExpires = NO_EXP_DATE;
             foodQuantity = 0;
+            foodCategory = "";
         }
         else{ //requestCode == UPDATE_ENTRY_REQUEST
             setTitle("Edit Food Item");
             foodName = intent.getStringExtra("foodName");
             foodExpires = intent.getLongExtra("foodExpires",NO_EXP_DATE);
             foodQuantity = intent.getFloatExtra("foodQuantity",0);
+            foodCategory = intent.getStringExtra("foodCategory");
             edittext.setText(foodName);
             Date expDate = new Date(foodExpires);
             myCalendar.setTime(expDate);
             editTextQuantity.setText(Float.toString(foodQuantity));
+            if (foodCategory != "") categorySpinner.setSelection(categoryAdapter.getPosition(foodCategory));
         }
 
 
@@ -101,7 +116,7 @@ public class ManualEntry extends AppCompatActivity {
                     }
                     float theQuantityFloat = Float.parseFloat(theQuantity);
 
-                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat);
+                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat, mfoodCategory);
 
                     Calendar theDateAdded = Calendar.getInstance();
                     theDateAdded.getTime();
@@ -224,5 +239,15 @@ public class ManualEntry extends AppCompatActivity {
         }
         rd.close();
         return result.toString();
+    }
+    public void onItemSelected(AdapterView<?> parent, View view,
+                               int pos, long id) {
+        // An item was selected. You can retrieve the selected item using
+        //parent.getItemAtPosition(pos);
+        mfoodCategory = parent.getItemAtPosition(pos).toString();
+    }
+
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
     }
 }

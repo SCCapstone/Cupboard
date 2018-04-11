@@ -47,6 +47,13 @@ public class FoodItem implements Comparable<FoodItem> {
         mQuantity = aQuantity;
     }
 
+    public FoodItem(String aName, Calendar aExpiration, float aQuantity, String aCategory) {
+        mName = aName;
+        mExpiration = aExpiration;
+        mQuantity = aQuantity;
+        mCategory = aCategory;
+    }
+
     public FoodItem(String aName) {
         mName = aName;
     }
