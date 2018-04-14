@@ -10,6 +10,7 @@
         app:actionViewClass="android.support.v7.widget.SearchView">
     </item>
     <item
+        android:id="@+id/cupboard_settings"
         android:title="SortSpinner"
         android:icon="@drawable/ic_menu_manage"
         app:showAsAction="ifRoom">
