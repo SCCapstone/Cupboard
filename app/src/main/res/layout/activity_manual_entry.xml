@@ -39,6 +39,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView14"/>
 
+    <TextView
+        android:id="@+id/textViewCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:text="Category:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewQuantity"/>
+
     <EditText
         android:id="@+id/editText3"
         android:layout_width="wrap_content"
@@ -92,6 +103,7 @@
         android:layout_height="46dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="26dp"
+        android:backgroundTint="@color/lightGreen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText3"
         app:srcCompat="@android:drawable/ic_menu_my_calendar" />
@@ -111,6 +123,8 @@
         android:id="@+id/foodCategorySpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextQuantity" />
 
