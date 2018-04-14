@@ -152,6 +152,7 @@ public class UserData {
 
                         foodItem.setFirebaseId(food.getKey());
                         foodItem.setName(food.child("name").getValue().toString());
+                        foodItem.setQuantity(Float.parseFloat(food.child("quantity").getValue().toString()));
                         if(food.hasChild("category")) foodItem.setCategory(food.child("category").getValue().toString());
 
                         try {

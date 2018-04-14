@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
@@ -60,8 +61,11 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        updateFoods();
-        setListener();
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+            updateFoods();
+            setListener();
+            getActivity().setTitle(R.string.title_cupboard);
+        }
         setHasOptionsMenu(true);
     }
 
@@ -177,22 +181,25 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference refFood = database.getReference("foods/" + user.getUid());
-        refFood.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
-            }
+        DatabaseReference refFood;
+        if(user!=null){
+            refFood = database.getReference("foods/" + user.getUid());
+            refFood.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     public void updateFoods() {
-        getActivity().setTitle(R.string.title_cupboard);
+        //getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
         fullGroups = new String[mFoodItems.size()];
@@ -231,10 +238,13 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
-        lv.setAdapter(mAdapter);
-        lv.setGroupIndicator(null);
+        if(lv!=null){
+            lv.setAdapter(mAdapter);
+            lv.setGroupIndicator(null);
+        }
 
         manEntFAB = (FloatingActionButton)view.findViewById(R.id.add_food_fab);
+        if(manEntFAB!=null)
         manEntFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -379,26 +389,41 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                 holder = new ViewHolder();
                 holder.text = (TextView) convertView.findViewById(R.id.lblListHeader);
                 holder.deleteButton = (ImageButton) convertView.findViewById(R.id.delete_food_button);
-                holder.numPicker = (NumberPicker) convertView.findViewById(R.id.numPicker);
+                holder.quantityButton = (Button) convertView.findViewById(R.id.quantity_button);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.numPicker.setMinValue(1);
-            holder.numPicker.setMaxValue(1000);
-            holder.numPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
-            holder.numPicker.setClickable(true);
-
-            holder.numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-               public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                   FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                   foodToBeChanged.setQuantity(newVal);
-                   UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
-               }
+            holder.quantityButton.setFocusable(false);
+            holder.quantityButton.setText(String.valueOf((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity())));
+            holder.quantityButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final NumberPicker numberPicker = new NumberPicker(getActivity());
+                    final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
+                        @Override
+                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                            FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
+                            foodToBeChanged.setQuantity(newVal);
+                            UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
+                        }
+                    };
+                    numberPicker.setMinValue(0);
+                    numberPicker.setMaxValue(999);
+                    numberPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setView(numberPicker);
+                    builder.setTitle("Change the quantity");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
+                        }
+                    });
+                    builder.setView(numberPicker);
+                    builder.show();
+                }
             });
-
-            holder.numPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-            holder.numPicker.setFocusable(false);
             holder.text.setText(getGroup(groupPosition).toString());
             holder.deleteButton.setFocusable(false);
             holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -461,7 +486,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         private class ViewHolder {
             TextView text;
             ImageButton deleteButton;
-            NumberPicker numPicker;
+            Button quantityButton;
             ImageButton editButton;
             ImageButton addToListButton;
         }
