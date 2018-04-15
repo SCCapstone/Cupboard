@@ -215,7 +215,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             else {info = info.concat(mFoodItems.get(i).getExpirationAsString());}
 
             info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
-
+            info = info.concat("\nDescription: " + mFoodItems.get(i).getDescription());
             children[i][0] = info;
             fullChildren[i][0] = children[i][0];
         }
@@ -334,6 +334,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
                     intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
                     intent.putExtra("foodCategory", foodToUpdate.getCategory());
+                    intent.putExtra("foodDesc", foodToUpdate.getDescription());
                     intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
                     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
                 }

@@ -154,7 +154,7 @@ public class UserData {
                         foodItem.setName(food.child("name").getValue().toString());
                         foodItem.setQuantity(Float.parseFloat(food.child("quantity").getValue().toString()));
                         if(food.hasChild("category")) foodItem.setCategory(food.child("category").getValue().toString());
-
+                        if(food.hasChild("description")) foodItem.setDescription(food.child("description").getValue().toString());
                         try {
                             //Log.d("getFoods", "entering try block");
                             //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
@@ -263,6 +263,7 @@ public class UserData {
         update.put("quantity", newFoodItem.getQuantity());
         update.put("expirationAsLong", newFoodItem.getExpirationAsLong());
         update.put("category", newFoodItem.getCategory());
+        update.put("description", newFoodItem.getDescription());
         ref.updateChildren(update);
     }
 

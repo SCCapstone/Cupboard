@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -49,6 +50,8 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         EditText edittext= (EditText) findViewById(R.id.editText3);
         ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
         EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
+        TextView textView1 = (TextView) findViewById(R.id.textView5);
+        textView1.setText("None");
 
         Spinner categorySpinner = (Spinner) findViewById(R.id.foodCategorySpinner);
         //ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this, R.array.food_categories,android.R.layout.simple_spinner_item);
@@ -62,12 +65,14 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         final long foodExpires;
         final float foodQuantity;
         final String foodCategory;
+        final String foodDesc;
         if(requestCode == NEW_ENTRY_REQUEST){
             setTitle("New Food Item");
             foodName = "";
             foodExpires = NO_EXP_DATE;
             foodQuantity = 0;
             foodCategory = "";
+            foodDesc = "None";
         }
         else{ //requestCode == UPDATE_ENTRY_REQUEST
             setTitle("Edit Food Item");
@@ -75,11 +80,13 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
             foodExpires = intent.getLongExtra("foodExpires",NO_EXP_DATE);
             foodQuantity = intent.getFloatExtra("foodQuantity",0);
             foodCategory = intent.getStringExtra("foodCategory");
+            foodDesc = intent.getStringExtra("foodDesc");
             edittext.setText(foodName);
             Date expDate = new Date(foodExpires);
             myCalendar.setTime(expDate);
             editTextQuantity.setText(Float.toString(foodQuantity));
             if (foodCategory != "") categorySpinner.setSelection(categoryAdapter.getPosition(foodCategory));
+            textView1.setText(foodDesc);
         }
 
 
@@ -100,9 +107,11 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
                 EditText edittext= (EditText) findViewById(R.id.editText3);
                 EditText edittext2= (EditText) findViewById(R.id.editText5);
                 EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
+                TextView textView1 = (TextView) findViewById(R.id.textView5);
                 String theName = edittext.getText().toString();
                 String theDate = edittext2.getText().toString();
                 String theQuantity = editTextQuantity.getText().toString();
+                String theDesc = textView1.getText().toString();
 
                 Intent resultInt = new Intent();
                 resultInt.putExtra("Result", "Done");
@@ -119,6 +128,7 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
                     float theQuantityFloat = Float.parseFloat(theQuantity);
 
                     FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat, mfoodCategory);
+                    theFoodToBeAdded.setDescription(theDesc);
 
                     Calendar theDateAdded = Calendar.getInstance();
                     theDateAdded.getTime();
@@ -221,10 +231,15 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
                 if (theHTMLarr[1].split(",")[0].replaceAll("\"", "") != "INVALID_UPC") {
                     String[] theNamearr = theHTMLarr[6].split(",");
                     String theName = theNamearr[0];
+                    String theDesc = theHTMLarr[7].substring(1,theHTMLarr[7].length()-7);
                     theName = theName.replaceAll("\"", "");
                     EditText edittext = (EditText) findViewById(R.id.editText3);
                     edittext.setText(theName);
-                    Log.i("tag2", theName);
+                    EditText edittext2 = (EditText) findViewById(R.id.editTextQuantity);
+                    edittext2.setText("1.0");
+                    TextView textView1 = (TextView) findViewById(R.id.textView5);
+                    textView1.setText(theDesc);
+                    Log.i("tag2", theDesc);
                 }
             }
         }

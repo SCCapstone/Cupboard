@@ -24,6 +24,7 @@ public class FoodItem implements Comparable<FoodItem> {
     private Calendar mExpiration;
     private Calendar mDateAdded;
     private SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+    private String mDescription;
 
     public FoodItem() {
         mId = UUID.randomUUID();
@@ -33,7 +34,7 @@ public class FoodItem implements Comparable<FoodItem> {
         Calendar cal = Calendar.getInstance();
         cal.setTime(exp);
         mExpiration = cal;
-
+        mDescription = "None";
     }
 
     public FoodItem(String aName, Calendar aExpiration) {
@@ -120,6 +121,10 @@ public class FoodItem implements Comparable<FoodItem> {
     public void setCategory(String category) {
         mCategory = category;
     }
+
+    public String getDescription() { return mDescription; }
+
+    public void setDescription(String description) { mDescription = description; }
 
     public String getFirebaseId() {
         return mFirebaseId;
