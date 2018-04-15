@@ -198,33 +198,38 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResult != null) {
-            String[] upcArr = scanResult.toString().split("\n");
-            String[] theUpc = upcArr[1].split(": ");
-            Log.i("theTag",theUpc[1]);
-            if (android.os.Build.VERSION.SDK_INT > 9)
-            {
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-            };
-            String theHTML = "";
-            try {
-                theHTML = getHTML("https://api.upcitemdb.com/prod/trial/lookup?upc=" + theUpc[1]);
-                Log.i("theHTML",theHTML);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+            if (scanResult != null) {
+                String[] upcArr = scanResult.toString().split("\n");
+                String[] theUpc = upcArr[1].split(": ");
+                Log.i("theTag", theUpc[1]);
+                if (android.os.Build.VERSION.SDK_INT > 9) {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                }
+                ;
+                String theHTML = "";
+                try {
+                    theHTML = getHTML("https://api.upcitemdb.com/prod/trial/lookup?upc=" + theUpc[1]);
+                    Log.i("theHTML", theHTML);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-            String[] theHTMLarr = theHTML.split(":");
-            if(theHTMLarr[1].split(",")[0].replaceAll("\"","") != "INVALID_UPC") {
-                String[] theNamearr = theHTMLarr[6].split(",");
-                String theName = theNamearr[0];
-                theName = theName.replaceAll("\"", "");
-                EditText edittext= (EditText) findViewById(R.id.editText3);
-                edittext.setText(theName);
-                Log.i("tag2", theName);
+                String[] theHTMLarr = theHTML.split(":");
+                if (theHTMLarr[1].split(",")[0].replaceAll("\"", "") != "INVALID_UPC") {
+                    String[] theNamearr = theHTMLarr[6].split(",");
+                    String theName = theNamearr[0];
+                    theName = theName.replaceAll("\"", "");
+                    EditText edittext = (EditText) findViewById(R.id.editText3);
+                    edittext.setText(theName);
+                    Log.i("tag2", theName);
+                }
             }
+        }
+        catch (Exception e) {
+            Log.i("theError", e.toString());
         }
         // else continue with any other code you need in the method
     }
