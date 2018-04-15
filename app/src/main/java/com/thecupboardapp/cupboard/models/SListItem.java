@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
@@ -20,9 +21,9 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
                 onDelete = CASCADE
         )
 )
-public class SListItem {
+public class SListItem implements Comparable<SListItem>{
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @ColumnInfo(name = "name")
     private String name;
@@ -34,7 +35,7 @@ public class SListItem {
     private String firebaseKey;
 
     @ColumnInfo(name = "parent_id")
-    private int parentId;
+    private long parentId;
 
     @ColumnInfo(name = "index")
     private int index;
@@ -59,11 +60,11 @@ public class SListItem {
         this.index = index;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -91,11 +92,11 @@ public class SListItem {
         this.firebaseKey = firebaseKey;
     }
 
-    public int getParentId() {
+    public long getParentId() {
         return parentId;
     }
 
-    public void setParentId(int parentId) {
+    public void setParentId(long parentId) {
         this.parentId = parentId;
     }
 
@@ -110,12 +111,23 @@ public class SListItem {
     @Ignore
     @Override
     public String toString() {
-        String str = "SList{ id: " + id + " , " +
+        String str = "SListItem{ id: " + id + " , " +
                 "name: " + name + " , " +
                 "checked: " + checked + " , " +
                 "parentId: " + parentId + " , " +
+                "index: " + index + " , " +
                 "firebaseKey: " + firebaseKey + "}";
 
         return str;
+    }
+
+    @Ignore
+    @Override
+    public int compareTo(@NonNull SListItem o) {
+        if (this.id == o.id) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }

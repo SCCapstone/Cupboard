@@ -20,28 +20,28 @@ public class Cupboard extends Application {
         super.onCreate();
         Stetho.initializeWithDefaults(this);
 
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            syncWithFirebase();
-        }
+        // if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        //     syncWithFirebase();
+        // }
     }
 
-    private void syncWithFirebase(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                .child("lists")
-                .child(getUid());
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+    // private void syncWithFirebase(){
+    //     DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+    //             .child("lists")
+    //             .child(getUid());
+    //
+    //     ref.addValueEventListener(new ValueEventListener() {
+    //         @Override
+    //         public void onDataChange(DataSnapshot dataSnapshot) {
+    //
+    //         }
+    //
+    //         @Override
+    //         public void onCancelled(DatabaseError databaseError) {
+    //
+    //         }
+    //     });
+    // }
 
 
     public String getUid() {

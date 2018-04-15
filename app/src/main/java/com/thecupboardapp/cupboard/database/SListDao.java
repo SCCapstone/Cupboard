@@ -30,6 +30,9 @@ public interface SListDao {
     @Insert
     void insertAll(SList... sLists);
 
+    @Insert
+    long insertList(SList sList);
+
     @Delete
     void delete(SList slist);
 
@@ -45,9 +48,15 @@ public interface SListDao {
     @Update
     void update(List<SList> sLists);
 
-    @Query("SELECT * FROM slists WHERE id = :id LIMIT 1")
-    Flowable<SList> getFlowableListById(int id);
+    @Query("UPDATE slists SET name = :name WHERE id = :id")
+    void updateName(String name, long id);
 
     @Query("SELECT * FROM slists WHERE id = :id LIMIT 1")
-    Single<SList> getSingleListById(int id);
+    Flowable<SList> getFlowableListById(long id);
+
+    @Query("SELECT * FROM slists WHERE id = :id LIMIT 1")
+    Single<SList> getSingleListById(long id);
+
+    @Query("UPDATE slists SET last_modified = :lastModified WHERE id = :id")
+    void updateLastModified(long id, long lastModified);
 }

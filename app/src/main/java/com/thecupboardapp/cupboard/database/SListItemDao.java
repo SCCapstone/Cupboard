@@ -35,5 +35,5 @@ public interface SListItemDao {
     void update(List<SListItem> sListItems);
 
     @Query("SELECT * FROM slist_items WHERE parent_id = :id")
-    Flowable<List<SListItem>> getSListItemById(int id);
+    Flowable<List<SListItem>> getSListItemById(long id);
 }

@@ -41,7 +41,6 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class CupboardFragment extends Fragment {
-
     View rootView;
     ExpandableListView lv;
     private String[] groups;

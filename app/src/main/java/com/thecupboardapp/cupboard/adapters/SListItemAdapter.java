@@ -21,6 +21,7 @@ import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
 import com.thecupboardapp.cupboard.models.SListItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
@@ -30,22 +31,23 @@ import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
  */
 
 public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SListItemHolder> {
-    private static final String TAG = "SListItemAdapter";
     private List<SListItem> mSListItems;
     private RecyclerView mRecyclerView;
+    private long mParentId;
     private boolean isEnterPressed;
 
-    public SListItemAdapter(List<SListItem> items) {
+    public SListItemAdapter(List<SListItem> items, long parentId) {
         mSListItems = items;
-        SListItem emptyItem = new SListItem("", false);
-        emptyItem.setIndex(items.size());
+        mParentId = parentId;
+
+        SListItem emptyItem = new SListItem("", false, items.size());
+        emptyItem.setParentId(mParentId);
         items.add(emptyItem);
     }
 
     @NonNull
     @Override
     public SListItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder: ");
         mRecyclerView = (RecyclerView) parent;
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
@@ -61,6 +63,7 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
         SListItem item = mSListItems.get(position);
         holder.bind(item);
 
+        // Set the hint if its an empty list or its the last element
         if (holder.getAdapterPosition() == mSListItems.size() - 1 && item.getName().isEmpty()) {
             holder.mSListItemEditText.setHint(R.string.slist_item_hint);
         }
@@ -93,8 +96,16 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
         mSListItems.addAll(sListItems);
     }
 
+    public void setParentId(long id){
+        for (SListItem item : mSListItems) {
+            item.setParentId(id);
+        }
+    }
+
     public List<SListItem> getSListItems() {
-        return mSListItems;
+        List<SListItem> newList = new ArrayList<>(mSListItems);
+        newList.remove(newList.size()-1);
+        return newList;
     }
 
     static class SListItemHolder extends RecyclerView.ViewHolder {
@@ -104,7 +115,7 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
 
         private ItemTextWatcher mItemTextWatcher;
         private ItemOnEditorActionListener mItemOnEditorActionListener;
-        private ItemOnCheckedChangedListener mOnCheckedChangeListener;
+        private ItemOnCheckedChangedListener mItemOnCheckedChangeListener;
 
         SListItemHolder(LayoutInflater inflater,
                         ViewGroup parent,
@@ -123,8 +134,8 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
             mItemOnEditorActionListener = itemOnEditorActionListener;
             mSListItemEditText.setOnEditorActionListener(mItemOnEditorActionListener);
 
-            mOnCheckedChangeListener = onCheckedChangeListener;
-            mSListItemCheckBox.setOnCheckedChangeListener(mOnCheckedChangeListener);
+            mItemOnCheckedChangeListener = onCheckedChangeListener;
+            mSListItemCheckBox.setOnCheckedChangeListener(mItemOnCheckedChangeListener);
 
             if (SListEditActivity.mIsEnterPressed) {
                 itemView.findViewById(R.id.slist_item_name).requestFocus();
@@ -133,56 +144,14 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
         }
 
         void bind(SListItem item) {
-            // Update positions on listeners
+            // Update items in the listeners
             mItemTextWatcher.updateSListItem(item);
             mItemOnEditorActionListener.updateSListItem(item);
+            mItemOnCheckedChangeListener.updateSListItem(item);
 
             // Set the values
             mSListItemEditText.setText(item.getName());
             mSListItemCheckBox.setChecked(item.getChecked());
-        }
-    }
-
-    private class SListItemDiffCallback extends DiffUtil.Callback {
-        List<SListItem> oldItems;
-        List<SListItem> newItems;
-
-        public SListItemDiffCallback(List<SListItem> oldItems, List<SListItem> newItems) {
-            this.oldItems = oldItems;
-            this.newItems = newItems;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldItems.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newItems.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldItems.get(oldItemPosition).getIndex() == newItems.get(newItemPosition).getIndex();
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            SListItem oldListItem = oldItems.get(oldItemPosition);
-            SListItem newListItem = newItems.get(newItemPosition);
-
-            return oldListItem.equals(newListItem);
-        }
-
-        @Nullable
-        @Override
-        public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-            SListItem oldListItem = oldItems.get(oldItemPosition);
-            SListItem newListItem = newItems.get(newItemPosition);
-            Bundle diffBundle = new Bundle();
-
-            return diffBundle;
         }
     }
 
@@ -194,9 +163,7 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
         }
 
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void onTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -205,18 +172,18 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
                 if (s.toString().isEmpty()) return;
                 // EditText something = mRecyclerView.getChildAt(position).findViewById(R.id.slist_item_name);
                 // something.setHint(null);
-                mSListItems.add(new SListItem("", false, mSListItems.size()));
+
+                SListItem newItem = new SListItem("", false, mSListItems.size());
+                newItem.setParentId(mParentId);
+                mSListItems.add(newItem);
                 mRecyclerView.post(() -> notifyItemInserted(index  + 1 ));
             }
 
             mSListItem.setName(s.toString());
-            // Log.d(TAG, "onTextChanged: " + "at pos: " + position + " , \"" + mSListItems.get(position) + "\"");
         }
 
         @Override
-        public void afterTextChanged(Editable editable) {
-
-        }
+        public void afterTextChanged(Editable editable) {}
     }
 
     private class ItemOnEditorActionListener implements TextView.OnEditorActionListener {
@@ -249,16 +216,16 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
     }
 
     private class ItemOnCheckedChangedListener implements CompoundButton.OnCheckedChangeListener {
+        private SListItem mSListItem;
 
-        private int position;
-
-        void updatePosition(int pos) {
-            position = pos;
+        void updateSListItem(SListItem sListItem) {
+            mSListItem = sListItem;
         }
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            mSListItems.get(position).setChecked(isChecked);
+            int index = mSListItems.indexOf(mSListItem);
+            mSListItems.get(index).setChecked(isChecked);
         }
     }
 }

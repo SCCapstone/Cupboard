@@ -2,7 +2,6 @@ package com.thecupboardapp.cupboard.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -19,21 +18,33 @@ import android.widget.EditText;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.adapters.SListItemAdapter;
 import com.thecupboardapp.cupboard.models.SList;
-import com.thecupboardapp.cupboard.models.viewmodels.SListItemViewModel;
+import com.thecupboardapp.cupboard.models.SListItem;
 import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class SListEditActivity extends AppCompatActivity {
     private String TAG = "SListEditActivity";
     private RecyclerView mRecyclerView;
     private SListItemAdapter mAdapter;
-    private int extra;
+    private long sListIdExtra;
 
-    private CompositeDisposable mDisposables = new CompositeDisposable();
+    private Disposable disposableSListItems;
+    private Disposable disposableSList;
+
+    private SList oldSList;
+    private List<SListItem> oldSListItems;
+
+    private CompositeDisposable mDisposables;
 
     public static final String EXTRA_ID = "com.thecupboardapp.cupboard.EXTRA_ID";
 
@@ -44,40 +55,54 @@ public class SListEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slist_edit);
 
+        // Find the recycler view and set its layout
         mRecyclerView = findViewById(R.id.shopping_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(SListEditActivity.this));
 
-        extra = getIntent().getIntExtra(EXTRA_ID, -1);
+        // init disposable container
+        mDisposables = new CompositeDisposable();
 
-        SListItemViewModel itemViewModel = ViewModelProviders.of(this).get(SListItemViewModel.class);
-        itemViewModel.SListViewModelFactory(this);
-        Disposable disposableItems = itemViewModel.getListItemsById(extra)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(sListItems -> {
-                    if (mAdapter == null) {
-                        Log.d(TAG, "onCreate: null adapter");
-                        mAdapter = new SListItemAdapter(sListItems);
-                        mRecyclerView.setAdapter(mAdapter);
-                    } else {
-                        Log.d(TAG, "onCreate: not null adapter");
-                        mAdapter.updateList(sListItems);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+        // Get the sListIdExtra to see if this is a new list or not
+        sListIdExtra = getIntent().getLongExtra(EXTRA_ID, -1);
 
-        SListViewModel sListViewModel = ViewModelProviders.of(this).get(SListViewModel.class);
-        sListViewModel.SListViewModelFactory(this);
+        // Initialize the viewmodel
+        SListViewModel mSListViewModel = ViewModelProviders.of(this).get(SListViewModel.class);
+        mSListViewModel.SListViewModelFactory(this);
 
-        Disposable disposableTitle = sListViewModel.getListById(extra)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(sList -> {
-                    Log.d(TAG, "disposableTitle sub");
-                    SListEditActivity.this.setTitle(sList.getName());
-                });
+        // If the list exists, get the items and the slist
+        if (sListIdExtra != -1) {
+            disposableSListItems = mSListViewModel.getListItemsById(sListIdExtra)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(sListItems -> {
+                        if (mAdapter == null) {
+                            Log.d(TAG, "onCreate: null adapter " + sListItems);
+                            oldSListItems = new ArrayList<SListItem>(sListItems);
+                            mAdapter = new SListItemAdapter(sListItems, sListIdExtra);
+                            mRecyclerView.setAdapter(mAdapter);
+                        } else {
+                            Log.d(TAG, "onCreate: not null adapter");
+                            mAdapter.updateList(sListItems);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+            disposableSList = mSListViewModel.getListById(sListIdExtra)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(sList -> {
+                        oldSList = sList;
+                        setTitle(sList.getName());
+                    });
 
-        mDisposables.addAll(disposableItems, disposableTitle);
+            mDisposables.addAll(disposableSListItems);
+        } else {
+            oldSList = new SList("New List", 99);
+            setTitle("New List");
+            oldSListItems = new ArrayList<SListItem>();
+
+            mAdapter = new SListItemAdapter(new ArrayList<SListItem>(), sListIdExtra);
+            mRecyclerView.setAdapter(mAdapter);
+        }
     }
 
     @Override
@@ -86,7 +111,7 @@ public class SListEditActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    public static Intent newIntent(Context packageContext, int id) {
+    public static Intent newIntent(Context packageContext, long id) {
         Intent intent = new Intent(packageContext, SListEditActivity.class);
         intent.putExtra(EXTRA_ID, id);
         return intent;
@@ -118,20 +143,50 @@ public class SListEditActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if (mAdapter.getSListItems().size() == 0) {
+            super.onBackPressed();
+            return;
+        }
+
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setTitle("Save Changes?");
 
         alert.setPositiveButton("YES", (dialog, whichButton) -> {
-            ViewModelProviders.of(this).get(SListItemViewModel.class).update(mAdapter.getSListItems());
+            if (sListIdExtra == -1) {
+                Log.d(TAG, "onBackPressed: HERE 1");
+                SList newList = new SList(getTitle().toString(), 99);
+                Observable.fromCallable(() -> ViewModelProviders.of(this).get(SListViewModel.class).newList(newList)).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(o -> {
+                            Log.d(TAG, "onBackPressed: " + o);
+                            mAdapter.setParentId(o);
+
+                            ViewModelProviders.of(this).get(SListViewModel.class).update(oldSListItems, mAdapter.getSListItems());
+                            ViewModelProviders.of(this).get(SListViewModel.class).updateListTitle(sListIdExtra, getTitle().toString());
+                            ViewModelProviders.of(this).get(SListViewModel.class).updateLastModified(sListIdExtra);
+                        });
+            } else {
+                // update items
+                ViewModelProviders.of(this).get(SListViewModel.class).update(oldSListItems, mAdapter.getSListItems());
+
+                // Update title
+                ViewModelProviders.of(this).get(SListViewModel.class).updateListTitle(sListIdExtra, getTitle().toString());
+
+                // Update last modified
+                ViewModelProviders.of(this).get(SListViewModel.class).updateLastModified(sListIdExtra);
+            }
+
+
             super.onBackPressed();
         });
 
-        alert.setNeutralButton("DEBUG", (dialogInterface, i) -> {
-            SList sList = new SList("debug test", 20);
-            ViewModelProviders.of(this).get(SListViewModel.class).newList(sList);
-            super.onBackPressed();
-        });
+        // alert.setNeutralButton("DEBUG", (dialogInterface, i) -> {
+        //     SList sList = new SList("debug test", 20);
+        //     ViewModelProviders.of(this).get(SListViewModel.class).newList(sList);
+        //     super.onBackPressed();
+        // });
         alert.setNegativeButton("NO", (dialog, whichButton) -> super.onBackPressed());
         alert.show();
     }
@@ -146,7 +201,7 @@ public class SListEditActivity extends AppCompatActivity {
         alert.setView(v);
 
         alert.setPositiveButton("OK", (dialog, whichButton) -> {
-            ViewModelProviders.of(this).get(SListViewModel.class).updateListTitle(extra, text.getText().toString());
+            SListEditActivity.this.setTitle(text.getText().toString());
         });
 
         alert.setNegativeButton("Back", (dialog, whichButton) -> {});

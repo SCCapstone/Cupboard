@@ -17,6 +17,7 @@ public abstract class Repository extends RoomDatabase {
 
     public abstract SListDao sListDao();
     public abstract SListItemDao sListItemDao();
+    public abstract CupboardDao mCupboardDao();
 
     private static Repository INSTANCE;
 
