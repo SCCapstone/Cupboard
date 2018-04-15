@@ -16,9 +16,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    repositories {
+        mavenCentral()
+
+        maven {
+            url "http://dl.bintray.com/journeyapps/maven"
+        }
     }
 }
 
@@ -80,6 +89,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:3.0.1'
     /* END Testing Dependencies */
+
+    compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
+    compile 'com.journeyapps:zxing-android-legacy:2.3.0@aar'
+    compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
+    compile 'com.google.zxing:core:3.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -2,6 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:iconTint="#FFFFFF"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView">
+    </item>
+    <item
+        android:id="@+id/cupboard_settings"
         android:title="SortSpinner"
         android:icon="@drawable/ic_menu_manage"
         android:iconTint="#FFFFFF"
@@ -13,6 +22,18 @@
             <item
                 android:id="@+id/menu_sort_expires_soon"
                 android:title="Sort by Expiration" />
+            <item
+                android:id="@+id/menu_show_pantry"
+                android:title="Show Pantry" />
+            <item
+                android:id="@+id/menu_show_fridge"
+                android:title="Show Fridge" />
+            <item
+                android:id="@+id/menu_show_freezer"
+                android:title="Show Freezer" />
+            <item
+                android:id="@+id/menu_show_all"
+                android:title="Show All" />
         </menu>
     </item>
 </menu>

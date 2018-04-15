@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +33,7 @@ import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
 import com.thecupboardapp.cupboard.models.FoodItem;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -40,15 +42,19 @@ import static android.app.Activity.RESULT_OK;
  * Created by Kyle on 1/12/2018.
  */
 
-public class CupboardFragment extends Fragment {
-    View rootView;
+public class CupboardFragment extends Fragment
+implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     ExpandableListView lv;
+    private String mCategoryShown = "";
     private String[] groups;
+    private String[] fullGroups;
     private String[][] children;
+    private String[][] fullChildren;
     private ExpandableListAdapter mAdapter;
     private FloatingActionButton manEntFAB;
     private int NEW_ENTRY_REQUEST = 0;
     private int UPDATE_ENTRY_REQUEST = 1;
+    private int SHOW_REQUEST = 2;
     long NO_EXP_DATE = 4133987474999L;
     private List<FoodItem> mFoodItems;
 
@@ -59,6 +65,7 @@ public class CupboardFragment extends Fragment {
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
             updateFoods();
             setListener();
+            getActivity().setTitle(R.string.title_cupboard);
         }
         setHasOptionsMenu(true);
     }
@@ -67,6 +74,28 @@ public class CupboardFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.cupboard_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnCloseListener(this);
+    }
+
+    @Override
+    public boolean onClose() {
+        mAdapter.filterData("");
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        mAdapter.filterData(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        mAdapter.filterData(query);
+        return false;
     }
 
     @Override
@@ -77,6 +106,18 @@ public class CupboardFragment extends Fragment {
                 return true;
             case R.id.menu_sort_expires_soon:
                 sortExpiresSoon();
+                return true;
+            case R.id.menu_show_pantry:
+                showByCategory("Pantry");
+                return true;
+            case R.id.menu_show_fridge:
+                showByCategory("Fridge");
+                return true;
+            case R.id.menu_show_freezer:
+                showByCategory("Freezer");
+                return true;
+            case R.id.menu_show_all:
+                showAll();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -93,13 +134,45 @@ public class CupboardFragment extends Fragment {
         onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
     }
 
+    public void showByCategory(String aCategory){
+        String[] newGroups;
+        ArrayList<FoodItem> newGroupsList = new ArrayList<>();
+
+        for(FoodItem item: mFoodItems){
+
+            if(item.getCategory().equals(aCategory)){
+                newGroupsList.add(item);
+            }
+
+        }
+        newGroups = new String[newGroupsList.size()];
+        for(int i=0;i<newGroupsList.size();i++){
+            newGroups[i] = newGroupsList.get(i).getName();
+        }
+
+        mCategoryShown = aCategory;
+        groups = newGroups;
+        onActivityResult(SHOW_REQUEST,RESULT_OK,null);
+    }
+
+    public void showAll(){
+        mCategoryShown = "";
+        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 updateFoods();
                 //mAdapter.notifyDataSetChanged();
-                mAdapter = new ExpandableListAdapter(groups, children);
+                mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
+                lv.setAdapter(mAdapter);
+            }
+        }
+        else if(requestCode == SHOW_REQUEST){
+            if (resultCode == RESULT_OK) {
+                mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
                 lv.setAdapter(mAdapter);
             }
         }
@@ -127,22 +200,27 @@ public class CupboardFragment extends Fragment {
     }
 
     public void updateFoods() {
-        getActivity().setTitle(R.string.title_cupboard);
+        //getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
+        fullGroups = new String[mFoodItems.size()];
         children = new String[mFoodItems.size()][1];
+        fullChildren = new String[mFoodItems.size()][1];
 
         for(int i=0;i<mFoodItems.size();i++){
             groups[i] = mFoodItems.get(i).getName();
+            fullGroups[i] = groups[i];
 
             String info = "Expires: ";
             if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE) {info = info.concat("Never");}
             else {info = info.concat(mFoodItems.get(i).getExpirationAsString());}
 
             info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
-
+            info = info.concat("\nDescription: " + mFoodItems.get(i).getDescription());
             children[i][0] = info;
+            fullChildren[i][0] = children[i][0];
         }
+        if(!mCategoryShown.equals("")) showByCategory(mCategoryShown);
     }
 
     @Nullable
@@ -159,7 +237,7 @@ public class CupboardFragment extends Fragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new ExpandableListAdapter(groups, children);
+        mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
         lv = (ExpandableListView) view.findViewById(R.id.accordion);
         if (lv!=null){
             lv.setAdapter(mAdapter);
@@ -182,11 +260,15 @@ public class CupboardFragment extends Fragment {
     public class ExpandableListAdapter extends BaseExpandableListAdapter {
         private final LayoutInflater inf;
         private String[] groups;
+        private String[] fullGroups;
         private String[][] children;
+        private String[][] fullChildren;
 
-        public ExpandableListAdapter(String[] groups, String[][] children) {
+        public ExpandableListAdapter(String[] groups, String[] fullGroups, String[][] children, String[][] fullChildren) {
             this.groups = groups;
+            this.fullGroups = fullGroups;
             this.children = children;
+            this.fullChildren = fullChildren;
             inf = LayoutInflater.from(getActivity());
         }
 
@@ -252,6 +334,8 @@ public class CupboardFragment extends Fragment {
                     intent.putExtra("foodName", foodToUpdate.getName());
                     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
                     intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
+                    intent.putExtra("foodCategory", foodToUpdate.getCategory());
+                    intent.putExtra("foodDesc", foodToUpdate.getDescription());
                     intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
                     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
                 }
@@ -299,7 +383,7 @@ public class CupboardFragment extends Fragment {
 
         @Override
         public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+            final ViewHolder holder;
 
             if (convertView == null) {
                 convertView = inf.inflate(R.layout.list_group, parent, false);
@@ -316,7 +400,7 @@ public class CupboardFragment extends Fragment {
             holder.quantityButton.setText(String.valueOf((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity())));
             holder.quantityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View view) {
                     final NumberPicker numberPicker = new NumberPicker(getActivity());
                     final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
                         @Override
@@ -326,8 +410,8 @@ public class CupboardFragment extends Fragment {
                             UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
                         }
                     };
-                    numberPicker.setMinValue(1);
-                    numberPicker.setMaxValue(1000);
+                    numberPicker.setMinValue(0);
+                    numberPicker.setMaxValue(999);
                     numberPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setView(numberPicker);
@@ -335,7 +419,6 @@ public class CupboardFragment extends Fragment {
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //dialogHost.onPositiveButton(numberPicker.getValue());
                             valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
                         }
                     });
@@ -361,6 +444,45 @@ public class CupboardFragment extends Fragment {
         @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
+        }
+
+        public void filterData(String query){
+
+            query = query.toLowerCase();
+            Log.v("MyListAdapter", String.valueOf(groups.length));
+            String[] newGroups;
+            String[][] newChildren;
+            ArrayList<String> newGroupsList = new ArrayList<>();
+            ArrayList<String> newChildrenList = new ArrayList<>();
+
+            if(query.isEmpty()){
+                updateFoods();
+                newGroups = fullGroups;
+                newChildren = fullChildren;
+            }
+            else {
+                int i=0;
+                for(String foodName: fullGroups){
+                    if(foodName.toLowerCase().contains(query)){
+                        newGroupsList.add(foodName);
+                        newChildrenList.add(fullChildren[i][0]);
+                    }
+                    i++;
+                }
+                newGroups = new String[newGroupsList.size()];
+                newChildren = new String[newChildrenList.size()][1];
+                for(i=0;i<newGroupsList.size();i++){
+                    newGroups[i] = newGroupsList.get(i);
+                    newChildren[i][0] = newChildrenList.get(i);
+                }
+
+            }
+
+            Log.v("MyListAdapter", String.valueOf(newGroupsList.size()));
+            groups = newGroups;
+            children = newChildren;
+            notifyDataSetChanged();
+
         }
 
         private class ViewHolder {

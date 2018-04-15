@@ -5,6 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
 
 
     <string name="nav_header_title">Not currently signed in.</string>
@@ -33,6 +34,8 @@
     <string name="slist_item_hint">Create an item</string>
 
     <string-array name="sort_choices"><item>Alphabetically</item><item>Expiration</item></string-array>
+
+    <string-array name="food_categories"><item>Pantry</item><item>Fridge</item><item>Freezer</item></string-array>
 
 
 </resources>
