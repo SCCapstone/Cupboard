@@ -226,23 +226,26 @@ public class HomeFragment extends Fragment{
 
         try {
             if (mLists.isEmpty()) {
-                mHeaders.add("create a list");
+                mHeaders.add("You don't have any Shopping Lists :(");
+                ArrayList<String> empty = new ArrayList<String>();
+                empty.add("Create a Shopping List to display the last shopping list you modified on the home screen.");
+                mListChild.put(mHeaders.get(1), empty);
             }
 
             else {
                 Collections.sort(mLists);
 
-
-                /*for (ShoppingList list : mLists) {
-                    mHeaders.add("Last Modified List: " + list.getName());
+/*
+                for (ShoppingList list : mLists) {
+                    mHeaders.add(list.getName());
                     ArrayList<String> lastList = new ArrayList<String>();
                     List<ShoppingListItem> items = list.getShoppingListItems();
                     for ( ShoppingListItem item : items) {
                         lastList.add(item.getName());
                     }
-                    mListChild.put(mHeaders.get(1), lastList);
+                    mListChild.put(mHeaders.get(mHeaders.size()), lastList);
                 }
-                */
+*/
 
 
                 mHeaders.add("Last Modified List: " + mLists.get(0).getName());
@@ -252,7 +255,7 @@ public class HomeFragment extends Fragment{
                      lastList.add(item.getName());
                 }
                 mListChild.put(mHeaders.get(1), lastList);
-                
+
             }
         }
         catch (Exception e) {
@@ -329,6 +332,9 @@ public class HomeFragment extends Fragment{
            // mNextExpiring.setText("error in next expiring");
         }
 
+        if (retVal.isEmpty()){
+            retVal.add("You do not have any food about to expire :)");
+        }
         return retVal;
     }
 
