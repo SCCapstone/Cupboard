@@ -88,11 +88,15 @@ public class HomeFragment extends Fragment{
                         }
 
                         foodItems.add(foodItem);
+                        prepareAccordion();
+                        mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+                        mExpandableListView.setAdapter(mAccordion);
                     }
                     UserData.get(getContext()).setFoodItems(foodItems);
 
-                    updateNextExpiring();
-                    updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
+                    //updateNextExpiring();
+                    //updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
 
                     prepareAccordion();
                     //mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
@@ -107,9 +111,9 @@ public class HomeFragment extends Fragment{
         //FoodItem f = new FoodItem();
         //UserData.get(getActivity()).addFoodItem(f);
 
-        mNextExpiring = (TextView) v.findViewById(R.id.next_expiring);
-        mLastModifiedList = (TextView) v.findViewById(R.id.last_modified_list);
-        Log.d("mNextExpiring", mNextExpiring.toString());
+        //mNextExpiring = (TextView) v.findViewById(R.id.next_expiring);
+        //mLastModifiedList = (TextView) v.findViewById(R.id.last_modified_list);
+        //Log.d("mNextExpiring", mNextExpiring.toString());
         UserData.get(getActivity()).updateFromFirebase();
 
 
@@ -195,23 +199,94 @@ public class HomeFragment extends Fragment{
         mListChild = new HashMap<String, List<String>>();
 
         mHeaders.add("Food Expiring Soon");
-        mHeaders.add("Last Modified Shopping List");
+        //mHeaders.add("Last Modified Shopping List");
 
         List<String> mExpiringSoon = setExpiringSoon(7);
         Log.d("mExpiringSoon", "size: "+mExpiringSoon.size());
         mListChild.put(mHeaders.get(0), mExpiringSoon);
 
 
-        List<String> mDummyList = new ArrayList<String>();
+        //List<String> mLastShoppingList = setLastShoppingList();
+
+        /*List<String> mDummyList = new ArrayList<String>();
         for (int i = 0; i < 6; ++i) {
             mDummyList.add("food "+i);
         }
 
-        mListChild.put(mHeaders.get(1), mDummyList);
+        mListChild.put(mHeaders.get(1), mDummyList);*/
+
+        //mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+        //mExpandableListView.setAdapter(mAccordion);
+
+
+
+        mLists = UserData.get(getActivity()).getShoppingLists();
+
+
+        try {
+            if (mLists.isEmpty()) {
+                mHeaders.add("create a list");
+            }
+
+            else {
+                Collections.sort(mLists);
+
+
+                /*for (ShoppingList list : mLists) {
+                    mHeaders.add("Last Modified List: " + list.getName());
+                    ArrayList<String> lastList = new ArrayList<String>();
+                    List<ShoppingListItem> items = list.getShoppingListItems();
+                    for ( ShoppingListItem item : items) {
+                        lastList.add(item.getName());
+                    }
+                    mListChild.put(mHeaders.get(1), lastList);
+                }
+                */
+
+
+                mHeaders.add("Last Modified List: " + mLists.get(0).getName());
+                ArrayList<String> lastList = new ArrayList<String>();
+                List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
+                for ( ShoppingListItem item : items) {
+                     lastList.add(item.getName());
+                }
+                mListChild.put(mHeaders.get(1), lastList);
+                
+            }
+        }
+        catch (Exception e) {
+
+        }
+
 
 
     }
 
+    /*private List<String> setLastShoppingList() {
+        mLists = UserData.get(getActivity()).getShoppingLists();
+        ArrayList<String> retVal = new ArrayList<String>();
+
+        try {
+            if (mLists.isEmpty()) {
+                retVal.add("You don't have any shopping lists. Go to Shopping Lists to add one.");
+            }
+
+            else {
+                Collections.sort(mLists);
+
+
+                s = mLists.get(0).getName() + "\n";
+                List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
+                for ( ShoppingListItem item : items) {
+                    s += item.getName() + "\n";
+                }
+            }
+        }
+        catch (Exception e) {
+            s = "something went wrong";
+        }
+    }*/
 
     private List<String> setExpiringSoon(int days) {
         mFoods = UserData.get(getActivity()).getFoodItems();
@@ -221,7 +296,7 @@ public class HomeFragment extends Fragment{
         List<String> retVal = new ArrayList<String>();
 
         long millisPerDay = 86400*1000;
-        Log.d("expiringSoon", "millisPerDay\t\t" + (Long.toString(millisPerDay)));
+        Log.d("expiringSoon", "millisPerDay\t\t\t" + (Long.toString(millisPerDay)));
         Log.d("expiringSoon", "millisPerWeek\t\t" + (Long.toString(millisPerDay*7)));
         long currentTime = Calendar.getInstance().getTimeInMillis();
         Log.d("expiringSoon", "currentTime\t\t" + (Long.toString(currentTime)));
@@ -231,7 +306,7 @@ public class HomeFragment extends Fragment{
             if (!mFoods.isEmpty()) {
                 int counter = 0;
                 try {
-                    Log.d("expiringSoon", mFoods.get(counter).getName() + " expires at " + mFoods.get(counter).getExpirationAsLong());
+                    Log.d("expiringSoon", mFoods.get(counter).getName() + " expires at \t" + mFoods.get(counter).getExpirationAsLong());
                     while (mFoods.get(counter).getExpirationAsLong() < expiringTime) {
                         String s = formatFood(mFoods.get(counter));
                         retVal.add(s);
@@ -251,7 +326,7 @@ public class HomeFragment extends Fragment{
             }
         }
         catch (Exception e) {
-            mNextExpiring.setText("error in next expiring");
+           // mNextExpiring.setText("error in next expiring");
         }
 
         return retVal;

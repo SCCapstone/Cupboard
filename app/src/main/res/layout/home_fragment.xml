@@ -7,30 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/next_expiring"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="expiring food" />
-
-            <TextView
-                android:id="@+id/last_modified_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="last modified list"/>
-
-        </LinearLayout>
-
-    </ScrollView>
     <ExpandableListView
         android:id="@+id/home_fragment_expandable_list_view"
         android:layout_width="match_parent"
@@ -39,4 +16,5 @@
         android:layout_marginStart="8dp"
 
         tools:layout_editor_absoluteY="0dp" />
+
 </android.support.constraint.ConstraintLayout>
