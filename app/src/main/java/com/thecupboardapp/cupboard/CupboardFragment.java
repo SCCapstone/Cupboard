@@ -1,6 +1,8 @@
 package com.thecupboardapp.cupboard;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -175,6 +177,18 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                 lv.setAdapter(mAdapter);
             }
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Activity a;
+
+        if (context instanceof Activity){
+            a=(Activity) context;
+        }
+
     }
 
     public void setListener(){
