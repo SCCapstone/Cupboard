@@ -2,6 +2,7 @@ package com.thecupboardapp.cupboard;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Timer;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,6 +50,13 @@ public class HomeActivity extends AppCompatActivity
 
         //         Set the home screen to be up first
         FragmentManager fm = getSupportFragmentManager();
+
+        /*Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                Log.d("delay", "did delay");
+            }
+        }, 5000); */  //5 seconds
         fm.beginTransaction().add(R.id.fragment_container, new HomeFragment()).commit();
 
         // Set up the navigation drawer.
