@@ -232,17 +232,17 @@ public class HomeFragment extends Fragment{
             else {
                 Collections.sort(mLists);
 
-
-                /*for (ShoppingList list : mLists) {
-                    mHeaders.add("Last Modified List: " + list.getName());
+/*
+                for (ShoppingList list : mLists) {
+                    mHeaders.add(list.getName());
                     ArrayList<String> lastList = new ArrayList<String>();
                     List<ShoppingListItem> items = list.getShoppingListItems();
                     for ( ShoppingListItem item : items) {
                         lastList.add(item.getName());
                     }
-                    mListChild.put(mHeaders.get(1), lastList);
+                    mListChild.put(mHeaders.get(mHeaders.size()), lastList);
                 }
-                */
+*/
 
 
                 mHeaders.add("Last Modified List: " + mLists.get(0).getName());
@@ -252,7 +252,7 @@ public class HomeFragment extends Fragment{
                      lastList.add(item.getName());
                 }
                 mListChild.put(mHeaders.get(1), lastList);
-                
+
             }
         }
         catch (Exception e) {
