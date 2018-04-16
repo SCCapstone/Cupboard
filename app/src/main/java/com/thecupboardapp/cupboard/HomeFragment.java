@@ -1,5 +1,6 @@
 package com.thecupboardapp.cupboard;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,7 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Collections;
 
@@ -33,6 +38,11 @@ public class HomeFragment extends Fragment{
     private List<ShoppingList> mLists;
     private TextView mNextExpiring;
     private TextView mLastModifiedList;
+
+    private ExpandableListAdapter mAccordion;
+    private ExpandableListView mExpandableListView;
+    private List<String> mHeaders;
+    private HashMap<String, List<String>> mListChild;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,13 +77,14 @@ public class HomeFragment extends Fragment{
 
                         try {
                             //Log.d("getFoods", "entering try block");
-                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
-                            Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
-
-                            foodItem.setExpiration(expDate);
+                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toS
                             Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
                             foodItem.setDateAdded(dateAdded);
-                        } catch (Exception e) {
+                            foodItem.setName(food.child("name").getValue().toString());
+                            //Log.d("getFoods", food.child("name").getValue().toString());
+
+                        }
+                        catch (Exception e) {
                         }
 
                         foodItems.add(foodItem);
@@ -82,6 +93,9 @@ public class HomeFragment extends Fragment{
 
                     updateNextExpiring();
                     updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
+
+                    prepareAccordion();
+                    //mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
                 }
 
                 @Override
@@ -97,6 +111,14 @@ public class HomeFragment extends Fragment{
         mLastModifiedList = (TextView) v.findViewById(R.id.last_modified_list);
         Log.d("mNextExpiring", mNextExpiring.toString());
         UserData.get(getActivity()).updateFromFirebase();
+
+
+        mExpandableListView = (ExpandableListView) v.findViewById(R.id.home_fragment_expandable_list_view);
+        prepareAccordion();
+
+        mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+        mExpandableListView.setAdapter(mAccordion);
 
         return v;
     }
@@ -165,4 +187,172 @@ public class HomeFragment extends Fragment{
         mLastModifiedList.setText(s);
 
     }
+
+    private void prepareAccordion() {
+
+
+        mHeaders = new ArrayList<String>();
+        mListChild = new HashMap<String, List<String>>();
+
+        mHeaders.add("Food Expiring Soon");
+        mHeaders.add("Last Modified Shopping List");
+
+        List<String> mExpiringSoon = setExpiringSoon(7);
+        Log.d("mExpiringSoon", "size: "+mExpiringSoon.size());
+        mListChild.put(mHeaders.get(0), mExpiringSoon);
+
+
+        List<String> mDummyList = new ArrayList<String>();
+        for (int i = 0; i < 6; ++i) {
+            mDummyList.add("food "+i);
+        }
+
+        mListChild.put(mHeaders.get(1), mDummyList);
+
+
+    }
+
+
+    private List<String> setExpiringSoon(int days) {
+        mFoods = UserData.get(getActivity()).getFoodItems();
+        //UserData.get(getA)
+        Collections.sort(mFoods);
+        //FoodItem mExpFood1 = ;
+        List<String> retVal = new ArrayList<String>();
+
+        long millisPerDay = 86400*1000;
+        Log.d("expiringSoon", "millisPerDay\t\t" + (Long.toString(millisPerDay)));
+        Log.d("expiringSoon", "millisPerWeek\t\t" + (Long.toString(millisPerDay*7)));
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        Log.d("expiringSoon", "currentTime\t\t" + (Long.toString(currentTime)));
+        long expiringTime = currentTime+(millisPerDay*days);
+
+        try {
+            if (!mFoods.isEmpty()) {
+                int counter = 0;
+                try {
+                    Log.d("expiringSoon", mFoods.get(counter).getName() + " expires at " + mFoods.get(counter).getExpirationAsLong());
+                    while (mFoods.get(counter).getExpirationAsLong() < expiringTime) {
+                        String s = formatFood(mFoods.get(counter));
+                        retVal.add(s);
+                        ++counter;
+                    }
+                }
+                catch (Exception e){
+
+                }
+
+            }
+            else {
+                //Log.d("mFoods", "mFoods equals null");
+                //Log.d("mFoods", "UID = );
+                String s = "no foods";
+                mNextExpiring.setText(s);
+            }
+        }
+        catch (Exception e) {
+            mNextExpiring.setText("error in next expiring");
+        }
+
+        return retVal;
+    }
+
+    private String formatFood(FoodItem f) {
+        String s = "";
+        s += f.getName();
+        s += "\nExpiration Date: ";
+        s += f.getExpirationAsString();
+
+        return s;
+    }
+
+    public class ExpandableListAdapter extends BaseExpandableListAdapter {
+        private Context mContext;
+        private List<String> mListHeaders;
+        private HashMap<String, List<String>> mListChild;
+
+        public ExpandableListAdapter(Context context, List<String> listHeaders, HashMap<String, List<String>> listChild) {
+            this.mContext = context;
+            this.mListHeaders = listHeaders;
+            this.mListChild = listChild;
+        }
+
+        @Override
+        public int getGroupCount() {
+            return this.mListHeaders.size();
+        }
+
+        @Override
+        public int getChildrenCount(int groupPosition) {
+            //TODO some problem here, null pointer
+            /*if (null == this.mListChild.get(this.getGroup(groupPosition))) {
+                return 0;
+            }*/
+            return this.mListChild.get(this.getGroup(groupPosition)).size();
+        }
+
+        @Override
+        public Object getGroup(int groupPosition) {
+            return this.mListHeaders.get(groupPosition);
+        }
+
+        @Override
+        public Object getChild(int groupPosition, int childPosition) {
+            return this.mListChild.get(mListHeaders.get(groupPosition)).get(childPosition);
+        }
+
+        @Override
+        public long getGroupId(int groupPosition) {
+            return groupPosition;
+        }
+
+        @Override
+        public long getChildId(int groupPosition, int childPosition) {
+            return childPosition;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+            String mHeaderTitle = (String) getGroup(groupPosition);
+
+            if (convertView == null) {
+                LayoutInflater inf = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inf.inflate(R.layout.home_group,null);
+            }
+
+            TextView mHomeGroupHeader = (TextView) convertView.findViewById(R.id.home_group_header);
+            mHomeGroupHeader.setText(mHeaderTitle);
+
+            return  convertView;
+        }
+
+        @Override
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+            final String mChildText = (String) getChild(groupPosition, childPosition);
+
+            if (convertView == null) {
+                LayoutInflater inf = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inf.inflate(R.layout.home_item, null);
+            }
+
+            TextView mChildTextView = (TextView) convertView.findViewById(R.id.home_item_list_item);
+            mChildTextView.setText(mChildText);
+
+            return convertView;
+        }
+
+        @Override
+        public boolean isChildSelectable(int groupPosition, int childPosition) {
+            return true;
+        }
+    }
 }
+
+
+
+
