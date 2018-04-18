@@ -19,6 +19,7 @@ import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.adapters.SListItemAdapter;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
+import com.thecupboardapp.cupboard.models.viewmodels.SListEditViewModel;
 import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
 import java.util.ArrayList;
@@ -34,19 +35,21 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SListEditActivity extends AppCompatActivity {
     private String TAG = "SListEditActivity";
+
+    public static final String EXTRA_ID = "com.thecupboardapp.cupboard.EXTRA_ID";
+    private long sListIdExtra;
+
     private RecyclerView mRecyclerView;
     private SListItemAdapter mAdapter;
-    private long sListIdExtra;
 
     private Disposable disposableSListItems;
     private Disposable disposableSList;
+    private CompositeDisposable mDisposables;
 
     private SList oldSList;
     private List<SListItem> oldSListItems;
 
-    private CompositeDisposable mDisposables;
-
-    public static final String EXTRA_ID = "com.thecupboardapp.cupboard.EXTRA_ID";
+    private SListEditViewModel mSListEditViewModel;
 
     public static boolean mIsEnterPressed = false;
 
@@ -66,12 +69,13 @@ public class SListEditActivity extends AppCompatActivity {
         sListIdExtra = getIntent().getLongExtra(EXTRA_ID, -1);
 
         // Initialize the viewmodel
-        SListViewModel mSListViewModel = ViewModelProviders.of(this).get(SListViewModel.class);
-        mSListViewModel.SListViewModelFactory(this);
+        mSListEditViewModel = ViewModelProviders.of(this).get(SListEditViewModel.class);
+        mSListEditViewModel.setSListItems(sListIdExtra);
+        mSListEditViewModel.setSList(sListIdExtra);
 
         // If the list exists, get the items and the slist
         if (sListIdExtra != -1) {
-            disposableSListItems = mSListViewModel.getListItemsById(sListIdExtra)
+            disposableSListItems = mSListEditViewModel.getListItemsById(sListIdExtra)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(sListItems -> {
@@ -86,7 +90,7 @@ public class SListEditActivity extends AppCompatActivity {
                             mAdapter.notifyDataSetChanged();
                         }
                     });
-            disposableSList = mSListViewModel.getListById(sListIdExtra)
+            disposableSList = mSListEditViewModel.getListById(sListIdExtra)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(sList -> {
@@ -153,41 +157,30 @@ public class SListEditActivity extends AppCompatActivity {
 
         alert.setTitle("Save Changes?");
 
-        alert.setPositiveButton("YES", (dialog, whichButton) -> {
+        alert.setPositiveButton("Yes", (dialog, whichButton) -> {
             if (sListIdExtra == -1) {
-                Log.d(TAG, "onBackPressed: HERE 1");
                 SList newList = new SList(getTitle().toString(), 99);
-                Observable.fromCallable(() -> ViewModelProviders.of(this).get(SListViewModel.class).newList(newList)).subscribeOn(Schedulers.io())
+                Observable.fromCallable(() -> mSListEditViewModel.newList(newList)).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(o -> {
-                            Log.d(TAG, "onBackPressed: " + o);
                             mAdapter.setParentId(o);
 
-                            ViewModelProviders.of(this).get(SListViewModel.class).update(oldSListItems, mAdapter.getSListItems());
-                            ViewModelProviders.of(this).get(SListViewModel.class).updateListTitle(sListIdExtra, getTitle().toString());
-                            ViewModelProviders.of(this).get(SListViewModel.class).updateLastModified(sListIdExtra);
+                            mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
+                            mSListEditViewModel.updateListTitle(sListIdExtra, getTitle().toString());
+                            mSListEditViewModel.updateLastModified(sListIdExtra);
                         });
             } else {
-                // update items
-                ViewModelProviders.of(this).get(SListViewModel.class).update(oldSListItems, mAdapter.getSListItems());
-
-                // Update title
-                ViewModelProviders.of(this).get(SListViewModel.class).updateListTitle(sListIdExtra, getTitle().toString());
-
-                // Update last modified
-                ViewModelProviders.of(this).get(SListViewModel.class).updateLastModified(sListIdExtra);
+                mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
+                mSListEditViewModel.updateListTitle(sListIdExtra, getTitle().toString());
+                mSListEditViewModel.updateLastModified(sListIdExtra);
             }
 
 
             super.onBackPressed();
         });
 
-        // alert.setNeutralButton("DEBUG", (dialogInterface, i) -> {
-        //     SList sList = new SList("debug test", 20);
-        //     ViewModelProviders.of(this).get(SListViewModel.class).newList(sList);
-        //     super.onBackPressed();
-        // });
-        alert.setNegativeButton("NO", (dialog, whichButton) -> super.onBackPressed());
+        alert.setNeutralButton("Back", (dialogInterface, i) -> {});
+        alert.setNegativeButton("No", (dialog, whichButton) -> super.onBackPressed());
         alert.show();
     }
 
@@ -200,11 +193,10 @@ public class SListEditActivity extends AppCompatActivity {
         alert.setTitle("Title");
         alert.setView(v);
 
-        alert.setPositiveButton("OK", (dialog, whichButton) -> {
-            SListEditActivity.this.setTitle(text.getText().toString());
-        });
+        alert.setPositiveButton("Ok", (dialog, whichButton) ->
+                SListEditActivity.this.setTitle(text.getText().toString()));
 
-        alert.setNegativeButton("Back", (dialog, whichButton) -> {});
+        alert.setNegativeButton("Back", (dialog, whichButton) -> dialog.dismiss());
 
         alert.show();
     }

@@ -9,7 +9,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.thecupboardapp.cupboard.database.Repository;
+import com.thecupboardapp.cupboard.database.Database;
 import com.thecupboardapp.cupboard.models.FoodItem;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class UserData {
     private List<FoodItem> mFoodItems;
     private List<String> mRecipes;
 
-    public Repository db;
+    public Database db;
 
     public static UserData get(Context context) {
         if (sUserData == null) {
@@ -44,7 +44,7 @@ public class UserData {
         mFoodItems = new ArrayList<FoodItem>();
         mRecipes = new ArrayList<String>();
 
-        // db = Room.databaseBuilder(context, Repository.class, "cupboard_db").build();
+        // db = Room.databaseBuilder(context, Database.class, "cupboard_db").build();
 
         // final com.thecupboardapp.cupboard.models.SList list = new com.thecupboardapp.cupboard.models.SList("another", 6);
         // list.setId(1);

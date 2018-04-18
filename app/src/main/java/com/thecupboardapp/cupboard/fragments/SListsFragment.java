@@ -1,6 +1,7 @@
 package com.thecupboardapp.cupboard.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.lifecycle.ViewModelStoreOwner;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,7 +40,6 @@ public class SListsFragment extends Fragment{
     private final String TAG = "SListsFragment";
 
     public static final int NEW_LIST_REQUEST_CODE = 1;
-    public static final String NEW_LIST_REQUEST_CODE_KEY = "com.thecupboardapp.cupboard.new_list";
 
     private FloatingActionButton mNewListFAB;
     private RecyclerView mSListsRecyclerView;
@@ -75,7 +75,6 @@ public class SListsFragment extends Fragment{
     public void onStart() {
         Log.d(TAG, "onStart: ");
         mSListViewModel = ViewModelProviders.of(getActivity()).get(SListViewModel.class);
-        mSListViewModel.SListViewModelFactory(getContext());
 
         mDisposableSList = mSListViewModel.getLists()
                 .subscribeOn(Schedulers.io())
@@ -103,16 +102,13 @@ public class SListsFragment extends Fragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sort_alphabetically:
-                ViewModelProviders.of(getActivity())
-                        .get(SListViewModel.class).sort(SListViewModel.SORT_ALPHABETICAL);
+                mSListViewModel.sort(SListViewModel.SORT_ALPHABETICAL, mAdapter.getSLists());
                 return true;
             case R.id.menu_sort_last_modified:
-                ViewModelProviders.of(getActivity())
-                        .get(SListViewModel.class).sort(SListViewModel.SORT_LAST_MODIFIED);
+                mSListViewModel.sort(SListViewModel.SORT_LAST_MODIFIED, mAdapter.getSLists());
                 return true;
             case R.id.menu_sort_date_created:
-                ViewModelProviders.of(getActivity())
-                        .get(SListViewModel.class).sort(SListViewModel.SORT_DATE_CREATED);
+                mSListViewModel.sort(SListViewModel.SORT_DATE_CREATED, mAdapter.getSLists());
                 return true;
             default:
                 break;
@@ -122,7 +118,6 @@ public class SListsFragment extends Fragment{
 
     @Override
     public void onStop() {
-        Log.d(TAG, "onStop: Dispose");
         mDisposableSList.dispose();
         super.onStop();
     }

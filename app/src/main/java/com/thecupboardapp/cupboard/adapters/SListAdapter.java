@@ -56,17 +56,13 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
     }
 
     public void swap(List<SList> sLists) {
-        Log.d(TAG, "swap: ");
-        Observable.just(new Object())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(o -> {
-                    SListDiffCallback callback = new SListDiffCallback(this.mSLists, sLists);
-                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
-                    mSLists.clear();
-                    mSLists.addAll(sLists);
-                    diffResult.dispatchUpdatesTo(this);
-                });
+        AsyncTask.execute(() -> {
+            SListDiffCallback callback = new SListDiffCallback(this.mSLists, sLists);
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
+            mSLists.clear();
+            mSLists.addAll(sLists);
+            diffResult.dispatchUpdatesTo(this);
+        });
     }
 
     private class SListDiffCallback extends DiffUtil.Callback {

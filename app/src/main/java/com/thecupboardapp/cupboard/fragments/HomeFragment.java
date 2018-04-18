@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.thecupboardapp.cupboard.R;
-import com.thecupboardapp.cupboard.database.Repository;
+import com.thecupboardapp.cupboard.database.Database;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
@@ -174,7 +174,7 @@ public class HomeFragment extends Fragment{
         AsyncTask.execute(() -> {
             SListItem item = new SListItem("example name", false);
             item.setParentId(1);
-            Repository.getDatabase(getContext()).sListItemDao().insertAll(item);
+            Database.getDatabase(getContext()).sListItemDao().insertAll(item);
         });
     }
 

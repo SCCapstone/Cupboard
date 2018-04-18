@@ -20,16 +20,13 @@ import io.reactivex.Flowable;
 @Dao
 public interface SListItemDao {
     @Query("SELECT * FROM slist_items")
-    Flowable<List<SListItem>> getAll();
+    Flowable<List<SListItem>> getAllItems();
 
     @Insert
     void insertAll(SListItem... sListItems);
 
     @Delete
     void delete(SListItem sListItem);
-
-    @Query("DELETE FROM slist_items")
-    void deleteAll();
 
     @Update
     void update(List<SListItem> sListItems);
