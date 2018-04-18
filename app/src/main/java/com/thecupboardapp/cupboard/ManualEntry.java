@@ -48,6 +48,7 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         Intent intent = getIntent();
         final int requestCode = intent.getIntExtra("requestCode", NEW_ENTRY_REQUEST);
         EditText edittext= (EditText) findViewById(R.id.editText3);
+        //EditText edittext2 = (EditText) findViewById(R.id.editText5);
         ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
         EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
         TextView textView1 = (TextView) findViewById(R.id.textView5);
@@ -84,6 +85,8 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
             edittext.setText(foodName);
             Date expDate = new Date(foodExpires);
             myCalendar.setTime(expDate);
+            //edittext2.setText("nut");
+            updateLabel();
             editTextQuantity.setText(Float.toString(foodQuantity));
             if (foodCategory != "") categorySpinner.setSelection(categoryAdapter.getPosition(foodCategory));
             textView1.setText(foodDesc);
@@ -204,7 +207,9 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         EditText edittext= (EditText) findViewById(R.id.editText5);
+        if(myCalendar.getTimeInMillis()!=NO_EXP_DATE)
         edittext.setText(sdf.format(myCalendar.getTime()));
+        else edittext.setText("Never");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
