@@ -33,7 +33,6 @@ public class HomeFragment extends Fragment{
     private TextView mNextExpiring;
     private TextView mLastModifiedList;
 
-    private Button mTestButton;
     private Button mTestButton2;
 
     @Override
@@ -49,9 +48,6 @@ public class HomeFragment extends Fragment{
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        mTestButton = (Button) v.findViewById(R.id.test_button);
-        mTestButton.setOnClickListener(view -> testButtonPress());
 
         mTestButton2 = v.findViewById(R.id.test_button_2);
         mTestButton2.setOnClickListener(view -> testButtonPress2());
@@ -170,15 +166,8 @@ public class HomeFragment extends Fragment{
     //
     // }
 
-    private void testButtonPress(){
-        AsyncTask.execute(() -> {
-            SListItem item = new SListItem("example name", false);
-            item.setParentId(1);
-            Database.getDatabase(getContext()).sListItemDao().insertAll(item);
-        });
-    }
 
     private void testButtonPress2(){
-        getActivity().deleteDatabase("cupboard_db");
+        getActivity().deleteDatabase("cupboard");
     }
 }

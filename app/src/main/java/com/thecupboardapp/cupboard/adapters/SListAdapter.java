@@ -8,6 +8,7 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -98,6 +99,7 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
 
     static class SListHolder extends RecyclerView.ViewHolder {
         private TextView mTitleTextView;
+        private View mConstraint;
 
         public SListHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.holder_slist, parent, false));
@@ -115,7 +117,7 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
 
             mTitleTextView.setOnLongClickListener(view -> {
                 String name = mTitleTextView.getText().toString();
-                String[] options = {"option 1"};
+                String[] options = {"Delete", "Copy", "Another option"};
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle(String.format("\"%s\" Options", name));
