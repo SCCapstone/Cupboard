@@ -1,14 +1,14 @@
 package com.thecupboardapp.cupboard;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,14 +31,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 public class ManualEntry extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    public static final long NO_EXP_DATE = 4133987474999L;
+    public static final int NEW_ENTRY_REQUEST = 0;
+    public static final int UPDATE_ENTRY_REQUEST = 1;
     Calendar myCalendar = Calendar.getInstance();
-    long NO_EXP_DATE = 4133987474999L;
-    private int NEW_ENTRY_REQUEST = 0;
-    private int UPDATE_ENTRY_REQUEST = 1;
     String mfoodCategory = "";
 
     @Override
@@ -46,17 +45,17 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_entry);
         Intent intent = getIntent();
-        final int requestCode = intent.getIntExtra("requestCode", NEW_ENTRY_REQUEST);
-        EditText edittext= (EditText) findViewById(R.id.editText3);
-        ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
-        EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
-        TextView textView1 = (TextView) findViewById(R.id.textView5);
-        textView1.setText("None");
+        final int requestCode = intent.getIntExtra(getString(R.string.request_code),
+                NEW_ENTRY_REQUEST);
+        EditText editTextName = findViewById(R.id.edit_text_name);
+        ImageButton dateButton = findViewById(R.id.image_button_calendar_expires);
+        EditText editTextQuantity = findViewById(R.id.edit_text_quantity);
+        TextView textViewDescription = findViewById(R.id.text_view_description);
+        textViewDescription.setText(getString(R.string.description_none));
 
-        Spinner categorySpinner = (Spinner) findViewById(R.id.foodCategorySpinner);
-        //ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this, R.array.food_categories,android.R.layout.simple_spinner_item);
-        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this, R.array.food_categories,R.layout.spinner_layout);
-        //categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner categorySpinner = findViewById(R.id.spinner_category);
+        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
+                R.array.food_categories,R.layout.spinner_layout);
         categoryAdapter.setDropDownViewResource(R.layout.spinner_item_layout);
         categorySpinner.setAdapter(categoryAdapter);
         categorySpinner.setOnItemSelectedListener(this);
@@ -66,59 +65,55 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         final float foodQuantity;
         final String foodCategory;
         final String foodDesc;
-        if(requestCode == NEW_ENTRY_REQUEST){
-            setTitle("New Food Item");
+        if(requestCode == NEW_ENTRY_REQUEST){ // adding a new food item
+            setTitle(getString(R.string.title_new_food));
             foodName = "";
-            foodExpires = NO_EXP_DATE;
-            foodQuantity = 0;
-            foodCategory = "";
-            foodDesc = "None";
         }
-        else{ //requestCode == UPDATE_ENTRY_REQUEST
-            setTitle("Edit Food Item");
-            foodName = intent.getStringExtra("foodName");
-            foodExpires = intent.getLongExtra("foodExpires",NO_EXP_DATE);
-            foodQuantity = intent.getFloatExtra("foodQuantity",0);
-            foodCategory = intent.getStringExtra("foodCategory");
-            foodDesc = intent.getStringExtra("foodDesc");
-            edittext.setText(foodName);
+        else{ //requestCode == UPDATE_ENTRY_REQUEST, fill with current values of FoodItem
+            setTitle(getString(R.string.title_edit_food));
+            foodName = intent.getStringExtra(getString(R.string.food_name));
+            foodExpires = intent.getLongExtra(getString(R.string.food_expires),NO_EXP_DATE);
+            foodQuantity = intent.getFloatExtra(getString(R.string.food_quantity),0);
+            foodCategory = intent.getStringExtra(getString(R.string.food_category));
+            foodDesc = intent.getStringExtra(getString(R.string.food_description));
+
+            editTextName.setText(foodName);
             Date expDate = new Date(foodExpires);
             myCalendar.setTime(expDate);
             updateLabel();
             editTextQuantity.setText(Float.toString(foodQuantity));
-            if (foodCategory != "") categorySpinner.setSelection(categoryAdapter.getPosition(foodCategory));
-            textView1.setText(foodDesc);
+            if (foodCategory != "") categorySpinner.setSelection(categoryAdapter
+                    .getPosition(foodCategory));
+            textViewDescription.setText(foodDesc);
         }
 
 
-        theDateButt.setOnClickListener(new View.OnClickListener() {
+        dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 new DatePickerDialog(ManualEntry.this, date, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
-        Button addButt = (Button)findViewById(R.id.button2);
-        addButt.setOnClickListener(new View.OnClickListener() {
+        Button buttonAdd = findViewById(R.id.button_add);
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText edittext= (EditText) findViewById(R.id.editText3);
-                EditText edittext2= (EditText) findViewById(R.id.editText5);
-                EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
-                TextView textView1 = (TextView) findViewById(R.id.textView5);
-                String theName = edittext.getText().toString();
-                String theDate = edittext2.getText().toString();
+                EditText editTextName = findViewById(R.id.edit_text_name);
+                EditText editTextExpires = findViewById(R.id.edit_text_expires);
+                EditText editTextQuantity = findViewById(R.id.edit_text_quantity);
+                TextView textViewDescription = findViewById(R.id.text_view_description);
+                String theName = editTextName.getText().toString();
+                String theDate = editTextExpires.getText().toString();
                 String theQuantity = editTextQuantity.getText().toString();
-                String theDesc = textView1.getText().toString();
+                String theDesc = textViewDescription.getText().toString();
 
                 Intent resultInt = new Intent();
                 resultInt.putExtra("Result", "Done");
 
                 if(!theName.isEmpty()) {
-                    //If user enters in no expiration date, it will default a value far in the future
                     if(theDate.isEmpty()){
                         Date expDate = new Date(NO_EXP_DATE);
                         myCalendar.setTime(expDate);
@@ -128,53 +123,56 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
                     }
                     float theQuantityFloat = Float.parseFloat(theQuantity);
 
-                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat, mfoodCategory);
+                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat,
+                            mfoodCategory);
                     theFoodToBeAdded.setDescription(theDesc);
 
                     Calendar theDateAdded = Calendar.getInstance();
                     theDateAdded.getTime();
                     theFoodToBeAdded.setDateAdded(theDateAdded);
 
-                    if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntry.this).addFoodItem(theFoodToBeAdded);
+                    if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntry.this)
+                            .addFoodItem(theFoodToBeAdded);
                     else if(requestCode == UPDATE_ENTRY_REQUEST) {
                         FoodItem oldFoodItem = UserData.get(ManualEntry.this).getFoodItem(foodName);
-                        UserData.get(ManualEntry.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
+                        UserData.get(ManualEntry.this).updateFoodItem(theFoodToBeAdded,
+                                oldFoodItem);
                     }
-                    //go to the next screen passing FoodItem in...
+                    //return to My Cupboard screen
                     setResult(RESULT_OK, resultInt);
                     finish();
                 }
                 else {
-                    //signal to user required fields...
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ManualEntry.this);
+                    builder.setTitle(getString(R.string.alert_name_required));
+                    builder.setNeutralButton(getString(R.string.alert_ok),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                }
+                            }).show();
                 }
 
             }
 
         });
 
-        Button cancelButt = (Button)findViewById(R.id.button3);
-        cancelButt.setOnClickListener(new View.OnClickListener() {
+        Button buttonCancel = findViewById(R.id.button_cancel);
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent resultInt = new Intent();
                 resultInt.putExtra("Result", "Done");
-
                 setResult(RESULT_CANCELED, resultInt);
                 finish();
             }
         });
     }
 
-    public static Intent newIntent(Context packageContext, UUID manualEntryId) {
-        Intent intent = new Intent(packageContext, ManualEntry.class);
-        return intent;
-    }
-
     DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear,
                               int dayOfMonth) {
-            // TODO Auto-generated method stub
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -204,44 +202,49 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
     private void updateLabel() {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        EditText edittext= (EditText) findViewById(R.id.editText5);
+        EditText editTextExpires = findViewById(R.id.edit_text_expires);
         if(myCalendar.getTimeInMillis()!=NO_EXP_DATE)
-        edittext.setText(sdf.format(myCalendar.getTime()));
-        else edittext.setText("Never");
+        editTextExpires.setText(sdf.format(myCalendar.getTime()));
+        else editTextExpires.setText(getString(R.string.msg_never));
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         try {
-            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
+                    intent);
             if (scanResult != null) {
                 String[] upcArr = scanResult.toString().split("\n");
                 String[] theUpc = upcArr[1].split(": ");
                 Log.i("theTag", theUpc[1]);
                 if (android.os.Build.VERSION.SDK_INT > 9) {
-                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                            .permitAll()
+                            .build();
                     StrictMode.setThreadPolicy(policy);
                 }
                 ;
                 String theHTML = "";
                 try {
-                    theHTML = getHTML("https://api.upcitemdb.com/prod/trial/lookup?upc=" + theUpc[1]);
+                    theHTML = getHTML("https://api.upcitemdb.com/prod/trial/lookup?upc="
+                            + theUpc[1]);
                     Log.i("theHTML", theHTML);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 String[] theHTMLarr = theHTML.split(":");
-                if (theHTMLarr[1].split(",")[0].replaceAll("\"", "") != "INVALID_UPC") {
+                if (theHTMLarr[1].split(",")[0]
+                        .replaceAll("\"", "") != "INVALID_UPC") {
                     String[] theNamearr = theHTMLarr[6].split(",");
                     String theName = theNamearr[0];
                     String theDesc = theHTMLarr[7].substring(1,theHTMLarr[7].length()-7);
                     theName = theName.replaceAll("\"", "");
-                    EditText edittext = (EditText) findViewById(R.id.editText3);
-                    edittext.setText(theName);
-                    EditText edittext2 = (EditText) findViewById(R.id.editTextQuantity);
-                    edittext2.setText("1.0");
-                    TextView textView1 = (TextView) findViewById(R.id.textView5);
-                    textView1.setText(theDesc);
+                    EditText editTextName = findViewById(R.id.edit_text_name);
+                    editTextName.setText(theName);
+                    EditText editTextQuantity = findViewById(R.id.edit_text_quantity);
+                    editTextQuantity.setText("1.0");
+                    TextView textViewDesc = findViewById(R.id.text_view_description);
+                    textViewDesc.setText(theDesc);
                     Log.i("tag2", theDesc);
                 }
             }
@@ -249,7 +252,6 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
         catch (Exception e) {
             Log.i("theError", e.toString());
         }
-        // else continue with any other code you need in the method
     }
 
     public static String getHTML(String urlToRead) throws Exception {
@@ -267,8 +269,6 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
     }
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
-        // An item was selected. You can retrieve the selected item using
-        //parent.getItemAtPosition(pos);
         mfoodCategory = parent.getItemAtPosition(pos).toString();
     }
 

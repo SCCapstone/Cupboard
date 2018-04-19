@@ -22,6 +22,8 @@
     <string name="title_cupboard">My Cupboard</string>
     <string name="title_recipes">My Recipes</string>
     <string name="title_lists">My Shopping Lists</string>
+    <string name="title_new_food">New Food Item</string>
+    <string name="title_edit_food">Edit Food Item</string>
 
     <string name="nav_label_dashboard">Dashboard</string>
 
@@ -30,10 +32,22 @@
     <string name="button_sign_in">Sign In</string>
     <string name="button_create_account">Create Account</string>
     <string name="description_delete_item">Delete item</string>
+    <string name="description_none">None</string>
 
     <string-array name="sort_choices"><item>Alphabetically</item><item>Expiration</item></string-array>
-
     <string-array name="food_categories"><item>Pantry</item><item>Fridge</item><item>Freezer</item></string-array>
+
+    <string name="request_code">requestCode</string>
+    <string name="food_name">foodName</string>
+    <string name="food_expires">foodExpires</string>
+    <string name="food_quantity">foodQuantity</string>
+    <string name="food_category">foodCategory</string>
+    <string name="food_description">foodDescription</string>
+
+    <string name="alert_name_required">Please enter a value in the \"Name\" field</string>
+    <string name="alert_ok">OK</string>
+
+    <string name="msg_never">Never</string>
 
 
 </resources>

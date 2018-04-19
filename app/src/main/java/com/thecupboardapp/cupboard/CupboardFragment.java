@@ -263,7 +263,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ManualEntry.class);
-                intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
+                intent.putExtra(getString(R.string.request_code), NEW_ENTRY_REQUEST);
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
         });
@@ -328,9 +328,9 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                 convertView = inf.inflate(R.layout.list_item, parent, false);
                 holder = new ViewHolder();
 
-                holder.text = (TextView) convertView.findViewById(R.id.lblListItem);
-                holder.editButton = (ImageButton) convertView.findViewById(R.id.edit_food_button);
-                holder.addToListButton = (ImageButton) convertView.findViewById(R.id.add_food_to_list_button);
+                holder.text = convertView.findViewById(R.id.lblListItem);
+                holder.editButton = convertView.findViewById(R.id.edit_food_button);
+                holder.addToListButton = convertView.findViewById(R.id.add_food_to_list_button);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -341,15 +341,16 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             holder.editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Toast.makeText(v.getContext(),"Need to update " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
                     FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
                     Intent intent = new Intent(getActivity(), ManualEntry.class);
-                    intent.putExtra("foodName", foodToUpdate.getName());
-                    intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
-                    intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
-                    intent.putExtra("foodCategory", foodToUpdate.getCategory());
-                    intent.putExtra("foodDesc", foodToUpdate.getDescription());
-                    intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
+                    intent.putExtra(getString(R.string.food_name), foodToUpdate.getName());
+                    intent.putExtra(getString(R.string.food_expires),
+                            foodToUpdate.getExpirationAsLong());
+                    intent.putExtra(getString(R.string.food_quantity), foodToUpdate.getQuantity());
+                    intent.putExtra(getString(R.string.food_category), foodToUpdate.getCategory());
+                    intent.putExtra(getString(R.string.food_description),
+                            foodToUpdate.getDescription());
+                    intent.putExtra(getString(R.string.request_code), UPDATE_ENTRY_REQUEST);
                     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
                 }
             });
