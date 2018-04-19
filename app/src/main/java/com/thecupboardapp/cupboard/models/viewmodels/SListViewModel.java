@@ -14,6 +14,7 @@ import com.thecupboardapp.cupboard.database.SListItemDao;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,32 +51,33 @@ public class SListViewModel extends AndroidViewModel{
     }
 
     // Get the list titles and sort them using a method
-    public void sort(int method, List<SList> sLists){
+    public void sort(int method, List<SList> sLists) {
+        List<SList> sortedList = new ArrayList<>(sLists);
         AsyncTask.execute(() -> {
             switch (method) {
                 case SORT_ALPHABETICAL: {
                     Log.d(TAG, "sort: " + sLists);
-                    Collections.sort(sLists, (sListA, sListB) ->
+                    Collections.sort(sortedList, (sListA, sListB) ->
                             sListA.getName().compareToIgnoreCase(sListB.getName()));
                     break;
                 }
                 case SORT_LAST_MODIFIED: {
-                    Collections.sort(sLists, (sListA, sListB) ->
+                    Collections.sort(sortedList, (sListA, sListB) ->
                             Long.compare(sListB.getLastModified(), sListA.getLastModified()));
                     break;
                 }
                 case SORT_DATE_CREATED: {
-                    Collections.sort(sLists, (sListA, sListB) ->
+                    Collections.sort(sortedList, (sListA, sListB) ->
                             Long.compare(sListA.getId(), sListB.getId()));
                     break;
                 }
             }
 
-            for (int i = 0; i < sLists.size(); i++){
-                sLists.get(i).setIndex(i);
+            for (int i = 0; i < sortedList.size(); i++){
+                sortedList.get(i).setIndex(i);
             }
 
-            mSListDao.update(sLists);
+            mSListDao.update(sortedList);
         });
     }
 }

@@ -56,13 +56,11 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
     }
 
     public void swap(List<SList> sLists) {
-        AsyncTask.execute(() -> {
-            SListDiffCallback callback = new SListDiffCallback(this.mSLists, sLists);
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
-            mSLists.clear();
-            mSLists.addAll(sLists);
-            diffResult.dispatchUpdatesTo(this);
-        });
+        SListDiffCallback callback = new SListDiffCallback(this.mSLists, sLists);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
+        mSLists.clear();
+        mSLists.addAll(sLists);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     private class SListDiffCallback extends DiffUtil.Callback {
@@ -99,7 +97,6 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
     }
 
     static class SListHolder extends RecyclerView.ViewHolder {
-        private static final String TAG = "SListHolder";
         private TextView mTitleTextView;
 
         public SListHolder(LayoutInflater inflater, ViewGroup parent) {

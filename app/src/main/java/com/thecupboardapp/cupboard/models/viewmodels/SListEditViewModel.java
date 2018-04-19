@@ -53,8 +53,14 @@ public class SListEditViewModel extends AndroidViewModel{
         });
     }
 
+    public void updateSList(SList sList) {
+        AsyncTask.execute(() -> {
+            mSListDao.update(sList);
+        });
+    }
+
     // Put a new list into the database
-    public long newList(SList sList) {
+    public long insertSList(SList sList) {
         return mSListDao.insertList(sList);
     }
 

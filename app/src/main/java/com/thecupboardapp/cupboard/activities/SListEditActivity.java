@@ -20,17 +20,14 @@ import com.thecupboardapp.cupboard.adapters.SListItemAdapter;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
 import com.thecupboardapp.cupboard.models.viewmodels.SListEditViewModel;
-import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class SListEditActivity extends AppCompatActivity {
@@ -159,22 +156,21 @@ public class SListEditActivity extends AppCompatActivity {
 
         alert.setPositiveButton("Yes", (dialog, whichButton) -> {
             if (sListIdExtra == -1) {
-                SList newList = new SList(getTitle().toString(), 99);
-                Observable.fromCallable(() -> mSListEditViewModel.newList(newList)).subscribeOn(Schedulers.io())
+                SList newList = new SList(getTitle().toString());
+                Observable.fromCallable(() -> mSListEditViewModel.insertSList(newList))
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(o -> {
-                            mAdapter.setParentId(o);
-
+                        .subscribe(primaryKey -> {
+                            newList.setIndex(primaryKey.intValue());
+                            mSListEditViewModel.updateSList(newList);
+                            mAdapter.setParentId(primaryKey);
                             mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
-                            mSListEditViewModel.updateListTitle(sListIdExtra, getTitle().toString());
-                            mSListEditViewModel.updateLastModified(sListIdExtra);
                         });
             } else {
                 mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
                 mSListEditViewModel.updateListTitle(sListIdExtra, getTitle().toString());
                 mSListEditViewModel.updateLastModified(sListIdExtra);
             }
-
 
             super.onBackPressed();
         });

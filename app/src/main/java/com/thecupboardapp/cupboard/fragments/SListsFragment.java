@@ -81,7 +81,6 @@ public class SListsFragment extends Fragment{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(sLists -> {
                     if (mAdapter == null) {
-                        Log.d(TAG, "onStart: first run null");
                         mAdapter = new SListAdapter(sLists);
                         mSListsRecyclerView.setAdapter(mAdapter);
                     } else {

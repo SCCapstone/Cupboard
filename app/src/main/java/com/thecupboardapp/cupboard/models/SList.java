@@ -33,9 +33,16 @@ public class SList {
     }
 
     @Ignore
+    public SList(String name) {
+        this.name = name;
+        this.lastModified = System.currentTimeMillis();
+    }
+
+    @Ignore
     public SList(String name, int index) {
         this.name = name;
         this.index = index;
+        this.lastModified = System.currentTimeMillis();
     }
 
     public long getId() {
