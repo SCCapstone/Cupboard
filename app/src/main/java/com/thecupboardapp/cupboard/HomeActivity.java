@@ -28,10 +28,8 @@ public class HomeActivity extends AppCompatActivity
 
     private final String TAG = "HomeActivity";
 
-    private ImageView mNavHeader;
-
     private TextView navEmail;
-    private TextView navId;
+    //private TextView navId;
 
     static final int SIGN_IN_REQUEST_CODE = 1;
 
@@ -60,7 +58,7 @@ public class HomeActivity extends AppCompatActivity
         fm.beginTransaction().add(R.id.fragment_container, new HomeFragment()).commit();
 
         // Set up the navigation drawer.
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         // Add the toggle to the appbar.
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -73,12 +71,12 @@ public class HomeActivity extends AppCompatActivity
         View headerview = navigationView.getHeaderView(0);
 
         navEmail = (TextView) headerview.findViewById(R.id.nav_header_email);
-        navId = (TextView) headerview.findViewById(R.id.nav_header_id);
+        //navId = (TextView) headerview.findViewById(R.id.nav_header_id);
 
         // Set the email and id if the user is logged in
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             navEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            //navId.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
         }
 
         headerview.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +93,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // If the drawer is open and back is pressed, close it.
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -170,13 +168,13 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
 
             navEmail.setText(R.string.nav_header_title);
-            navId.setText(R.string.nav_header_subtitle);
+            //navId.setText(R.string.nav_header_subtitle);
 
             UserData.get(this).reset();
             recreate();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
