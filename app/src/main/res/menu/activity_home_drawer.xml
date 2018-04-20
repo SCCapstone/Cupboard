@@ -7,7 +7,7 @@
         android:id="@+id/group_nav"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/nav_dashboard"
             android:icon="@drawable/ic_menu_home"
             android:title="@string/nav_label_home" />
         <item
@@ -19,7 +19,7 @@
             <!--android:icon="@drawable/ic_menu_create"-->
             <!--android:title="@string/nav_label_recipes" />-->
         <item
-            android:id="@+id/nav_lists"
+            android:id="@+id/nav_slists"
             android:icon="@drawable/ic_menu_list"
             android:title="@string/nav_label_lists" />
     </group>

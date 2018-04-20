@@ -101,8 +101,12 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         return v;
     }
 
-
-
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+        mFoodItemDisposable.dispose();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){

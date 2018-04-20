@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -25,17 +26,33 @@ import com.thecupboardapp.cupboard.fragments.SListsFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final String TAG = "HomeActivity";
+    public static final int SIGN_IN_REQUEST_CODE = 1;
 
-    private final String TAG = "HomeActivity";
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
+    private View mHeaderView;
 
-    static final int SIGN_IN_REQUEST_CODE = 1;
+    private int currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        currentFragment = R.layout.activity_home;
+
+        mToolbar = findViewById(R.id.toolbar);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mNavigationView = findViewById(R.id.nav_view);
+        mHeaderView = mNavigationView.getHeaderView(0);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        setSupportActionBar(mToolbar);
 
         UserData.get(this);
 
@@ -43,17 +60,14 @@ public class HomeActivity extends AppCompatActivity
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction().add(R.id.fragment_container, new DashboardFragment()).commit();
 
-        // Set up the navigation drawer.
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         // Add the toggle to the appbar.
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navView = findViewById(R.id.nav_view);
-        navView.setNavigationItemSelectedListener(this);
-        View headerView = navView.getHeaderView(0);
+        // Set up the navigation drawer.
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         // Set the email and id if the user is logged in
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -62,7 +76,7 @@ public class HomeActivity extends AppCompatActivity
             setHeaderText(email, id);
         }
 
-        headerView.setOnClickListener(v -> {
+        mHeaderView.setOnClickListener(v -> {
             Intent intent = SignInActivity.newIntent(HomeActivity.this);
             startActivityForResult(intent, SIGN_IN_REQUEST_CODE);
         });
@@ -71,9 +85,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // If the drawer is open and back is pressed, close it.
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -101,24 +114,32 @@ public class HomeActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (currentFragment == item.getItemId()) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+        }
+
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = null;
 
         switch(item.getItemId()) {
-            case R.id.nav_home: {
+            case R.id.nav_dashboard: {
                 fragment = new DashboardFragment();
+                currentFragment = R.id.nav_dashboard;
                 break;
             }
             case R.id.nav_cupboard: {
                 fragment = new CupboardFragment();
+                currentFragment = R.id.nav_cupboard;
                 break;
             }
             // case R.id.nav_recipes: {
             //     fragment = new RecipesFragment();
             //     break;
             // }
-            case R.id.nav_lists: {
+            case R.id.nav_slists: {
                 fragment = new SListsFragment();
+                currentFragment = R.id.nav_slists;
                 break;
             }
             case R.id.nav_logout: {
@@ -131,22 +152,21 @@ public class HomeActivity extends AppCompatActivity
                 break;
             }
         }
+
         if (fragment != null) {
             fm.beginTransaction().replace(R.id.fragment_container, fragment).commit();
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     private void setHeaderText(String primaryText, String secondaryText) {
-        NavigationView navView = findViewById(R.id.nav_view);
-        View headerView = navView.getHeaderView(0);
-        TextView primaryEditText = headerView.findViewById(R.id.nav_header_primary);
-        TextView secondaryEditText = headerView.findViewById(R.id.nav_header_secondary);
+        TextView headerPrimary = mHeaderView.findViewById(R.id.nav_header_primary);
+        TextView headerSecondary = mHeaderView.findViewById(R.id.nav_header_secondary);
 
-        primaryEditText.setText(primaryText);
-        secondaryEditText.setText(secondaryText);
+        headerPrimary.setText(primaryText);
+        headerSecondary.setText(secondaryText);
     }
 }
