@@ -1,7 +1,13 @@
 package com.thecupboardapp.cupboard.models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+
 import com.google.firebase.database.Exclude;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,162 +17,145 @@ import java.util.UUID;
  * Created by Kyle on 1/12/2018.
  */
 
+@Entity(tableName = "food_items")
 public class FoodItem implements Comparable<FoodItem> {
-    private UUID mId;
-    private String mFirebaseId;
-    private String mName;
-    private float mQuantity;
-    private String mUnits;
-    private String mCategory;
-    private Calendar mExpiration;
-    private Calendar mDateAdded;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-    private String mDescription;
 
-    public FoodItem() {
-        mId = UUID.randomUUID();
-        mName = "apple";
-        mQuantity = 1;
-        Date exp = new Date(2001,1,1);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(exp);
-        mExpiration = cal;
-        mDescription = "None";
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+
+    private String name;
+    private int index;
+    private float quantity;
+    private String units;
+    private String description;
+    private String category;
+
+    @ColumnInfo(name = "date_added")
+    private long dateAdded;
+    private long expiration;
+
+    @ColumnInfo(name = "firebase_key")
+    private String firebaseKey;
+
+    public FoodItem() {}
+
+    public FoodItem(String name) {
+        this.name = name;
     }
 
-    public FoodItem(String aName, Calendar aExpiration) {
-        mName = aName;
-        mExpiration = aExpiration;
+    public FoodItem(String name, long expiration) {
+        this.name = name;
+        this.expiration = expiration;
     }
 
-    public FoodItem(String aName, Calendar aExpiration, float aQuantity) {
-        mName = aName;
-        mExpiration = aExpiration;
-        mQuantity = aQuantity;
+    public FoodItem(String name, long expiration, float quantity) {
+        this.name = name;
+        this.expiration = expiration;
+        this.quantity = quantity;
     }
 
-    public FoodItem(String aName, Calendar aExpiration, float aQuantity, String aCategory) {
-        mName = aName;
-        mExpiration = aExpiration;
-        mQuantity = aQuantity;
-        mCategory = aCategory;
+    public FoodItem(String name, long expiration, float quantity, String category) {
+        this.name = name;
+        this.expiration = expiration;
+        this.quantity = quantity;
+        this.category = category;
     }
 
-    public FoodItem(String aName) {
-        mName = aName;
+    public long getId() {
+        return id;
     }
 
-    public UUID getId() {
-        return mId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
     public float getQuantity() {
-        return mQuantity;
+        return quantity;
     }
 
     public void setQuantity(float quantity) {
-        mQuantity = quantity;
-    }
-
-    @Exclude
-    public Calendar getExpiration() {
-        return mExpiration;
-    }
-
-    @Exclude
-    public void setExpiration(Calendar expiration) {
-        mExpiration = expiration;
-    }
-
-    @Exclude
-    public void setExpiration(Date expiration){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(expiration);
-        //Log.d("set expiration", "done");
-        mExpiration = cal;
-    }
-
-    public long getExpirationAsLong(){
-        return mExpiration.getTimeInMillis();
-    }
-
-    @Exclude
-    public String getExpirationAsString(){
-        return sdf.format(mExpiration.getTime());
+        this.quantity = quantity;
     }
 
     public String getUnits() {
-        return mUnits;
+        return units;
     }
 
     public void setUnits(String units) {
-        mUnits = units;
+        this.units = units;
     }
 
     public String getCategory() {
-        return mCategory;
+        return category;
     }
 
     public void setCategory(String category) {
-        mCategory = category;
+        this.category = category;
     }
 
-    public String getDescription() { return mDescription; }
-
-    public void setDescription(String description) { mDescription = description; }
-
-    public String getFirebaseId() {
-        return mFirebaseId;
+    public long getExpiration() {
+        return expiration;
     }
 
-    public void setFirebaseId(String firebaseId) {
-        mFirebaseId = firebaseId;
+    public void setExpiration(long expiration) {
+        this.expiration = expiration;
     }
 
-    @Exclude
-    public Calendar getDateAdded() {
-        return mDateAdded;
+    public long getDateAdded() {
+        return dateAdded;
     }
 
-    public long getDateAddedAsLong(){
-        return mDateAdded.getTimeInMillis();
-        //return 7;
+    public void setDateAdded(long dateAdded) {
+        this.dateAdded = dateAdded;
     }
 
-    @Exclude
-    public String getDateAddedAsString() {
-        return sdf.format(mDateAdded.getTime());
+    public String getFirebaseKey() {
+        return firebaseKey;
     }
 
-    @Exclude
-    public void setDateAdded(Calendar dateAdded) {
-        mDateAdded = dateAdded;
+    public void setFirebaseKey(String firebaseKey) {
+        this.firebaseKey = firebaseKey;
     }
 
-    @Exclude
-    public void setDateAdded(Date dateAdded){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dateAdded);
-        mDateAdded = cal;
+    public String getDescription() {
+        return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Ignore
+    public static String longToDate(long dateInMillis) {
+        return SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM).format(dateInMillis);
+    }
+
+    @Ignore
     public int compareTo(FoodItem f2) {
-        long l = this.getExpirationAsLong() - f2.getExpirationAsLong();
-        //return Math.toIntExact(Long.parseLong(f1.getExpiration()) - Long.parseLong(f2.getExpiration()));
-        if (l<0) return -1;
-        else if(l>0) return 1;
-        else return 0;//values equal
+        long comparison = this.expiration - f2.getExpiration();
+
+        if (comparison < 0) {
+            return -1;
+        } else if(comparison > 0) {
+            return 1;
+        } else {
+            return 0; // Values are equal
+        }
     }
-
-
 }
-
-

@@ -12,7 +12,7 @@
         />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/button_add_food"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/button1"

@@ -8,5 +8,6 @@
     <color name="lightGreen">#679289</color>
     <color name="tan">#F4C095</color>
     <color name="darkGray">#2E3138</color>
+    <color name="lightGray">#d3d3d3</color>
     <color name="red">#EE2E31</color>
 </resources>

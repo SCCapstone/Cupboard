@@ -1,12 +1,12 @@
 package com.thecupboardapp.cupboard.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,27 +14,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
-import android.widget.NumberPicker;
-import android.support.v7.widget.SearchView;
-import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.thecupboardapp.cupboard.R;
-import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
+import com.thecupboardapp.cupboard.adapters.CupboardExpandableListAdapter;
 import com.thecupboardapp.cupboard.models.FoodItem;
+import com.thecupboardapp.cupboard.models.viewmodels.CupboardViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,38 +35,80 @@ import static android.app.Activity.RESULT_OK;
  * Created by Kyle on 1/12/2018.
  */
 
-public class CupboardFragment extends Fragment
-implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
-    ExpandableListView lv;
+public class CupboardFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
+    public static final String TAG = "CupboardFragment";
+
+    ExpandableListView mExpandableListView;
+    private CupboardExpandableListAdapter mAdapter;
+
     private String mCategoryShown = "";
+
     private String[] groups;
     private String[] fullGroups;
     private String[][] children;
     private String[][] fullChildren;
-    private ExpandableListAdapter mAdapter;
+
     private FloatingActionButton manEntFAB;
+
     private int NEW_ENTRY_REQUEST = 0;
     private int UPDATE_ENTRY_REQUEST = 1;
     private int SHOW_REQUEST = 2;
     long NO_EXP_DATE = 4133987474999L;
-    private List<FoodItem> mFoodItems;
+
+    private Disposable mFoodItemDisposable;
+
+    private CupboardViewModel mCupboardViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            updateFoods();
-            setListener();
-            getActivity().setTitle(R.string.title_cupboard);
-        }
         setHasOptionsMenu(true);
+
+        mCupboardViewModel = ViewModelProviders.of(this).get(CupboardViewModel.class);
     }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_cupboard, container, false);
+
+        mExpandableListView = v.findViewById(R.id.accordion);
+        manEntFAB = v.findViewById(R.id.add_food_fab);
+
+        mFoodItemDisposable = mCupboardViewModel.getFoodItemFlowable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(items -> {
+                    mCupboardViewModel.setFoodItems(items);
+                    updateFoods(items);
+
+                    mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
+
+                    if (mExpandableListView != null){
+                        mExpandableListView.setAdapter(mAdapter);
+                        mExpandableListView.setGroupIndicator(null);
+                    }
+                });
+
+
+        manEntFAB.setOnClickListener(v1 -> {
+            Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
+            intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
+            startActivityForResult(intent, NEW_ENTRY_REQUEST);
+        });
+
+        return v;
+    }
+
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.cupboard_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
+
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
@@ -102,10 +137,10 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.menu_sort_alphabetically:
-                sortAlphabetically();
+                mCupboardViewModel.sort(CupboardViewModel.SORT_ALPHABETICAL);
                 return true;
             case R.id.menu_sort_expires_soon:
-                sortExpiresSoon();
+                mCupboardViewModel.sort(CupboardViewModel.SORT_EXPIRATION);
                 return true;
             case R.id.menu_show_pantry:
                 showByCategory("Pantry");
@@ -117,380 +152,81 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                 showByCategory("Freezer");
                 return true;
             case R.id.menu_show_all:
-                showAll();
+                showByCategory("All");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void sortAlphabetically(){
-        UserData.get(getActivity()).sortFoodItems("alphabetically");
-        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
-    }
-
-    public void sortExpiresSoon(){
-        UserData.get(getActivity()).sortFoodItems("expiresSoon");
-        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
-    }
-
     public void showByCategory(String aCategory){
         String[] newGroups;
         ArrayList<FoodItem> newGroupsList = new ArrayList<>();
 
-        for(FoodItem item: mFoodItems){
-
-            if(item.getCategory().equals(aCategory)){
-                newGroupsList.add(item);
+        if (aCategory.equals("All")) {
+            newGroupsList.addAll(mCupboardViewModel.getFoodItems());
+            mCategoryShown = "";
+        } else {
+            for (FoodItem item: mCupboardViewModel.getFoodItems()){
+                if(item.getCategory().equals(aCategory)){
+                    newGroupsList.add(item);
+                }
             }
-
+            mCategoryShown = aCategory;
         }
+
         newGroups = new String[newGroupsList.size()];
-        for(int i=0;i<newGroupsList.size();i++){
+        for (int i = 0; i < newGroupsList.size(); i++){
             newGroups[i] = newGroupsList.get(i).getName();
         }
 
-        mCategoryShown = aCategory;
+
         groups = newGroups;
         onActivityResult(SHOW_REQUEST,RESULT_OK,null);
-    }
-
-    public void showAll(){
-        mCategoryShown = "";
-        onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
             if (resultCode == RESULT_OK) {
-                updateFoods();
+                // updateFoods();
                 //mAdapter.notifyDataSetChanged();
-                mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
-                lv.setAdapter(mAdapter);
+                mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
+                mExpandableListView.setAdapter(mAdapter);
             }
         }
         else if(requestCode == SHOW_REQUEST){
             if (resultCode == RESULT_OK) {
-                mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
-                lv.setAdapter(mAdapter);
+                mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
+                mExpandableListView.setAdapter(mAdapter);
             }
         }
     }
 
-    public void setListener(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        DatabaseReference refFood;
-        if (user!=null){
-            refFood = database.getReference("foods/" + user.getUid());
-            refFood.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
-
-    public void updateFoods() {
-        //getActivity().setTitle(R.string.title_cupboard);
-        mFoodItems = UserData.get(getActivity()).getFoodItems();
+    public void updateFoods(List<FoodItem> mFoodItems) {
         groups = new String[mFoodItems.size()];
         fullGroups = new String[mFoodItems.size()];
         children = new String[mFoodItems.size()][1];
         fullChildren = new String[mFoodItems.size()][1];
 
-        for(int i=0;i<mFoodItems.size();i++){
+        for(int i = 0; i < mFoodItems.size(); i++){
             groups[i] = mFoodItems.get(i).getName();
             fullGroups[i] = groups[i];
 
             String info = "Expires: ";
-            if(mFoodItems.get(i).getExpirationAsLong() == NO_EXP_DATE) {info = info.concat("Never");}
-            else {info = info.concat(mFoodItems.get(i).getExpirationAsString());}
+            if (mFoodItems.get(i).getExpiration() == NO_EXP_DATE) {
+                info = info.concat("Never");
+            } else {
+                info = info.concat(FoodItem.longToDate(mFoodItems.get(i).getExpiration()));
+            }
 
-            info = info.concat("\nDate Added: " + mFoodItems.get(i).getDateAddedAsString());
+            info = info.concat("\nDate Added: " + FoodItem.longToDate(mFoodItems.get(i).getDateAdded()));
             info = info.concat("\nDescription: " + mFoodItems.get(i).getDescription());
             children[i][0] = info;
             fullChildren[i][0] = children[i][0];
         }
-        if(!mCategoryShown.equals("")) showByCategory(mCategoryShown);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            View v = inflater.inflate(R.layout.fragment_sign_in, container, false);
-            return v;
-        }
-
-        View v = inflater.inflate(R.layout.fragment_cupboard, container, false);
-        return v;
-    }
-
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
-        lv = (ExpandableListView) view.findViewById(R.id.accordion);
-        if (lv!=null){
-            lv.setAdapter(mAdapter);
-            lv.setGroupIndicator(null);
-        }
-
-        manEntFAB = (FloatingActionButton)view.findViewById(R.id.add_food_fab);
-        if(manEntFAB!=null)
-        manEntFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
-                intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
-                startActivityForResult(intent, NEW_ENTRY_REQUEST);
-            }
-        });
-
-    }
-
-    public class ExpandableListAdapter extends BaseExpandableListAdapter {
-        private final LayoutInflater inf;
-        private String[] groups;
-        private String[] fullGroups;
-        private String[][] children;
-        private String[][] fullChildren;
-
-        public ExpandableListAdapter(String[] groups, String[] fullGroups, String[][] children, String[][] fullChildren) {
-            this.groups = groups;
-            this.fullGroups = fullGroups;
-            this.children = children;
-            this.fullChildren = fullChildren;
-            inf = LayoutInflater.from(getActivity());
-        }
-
-        @Override
-        public int getGroupCount() {
-            return groups.length;
-        }
-
-        @Override
-        public int getChildrenCount(int groupPosition) {
-            return children[groupPosition].length;
-        }
-
-        @Override
-        public Object getGroup(int groupPosition) {
-            return groups[groupPosition];
-        }
-
-        @Override
-        public Object getChild(int groupPosition, int childPosition) {
-            return children[groupPosition][childPosition];
-        }
-
-        @Override
-        public long getGroupId(int groupPosition) {
-            return groupPosition;
-        }
-
-        @Override
-        public long getChildId(int groupPosition, int childPosition) {
-            return childPosition;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-
-            ViewHolder holder;
-            if (convertView == null) {
-                convertView = inf.inflate(R.layout.list_item, parent, false);
-                holder = new ViewHolder();
-
-                holder.text = (TextView) convertView.findViewById(R.id.lblListItem);
-                holder.editButton = (ImageButton) convertView.findViewById(R.id.edit_food_button);
-                holder.addToListButton = (ImageButton) convertView.findViewById(R.id.add_food_to_list_button);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            holder.text.setText(getChild(groupPosition, childPosition).toString());
-            holder.editButton.setFocusable(false);
-            holder.editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Toast.makeText(v.getContext(),"Need to update " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                    Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
-                    intent.putExtra("foodName", foodToUpdate.getName());
-                    intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
-                    intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
-                    intent.putExtra("foodCategory", foodToUpdate.getCategory());
-                    intent.putExtra("foodDesc", foodToUpdate.getDescription());
-                    intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
-                    startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
-                }
-            });
-
-            holder.addToListButton.setFocusable(false);
-            // holder.addToListButton.setOnClickListener(new View.OnClickListener() {
-            //     @Override
-            //     public void onClick(View v) {
-            //         //Toast.makeText(v.getContext(),"Need to add to a list: " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-            //         String foodName = getGroup(groupPosition).toString();
-            //         final SListItem foodToAdd = new SListItem(foodName);
-            //
-            //         final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
-            //         final CharSequence choices[] = new CharSequence[lists.length+1];
-            //         for(int i=0;i<choices.length;i++){
-            //             if (i!=choices.length-1) choices[i] = lists[i];
-            //             else choices[i] = "Add to a New List";
-            //         }
-            //         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-            //         builder.setTitle("Which list would you like to add " + foodName + " to?");
-            //         builder.setItems(choices, new DialogInterface.OnClickListener() {
-            //             @Override
-            //             public void onClick(DialogInterface dialog, int which) {
-            //                 //user clicked on choices[which]
-            //                 SList list;
-            //                 if (which==choices.length-1) {
-            //                     list = new SList();
-            //                     UserData.get(getActivity()).addShoppingList(list);
-            //                 }
-            //                 else
-            //                 list = UserData.get(getActivity()).getShoppingList(choices[which].toString());
-            //                 list.addShoppingListItem(foodToAdd);
-            //                 Toast.makeText(getContext(),"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
-            //             }
-            //         });
-            //         builder.show();
-            //
-            //
-            //     }
-            // });
-
-            return convertView;
-        }
-
-        @Override
-        public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            final ViewHolder holder;
-
-            if (convertView == null) {
-                convertView = inf.inflate(R.layout.list_group, parent, false);
-
-                holder = new ViewHolder();
-                holder.text = (TextView) convertView.findViewById(R.id.lblListHeader);
-                holder.deleteButton = (ImageButton) convertView.findViewById(R.id.delete_food_button);
-                holder.quantityButton = (Button) convertView.findViewById(R.id.quantity_button);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            holder.quantityButton.setFocusable(false);
-            holder.quantityButton.setText(String.valueOf((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity())));
-            holder.quantityButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final NumberPicker numberPicker = new NumberPicker(getActivity());
-                    final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
-                        @Override
-                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                            FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                            foodToBeChanged.setQuantity(newVal);
-                            UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
-                        }
-                    };
-                    numberPicker.setMinValue(0);
-                    numberPicker.setMaxValue(999);
-                    numberPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setView(numberPicker);
-                    builder.setTitle("Change the quantity");
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
-                        }
-                    });
-                    builder.setView(numberPicker);
-                    builder.show();
-                }
-            });
-            holder.text.setText(getGroup(groupPosition).toString());
-            holder.deleteButton.setFocusable(false);
-            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Toast.makeText(v.getContext(),"Need to delete " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-                    FoodItem foodToDelete = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-                    UserData.get(getActivity()).removeFoodItem(foodToDelete);
-                    onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
-                }
-            });
-
-            return convertView;
-        }
-
-        @Override
-        public boolean isChildSelectable(int groupPosition, int childPosition) {
-            return true;
-        }
-
-        public void filterData(String query){
-
-            query = query.toLowerCase();
-            Log.v("MyListAdapter", String.valueOf(groups.length));
-            String[] newGroups;
-            String[][] newChildren;
-            ArrayList<String> newGroupsList = new ArrayList<>();
-            ArrayList<String> newChildrenList = new ArrayList<>();
-
-            if(query.isEmpty()){
-                updateFoods();
-                newGroups = fullGroups;
-                newChildren = fullChildren;
-            }
-            else {
-                int i=0;
-                for(String foodName: fullGroups){
-                    if(foodName.toLowerCase().contains(query)){
-                        newGroupsList.add(foodName);
-                        newChildrenList.add(fullChildren[i][0]);
-                    }
-                    i++;
-                }
-                newGroups = new String[newGroupsList.size()];
-                newChildren = new String[newChildrenList.size()][1];
-                for(i=0;i<newGroupsList.size();i++){
-                    newGroups[i] = newGroupsList.get(i);
-                    newChildren[i][0] = newChildrenList.get(i);
-                }
-
-            }
-
-            Log.v("MyListAdapter", String.valueOf(newGroupsList.size()));
-            groups = newGroups;
-            children = newChildren;
-            notifyDataSetChanged();
-
-        }
-
-        private class ViewHolder {
-            TextView text;
-            ImageButton deleteButton;
-            Button quantityButton;
-            ImageButton editButton;
-            ImageButton addToListButton;
+        if(!mCategoryShown.equals("")) {
+            showByCategory(mCategoryShown);
         }
     }
 }

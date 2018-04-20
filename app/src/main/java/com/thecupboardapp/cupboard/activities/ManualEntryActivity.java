@@ -1,6 +1,7 @@
 package com.thecupboardapp.cupboard.activities;
 
 import android.app.DatePickerDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.StrictMode;
@@ -8,13 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -25,6 +24,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.models.FoodItem;
+import com.thecupboardapp.cupboard.models.viewmodels.ManualEntryViewModel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -34,155 +34,165 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class ManualEntryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    public static final long NO_EXP_DATE = 4133987474999L;
+    public static final long NEW_ENTRY_REQUEST = 0;
+    public static final long UPDATE_ENTRY_REQUEST = 1;
 
-    Calendar myCalendar = Calendar.getInstance();
-    long NO_EXP_DATE = 4133987474999L;
-    private int NEW_ENTRY_REQUEST = 0;
-    private int UPDATE_ENTRY_REQUEST = 1;
-    String mfoodCategory = "";
+    private EditText mNameEditText;
+    private ImageButton mCalendarButton;
+    private EditText mQuantityEditText;
+    private TextView mDescription;
+    private Spinner mCategorySpinner;
+    private Button mAddButton;
+    private Button mCancelButton;
+
+    private Disposable mFoodDisposable;
+    private ManualEntryViewModel mManualEntryViewModel;
+
+    private long mRequestCode;
+    private Calendar mCalendar;
+    private String mFoodCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_entry);
-        Intent intent = getIntent();
-        final int requestCode = intent.getIntExtra("requestCode", NEW_ENTRY_REQUEST);
-        EditText edittext= (EditText) findViewById(R.id.editText3);
-        ImageButton theDateButt = (ImageButton) findViewById(R.id.imageButton);
-        EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
-        TextView textView1 = (TextView) findViewById(R.id.textView5);
-        textView1.setText("None");
 
-        Spinner categorySpinner = (Spinner) findViewById(R.id.foodCategorySpinner);
-        //ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this, R.array.food_categories,android.R.layout.simple_spinner_item);
-        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this, R.array.food_categories,R.layout.spinner_layout);
-        //categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mNameEditText = findViewById(R.id.edit_food_name);
+        mQuantityEditText = findViewById(R.id.edit_quantity);
+        mCalendarButton = findViewById(R.id.image_button_calendar);
+        mDescription = findViewById(R.id.text_description);
+        mCategorySpinner = findViewById(R.id.spinner_category);
+        mAddButton = findViewById(R.id.button_add_food);
+        mCancelButton = findViewById(R.id.button_cancel_food);
+
+        mManualEntryViewModel = ViewModelProviders.of(this).get(ManualEntryViewModel.class);
+
+        mCalendar = Calendar.getInstance();
+        mFoodCategory = "";
+        mRequestCode = getIntent().getLongExtra("mRequestCode", NEW_ENTRY_REQUEST);
+
+        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
+                R.array.food_categories, R.layout.spinner_layout);
         categoryAdapter.setDropDownViewResource(R.layout.spinner_item_layout);
-        categorySpinner.setAdapter(categoryAdapter);
-        categorySpinner.setOnItemSelectedListener(this);
+        mCategorySpinner.setAdapter(categoryAdapter);
+        mCategorySpinner.setOnItemSelectedListener(this);
 
-        final String foodName;
-        final long foodExpires;
-        final float foodQuantity;
-        final String foodCategory;
-        final String foodDesc;
-        if(requestCode == NEW_ENTRY_REQUEST){
-            setTitle("New Food Item");
-            foodName = "";
-            foodExpires = NO_EXP_DATE;
-            foodQuantity = 0;
-            foodCategory = "";
-            foodDesc = "None";
+        if (mRequestCode == NEW_ENTRY_REQUEST) {
+            setTitle("New Food");
+            mDescription.setText("None");
+        } else {
+            setTitle("Edit Food");
+            mManualEntryViewModel.setFoodItemFlowable(mRequestCode);
+            mFoodDisposable = mManualEntryViewModel.getFoodItemFlowable()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(foodItem -> {
+                        mNameEditText.setText(foodItem.getName());
+                        mCalendar.setTime(new Date(foodItem.getExpiration()));
+                        mQuantityEditText.setText(Long.toString(foodItem.getExpiration()));
+                        if (!foodItem.getCategory().isEmpty()) {
+                            mCategorySpinner.setSelection(categoryAdapter.getPosition(foodItem.getCategory()));
+                        }
+                        mDescription.setText(foodItem.getDescription());
+                    });
         }
-        else{ //requestCode == UPDATE_ENTRY_REQUEST
-            setTitle("Edit Food Item");
-            foodName = intent.getStringExtra("foodName");
-            foodExpires = intent.getLongExtra("foodExpires",NO_EXP_DATE);
-            foodQuantity = intent.getFloatExtra("foodQuantity",0);
-            foodCategory = intent.getStringExtra("foodCategory");
-            foodDesc = intent.getStringExtra("foodDesc");
-            edittext.setText(foodName);
-            Date expDate = new Date(foodExpires);
-            myCalendar.setTime(expDate);
-            editTextQuantity.setText(Float.toString(foodQuantity));
-            if (foodCategory != "") categorySpinner.setSelection(categoryAdapter.getPosition(foodCategory));
-            textView1.setText(foodDesc);
-        }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        theDateButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                new DatePickerDialog(ManualEntryActivity.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
+        mCalendarButton.setOnClickListener(v -> {
+            new DatePickerDialog(ManualEntryActivity.this, date, mCalendar
+                    .get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+                    mCalendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
-        Button addButt = (Button)findViewById(R.id.button2);
-        addButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText edittext= (EditText) findViewById(R.id.editText3);
-                EditText edittext2= (EditText) findViewById(R.id.editText5);
-                EditText editTextQuantity = (EditText) findViewById(R.id.editTextQuantity);
-                TextView textView1 = (TextView) findViewById(R.id.textView5);
-                String theName = edittext.getText().toString();
-                String theDate = edittext2.getText().toString();
-                String theQuantity = editTextQuantity.getText().toString();
-                String theDesc = textView1.getText().toString();
 
-                Intent resultInt = new Intent();
-                resultInt.putExtra("Result", "Done");
+        mAddButton.setOnClickListener(v -> {
+            if (mRequestCode == NEW_ENTRY_REQUEST) {
+                FoodItem item = new FoodItem();
+                item.setName(mNameEditText.getText().toString());
+                item.setExpiration(mCalendar.getTimeInMillis());
+                item.setQuantity(Float.parseFloat(mQuantityEditText.getText().toString()));
+                item.setCategory(mCategorySpinner.getSelectedItem().toString());
+                item.setDescription(mDescription.getText().toString());
+                item.setDateAdded(System.currentTimeMillis());
 
-                if(!theName.isEmpty()) {
-                    //If user enters in no expiration date, it will default a value far in the future
-                    if(theDate.isEmpty()){
-                        Date expDate = new Date(NO_EXP_DATE);
-                        myCalendar.setTime(expDate);
-                    }
-                    if(theQuantity.isEmpty()){
-                        theQuantity = "1";
-                    }
-                    float theQuantityFloat = Float.parseFloat(theQuantity);
-
-                    FoodItem theFoodToBeAdded = new FoodItem(theName, myCalendar, theQuantityFloat, mfoodCategory);
-                    theFoodToBeAdded.setDescription(theDesc);
-
-                    Calendar theDateAdded = Calendar.getInstance();
-                    theDateAdded.getTime();
-                    theFoodToBeAdded.setDateAdded(theDateAdded);
-
-                    if(requestCode == NEW_ENTRY_REQUEST) UserData.get(ManualEntryActivity.this).addFoodItem(theFoodToBeAdded);
-                    else if(requestCode == UPDATE_ENTRY_REQUEST) {
-                        FoodItem oldFoodItem = UserData.get(ManualEntryActivity.this).getFoodItem(foodName);
-                        UserData.get(ManualEntryActivity.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
-                    }
-                    //go to the next screen passing FoodItem in...
-                    setResult(RESULT_OK, resultInt);
-                    finish();
-                }
-                else {
-                    //signal to user required fields...
-                }
-
-            }
-
-        });
-
-        Button cancelButt = (Button)findViewById(R.id.button3);
-        cancelButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent resultInt = new Intent();
-                resultInt.putExtra("Result", "Done");
-
-                setResult(RESULT_CANCELED, resultInt);
+                mManualEntryViewModel.insertFood(item);
                 finish();
+            } else {
+
             }
+
+            // Intent resultInt = new Intent();
+            // resultInt.putExtra("Result", "Done");
+            //
+            // if(!theName.isEmpty()) {
+            //     //If user enters in no expiration date, it will default a value far in the future
+            //     if(theDate.isEmpty()){
+            //         Date expDate = new Date(NO_EXP_DATE);
+            //         mCalendar.setTime(expDate);
+            //     }
+            //     if (theQuantity.isEmpty()){
+            //         theQuantity = "1";
+            //     }
+            //     float theQuantityFloat = Float.parseFloat(theQuantity);
+            //
+            //     FoodItem theFoodToBeAdded = new FoodItem(theName, mCalendar.getTimeInMillis(), theQuantityFloat, mFoodCategory);
+            //     theFoodToBeAdded.setDescription(theDesc);
+            //
+            //     Calendar theDateAdded = Calendar.getInstance();
+            //     theDateAdded.getTime();
+            //     theFoodToBeAdded.setDateAdded(theDateAdded.getTimeInMillis());
+            //
+            //     if (mRequestCode == NEW_ENTRY_REQUEST) {
+            //         UserData.get(ManualEntryActivity.this).addFoodItem(theFoodToBeAdded);
+            //     } else if(mRequestCode == UPDATE_ENTRY_REQUEST) {
+            //         // FoodItem oldFoodItem = UserData.get(ManualEntryActivity.this).getFoodItem(foodName);
+            //         // UserData.get(ManualEntryActivity.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
+            //     }
+            //     //go to the next screen passing FoodItem in...
+            //     setResult(RESULT_OK, resultInt);
+            //     finish();
+            // } else {
+            //     //signal to user required fields...
+            // }
+        });
+
+        mCancelButton.setOnClickListener(v -> {
+            Intent resultInt = new Intent();
+            resultInt.putExtra("Result", "Done");
+
+            setResult(RESULT_CANCELED, resultInt);
+            finish();
         });
     }
 
-    public static Intent newIntent(Context packageContext, UUID manualEntryId) {
+    @Override
+    protected void onStop() {
+        if (mFoodDisposable != null) {
+            mFoodDisposable.dispose();
+        }
+        super.onStop();
+    }
+
+    public static Intent newIntent(Context packageContext, long id) {
         Intent intent = new Intent(packageContext, ManualEntryActivity.class);
         return intent;
     }
 
-    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                              int dayOfMonth) {
-            // TODO Auto-generated method stub
-            myCalendar.set(Calendar.YEAR, year);
-            myCalendar.set(Calendar.MONTH, monthOfYear);
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateLabel();
-        }
-
+    DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+        mCalendar.set(Calendar.YEAR, year);
+        mCalendar.set(Calendar.MONTH, monthOfYear);
+        mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        updateLabel();
     };
 
     @Override
@@ -206,8 +216,8 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
     private void updateLabel() {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        EditText edittext= (EditText) findViewById(R.id.editText5);
-        edittext.setText(sdf.format(myCalendar.getTime()));
+        EditText edittext= (EditText) findViewById(R.id.edit_expiration);
+        edittext.setText(sdf.format(mCalendar.getTime()));
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -236,11 +246,11 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                     String theName = theNamearr[0];
                     String theDesc = theHTMLarr[7].substring(1,theHTMLarr[7].length()-7);
                     theName = theName.replaceAll("\"", "");
-                    EditText edittext = (EditText) findViewById(R.id.editText3);
+                    EditText edittext = (EditText) findViewById(R.id.edit_food_name);
                     edittext.setText(theName);
-                    EditText edittext2 = (EditText) findViewById(R.id.editTextQuantity);
+                    EditText edittext2 = (EditText) findViewById(R.id.edit_quantity);
                     edittext2.setText("1.0");
-                    TextView textView1 = (TextView) findViewById(R.id.textView5);
+                    TextView textView1 = (TextView) findViewById(R.id.text_description);
                     textView1.setText(theDesc);
                     Log.i("tag2", theDesc);
                 }
@@ -269,7 +279,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         //parent.getItemAtPosition(pos);
-        mfoodCategory = parent.getItemAtPosition(pos).toString();
+        mFoodCategory = parent.getItemAtPosition(pos).toString();
     }
 
     public void onNothingSelected(AdapterView<?> parent) {

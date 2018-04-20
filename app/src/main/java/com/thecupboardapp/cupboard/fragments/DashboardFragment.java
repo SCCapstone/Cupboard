@@ -26,7 +26,7 @@ import java.util.List;
  * Editied by Jacob Strom on 2/19/2018.
  */
 
-public class HomeFragment extends Fragment{
+public class DashboardFragment extends Fragment{
 
     private List<FoodItem> mFoods;
     private List<SList> mLists;
@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment{
         //             for (DataSnapshot food : dataSnapshot.getChildren()) {
         //                 FoodItem foodItem = new FoodItem();
         //
-        //                 foodItem.setFirebaseId(food.getKey());
+        //                 foodItem.setFirebaseKey(food.getKey());
         //                 foodItem.setName(food.child("name").getValue().toString());
         //                 //Log.d("getFoods", food.child("name").getValue().toString());
         //

@@ -34,6 +34,7 @@ public class SListEditActivity extends AppCompatActivity {
     private String TAG = "SListEditActivity";
 
     public static final String EXTRA_ID = "com.thecupboardapp.cupboard.EXTRA_ID";
+    public static final long NEW_SLIST = -1;
     private long sListIdExtra;
 
     private RecyclerView mRecyclerView;
@@ -63,7 +64,7 @@ public class SListEditActivity extends AppCompatActivity {
         mDisposables = new CompositeDisposable();
 
         // Get the sListIdExtra to see if this is a new list or not
-        sListIdExtra = getIntent().getLongExtra(EXTRA_ID, -1);
+        sListIdExtra = getIntent().getLongExtra(EXTRA_ID, NEW_SLIST);
 
         // Initialize the viewmodel
         mSListEditViewModel = ViewModelProviders.of(this).get(SListEditViewModel.class);
@@ -71,22 +72,21 @@ public class SListEditActivity extends AppCompatActivity {
         mSListEditViewModel.setSList(sListIdExtra);
 
         // If the list exists, get the items and the slist
-        if (sListIdExtra != -1) {
+        if (sListIdExtra != NEW_SLIST) {
             disposableSListItems = mSListEditViewModel.getListItemsById(sListIdExtra)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(sListItems -> {
                         if (mAdapter == null) {
-                            Log.d(TAG, "onCreate: null adapter " + sListItems);
                             oldSListItems = new ArrayList<SListItem>(sListItems);
                             mAdapter = new SListItemAdapter(sListItems, sListIdExtra);
                             mRecyclerView.setAdapter(mAdapter);
                         } else {
-                            Log.d(TAG, "onCreate: not null adapter");
                             mAdapter.updateList(sListItems);
                             mAdapter.notifyDataSetChanged();
                         }
                     });
+
             disposableSList = mSListEditViewModel.getListById(sListIdExtra)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -97,12 +97,13 @@ public class SListEditActivity extends AppCompatActivity {
 
             mDisposables.addAll(disposableSListItems);
         } else {
-            oldSList = new SList("New List", 99);
+            oldSList = new SList("New List");
             setTitle("New List");
             oldSListItems = new ArrayList<SListItem>();
 
             mAdapter = new SListItemAdapter(new ArrayList<SListItem>(), sListIdExtra);
             mRecyclerView.setAdapter(mAdapter);
+            editTitle();
         }
     }
 
@@ -162,8 +163,8 @@ public class SListEditActivity extends AppCompatActivity {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(primaryKey -> {
                             newList.setIndex(primaryKey.intValue());
-                            mSListEditViewModel.updateSList(newList);
                             mAdapter.setParentId(primaryKey);
+                            mSListEditViewModel.updateSList(newList);
                             mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
                         });
             } else {

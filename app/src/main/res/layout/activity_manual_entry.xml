@@ -7,7 +7,7 @@
     tools:context="com.thecupboardapp.cupboard.activities.ManualEntryActivity">
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/text_food_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/text_expiration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -26,10 +26,10 @@
         android:text="Expires:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+        app:layout_constraintTop_toBottomOf="@+id/text_food_name" />
 
     <TextView
-        android:id="@+id/textViewQuantity"
+        android:id="@+id/text_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -37,10 +37,10 @@
         android:text="Quantity:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView14"/>
+        app:layout_constraintTop_toBottomOf="@+id/text_expiration"/>
 
     <TextView
-        android:id="@+id/textViewCategory"
+        android:id="@+id/text_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -48,10 +48,10 @@
         android:text="Category:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewQuantity"/>
+        app:layout_constraintTop_toBottomOf="@+id/text_quantity"/>
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/edit_food_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -62,7 +62,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/button_add_food"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -70,22 +70,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button3" />
+        app:layout_constraintStart_toEndOf="@+id/button_cancel_food" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/button_cancel_food"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="8dp"
         android:text="Cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/button_add_food"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editText5"
+        android:id="@+id/edit_expiration"
         android:layout_width="165dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
@@ -94,22 +94,22 @@
         android:ems="10"
         android:focusable="false"
         android:inputType="date"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/editText3" />
+        app:layout_constraintEnd_toStartOf="@+id/image_button_calendar"
+        app:layout_constraintTop_toBottomOf="@+id/edit_food_name" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/image_button_calendar"
         android:layout_width="50dp"
         android:layout_height="46dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="26dp"
         android:backgroundTint="@color/lightGreen"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText3"
+        app:layout_constraintTop_toBottomOf="@+id/edit_food_name"
         app:srcCompat="@android:drawable/ic_menu_my_calendar" />
 
     <EditText
-        android:id="@+id/editTextQuantity"
+        android:id="@+id/edit_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -117,19 +117,19 @@
         android:ems="10"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText5" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_expiration" />
 
     <Spinner
-        android:id="@+id/foodCategorySpinner"
+        android:id="@+id/spinner_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextQuantity" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_quantity" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/text_description_title"
         android:layout_width="122dp"
         android:layout_height="38dp"
         android:layout_marginStart="16dp"
@@ -137,16 +137,16 @@
         android:text="Description:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCategory" />
+        app:layout_constraintTop_toBottomOf="@+id/text_category" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/text_description"
         android:layout_width="353dp"
         android:layout_height="104dp"
         android:layout_marginStart="16dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/text_description_title"
         tools:text="None" />
 
 </android.support.constraint.ConstraintLayout>

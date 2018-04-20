@@ -54,56 +54,15 @@ public class UserData {
         // });
 
         // If signed in do shit
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            updateFromFirebase();
-        }
+        // if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        //     updateFromFirebase();
+        // }
     }
 
     public void reset() {
         mFoodItems = new ArrayList<FoodItem>();
         mRecipes = new ArrayList<String>();
     }
-
-    // public void getListsFromFirebase() {
-    //     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    //     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    //
-    //     // Get shopping lists
-    //     if(user != null) {
-    //     DatabaseReference ref = database.getReference("lists/" + user.getUid());
-    //     ref.addListenerForSingleValueEvent(new ValueEventListener() {
-    //         @Override
-    //         public void onDataChange(DataSnapshot dataSnapshot) {
-    //             List<SList> sLists = new ArrayList<SList>();
-    //             for (DataSnapshot list : dataSnapshot.getChildren()) {
-    //                 SList sList = new SList();
-    //
-    //                 sList.setFirebaseId(list.getKey());
-    //                 sList.setName(list.child("name").getValue().toString());
-    //                 sList.setLastModified((Long) list.child("lastModified").getValue());
-    //
-    //                 for (DataSnapshot item : list.child("items").getChildren()) {
-    //                     SListItem sListItem = new SListItem();
-    //
-    //                     sListItem.setName(item.child("name").getValue().toString());
-    //                     sListItem.setChecked((boolean) item.child("checked").getValue());
-    //                     sListItem.setFirebaseId(item.getKey());
-    //                     sListItem.setRef(item.getRef());
-    //
-    //                     sList.addShoppingListItem(sListItem);
-    //                 }
-    //                 sLists.add(sList);
-    //             }
-    //             mSLists = sLists;
-    //         }
-    //
-    //         @Override
-    //         public void onCancelled(DatabaseError databaseError) {
-    //
-    //         }
-    //     });
-    //     }
-    // }
 
     public void getFoodsFromFirebase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -118,7 +77,7 @@ public class UserData {
                     for (DataSnapshot food : dataSnapshot.getChildren()) {
                         FoodItem foodItem = new FoodItem();
 
-                        foodItem.setFirebaseId(food.getKey());
+                        foodItem.setFirebaseKey(food.getKey());
                         foodItem.setName(food.child("name").getValue().toString());
                         foodItem.setQuantity(Float.parseFloat(food.child("quantity").getValue().toString()));
 
@@ -128,11 +87,8 @@ public class UserData {
                         try {
                             //Log.d("getFoods", "entering try block");
                             //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
-                            Date expDate = new Date(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
-
-                            foodItem.setExpiration(expDate);
-                            Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
-                            foodItem.setDateAdded(dateAdded);
+                            foodItem.setExpiration(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
+                            foodItem.setDateAdded(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
                         } catch (Exception e) {
                         }
 
@@ -165,9 +121,9 @@ public class UserData {
         mFoodItems = foodItems;
     }
 
-    public FoodItem getFoodItem(UUID id) {
+    public FoodItem getFoodItem(long id) {
         for (FoodItem item : mFoodItems) {
-            if (item.getId().equals(id)) {
+            if (item.getId() == id) {
                 return item;
             }
         }
@@ -191,7 +147,7 @@ public class UserData {
         //generate key beforehand so we know firebase key locally without having to close and reopen My Cupboard
         String key = ref.push().getKey();
         ref.child(key).setValue(aFoodItem);
-        aFoodItem.setFirebaseId(key);
+        aFoodItem.setFirebaseKey(key);
     }
 
     public void editFoodItemQuantity(FoodItem aFoodItem){
@@ -199,7 +155,7 @@ public class UserData {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("foods/" + user.getUid() + "/" + aFoodItem.getFirebaseId());
+        DatabaseReference ref = database.getReference("foods/" + user.getUid() + "/" + aFoodItem.getFirebaseKey());
         Map<String, Object> update = new HashMap<>();
         update.put("quantity", aFoodItem.getQuantity());
         ref.updateChildren(update);
@@ -211,27 +167,27 @@ public class UserData {
 
         //update firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + aFoodItem.getFirebaseId());
+        DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + aFoodItem.getFirebaseKey());
         ref.removeValue();
     }
 
     public void updateShoppingLists() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
     }
-  
+
     public void updateFoodItem(FoodItem newFoodItem, FoodItem oldFoodItem){
         int i = mFoodItems.indexOf(oldFoodItem);
         mFoodItems.set(i, newFoodItem);
 
-        String key = oldFoodItem.getFirebaseId();
-        newFoodItem.setFirebaseId(key);
+        String key = oldFoodItem.getFirebaseKey();
+        newFoodItem.setFirebaseKey(key);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("foods/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + key);
 
         Map<String, Object> update = new HashMap<>();
         update.put("name", newFoodItem.getName());
         update.put("quantity", newFoodItem.getQuantity());
-        update.put("expirationAsLong", newFoodItem.getExpirationAsLong());
+        update.put("expirationAsLong", newFoodItem.getExpiration());
         update.put("category", newFoodItem.getCategory());
         update.put("description", newFoodItem.getDescription());
         ref.updateChildren(update);
@@ -242,10 +198,11 @@ public class UserData {
             Collections.sort(mFoodItems, new Comparator<FoodItem>() {
                 @Override
                 public int compare(final FoodItem object1, final FoodItem object2) {
-                    if (sortMethod.equals("alphabetically"))
-                    return object1.getName().compareToIgnoreCase(object2.getName());
-                    //sortMethod.equals("expiresSoon")
-                    else return Long.compare(object1.getExpirationAsLong(),object2.getExpirationAsLong());
+                    if (sortMethod.equals("alphabetically")) {
+                        return object1.getName().compareToIgnoreCase(object2.getName());
+                    } else {
+                        return Long.compare(object1.getExpiration(), object2.getExpiration());
+                    }
                 }
             });
         }

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
 import com.thecupboardapp.cupboard.adapters.SListAdapter;
+import com.thecupboardapp.cupboard.decorations.SimpleDividerItemDecoration;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
@@ -50,6 +52,8 @@ public class SListsFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mSListViewModel = ViewModelProviders.of(getActivity()).get(SListViewModel.class);
     }
 
     @Nullable
@@ -65,6 +69,7 @@ public class SListsFragment extends Fragment{
 
         mNewListFAB.setOnClickListener(v1 -> createNewList());
         mSListsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSListsRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
 
         createItemTouchHelper().attachToRecyclerView(mSListsRecyclerView);
 
@@ -74,7 +79,6 @@ public class SListsFragment extends Fragment{
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");
-        mSListViewModel = ViewModelProviders.of(getActivity()).get(SListViewModel.class);
 
         mDisposableSList = mSListViewModel.getLists()
                 .subscribeOn(Schedulers.io())

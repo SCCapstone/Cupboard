@@ -56,7 +56,6 @@ public class SListViewModel extends AndroidViewModel{
         AsyncTask.execute(() -> {
             switch (method) {
                 case SORT_ALPHABETICAL: {
-                    Log.d(TAG, "sort: " + sLists);
                     Collections.sort(sortedList, (sListA, sListB) ->
                             sListA.getName().compareToIgnoreCase(sListB.getName()));
                     break;
