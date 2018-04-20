@@ -15,7 +15,6 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 @Entity(tableName = "slists")
 public class SList {
-    @Exclude
     @PrimaryKey(autoGenerate = true)
     private long id;
 
@@ -25,7 +24,6 @@ public class SList {
     @ColumnInfo(name = "last_modified")
     private long lastModified;
 
-    @Exclude
     @ColumnInfo(name = "firebase_key")
     private String firebaseKey;
 
@@ -45,8 +43,13 @@ public class SList {
         this.lastModified = System.currentTimeMillis();
     }
 
+    @Exclude
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -57,6 +60,7 @@ public class SList {
         this.name = name;
     }
 
+    @Exclude
     public int getIndex() {
         return index;
     }
@@ -73,11 +77,7 @@ public class SList {
         this.lastModified = lastModified;
     }
 
-    @Ignore
-    public void setLastModifiedNow() {
-        this.lastModified = System.currentTimeMillis();
-    }
-
+    @Exclude
     public String getFirebaseKey() {
         return firebaseKey;
     }
@@ -95,9 +95,5 @@ public class SList {
                 "firebaseKey: " + firebaseKey + "}";
 
         return str;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 }

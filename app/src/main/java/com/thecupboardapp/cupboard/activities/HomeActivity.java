@@ -39,13 +39,18 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+
         currentFragment = R.layout.activity_home;
+        setContentView(R.layout.activity_home);
 
         mToolbar = findViewById(R.id.toolbar);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mNavigationView = findViewById(R.id.nav_view);
         mHeaderView = mNavigationView.getHeaderView(0);
+
+        // Set the home screen to be up first
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().add(R.id.fragment_container, new DashboardFragment()).commit();
     }
 
     @Override
@@ -55,10 +60,6 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
 
         UserData.get(this);
-
-        // Set the home screen to be up first
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().add(R.id.fragment_container, new DashboardFragment()).commit();
 
         // Add the toggle to the appbar.
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

@@ -7,12 +7,16 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
  * Created by Kyle on 1/12/2018.
  */
 
+@IgnoreExtraProperties
 @Entity(tableName = "slist_items",
         foreignKeys = @ForeignKey(
                 entity = SList.class,
@@ -22,7 +26,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
         )
 )
 public class SListItem implements Comparable<SListItem>{
-    @PrimaryKey(autoGenerate = true)
+    @Exclude @PrimaryKey(autoGenerate = true)
     private long id;
 
     @ColumnInfo(name = "name")
@@ -37,7 +41,7 @@ public class SListItem implements Comparable<SListItem>{
     @ColumnInfo(name = "parent_id")
     private long parentId;
 
-    @ColumnInfo(name = "index")
+    @Exclude @ColumnInfo(name = "index")
     private int index;
 
     public SListItem() {
