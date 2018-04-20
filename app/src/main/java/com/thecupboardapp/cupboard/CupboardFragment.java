@@ -58,6 +58,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     private int SHOW_REQUEST = 2;
     long NO_EXP_DATE = 4133987474999L;
     private List<FoodItem> mFoodItems;
+    Activity mActivity; // ONLY USE WHEN NECESSARY, USE GETACTIVITY EVERYWHERE ELSE
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -166,7 +167,6 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
         if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 updateFoods();
-                //mAdapter.notifyDataSetChanged();
                 mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
                 lv.setAdapter(mAdapter);
             }
@@ -182,12 +182,7 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-        Activity a;
-
-        if (context instanceof Activity){
-            a=(Activity) context;
-        }
+        mActivity = getActivity();
 
     }
 
@@ -213,7 +208,6 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     }
 
     public void updateFoods() {
-        //getActivity().setTitle(R.string.title_cupboard);
         mFoodItems = UserData.get(getActivity()).getFoodItems();
         groups = new String[mFoodItems.size()];
         fullGroups = new String[mFoodItems.size()];
@@ -251,13 +245,13 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new ExpandableListAdapter(groups, fullGroups, children, fullChildren);
-        lv = (ExpandableListView) view.findViewById(R.id.accordion);
+        lv = view.findViewById(R.id.accordion);
         if(lv!=null){
             lv.setAdapter(mAdapter);
             lv.setGroupIndicator(null);
         }
 
-        manEntFAB = (FloatingActionButton)view.findViewById(R.id.add_food_fab);
+        manEntFAB = view.findViewById(R.id.add_food_fab);
         if(manEntFAB!=null)
         manEntFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -282,7 +276,8 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
             this.fullGroups = fullGroups;
             this.children = children;
             this.fullChildren = fullChildren;
-            inf = LayoutInflater.from(getActivity());
+            // NOTE: ONLY PLACE THAT USES mActivity IS NEXT LINE BECAUSE OF BUG
+            inf = LayoutInflater.from(mActivity);
         }
 
         @Override

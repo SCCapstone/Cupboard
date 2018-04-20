@@ -104,7 +104,7 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
                 EditText editTextName = findViewById(R.id.edit_text_name);
                 EditText editTextExpires = findViewById(R.id.edit_text_expires);
                 EditText editTextQuantity = findViewById(R.id.edit_text_quantity);
-                TextView textViewDescription = findViewById(R.id.text_view_description);
+                EditText textViewDescription = findViewById(R.id.text_view_description);
                 String theName = editTextName.getText().toString();
                 String theDate = editTextExpires.getText().toString();
                 String theQuantity = editTextQuantity.getText().toString();
@@ -243,7 +243,7 @@ public class ManualEntry extends AppCompatActivity implements AdapterView.OnItem
                     editTextName.setText(theName);
                     EditText editTextQuantity = findViewById(R.id.edit_text_quantity);
                     editTextQuantity.setText("1.0");
-                    TextView textViewDesc = findViewById(R.id.text_view_description);
+                    EditText textViewDesc = findViewById(R.id.text_view_description);
                     textViewDesc.setText(theDesc);
                     Log.i("tag2", theDesc);
                 }
