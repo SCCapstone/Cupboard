@@ -83,7 +83,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
                     mCupboardViewModel.setFoodItems(items);
                     updateFoods(items);
 
-                    mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
+                    mAdapter = new CupboardExpandableListAdapter(getActivity(), groups, fullGroups, children, fullChildren);
 
                     if (mExpandableListView != null){
                         mExpandableListView.setAdapter(mAdapter);
@@ -182,7 +182,8 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
 
 
         groups = newGroups;
-        onActivityResult(SHOW_REQUEST,RESULT_OK,null);
+
+        onActivityResult(SHOW_REQUEST, RESULT_OK,null);
     }
 
     @Override

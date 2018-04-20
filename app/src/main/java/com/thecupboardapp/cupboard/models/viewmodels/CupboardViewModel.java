@@ -9,7 +9,6 @@ import com.thecupboardapp.cupboard.database.Database;
 import com.thecupboardapp.cupboard.database.FoodItemDao;
 import com.thecupboardapp.cupboard.models.FoodItem;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class CupboardViewModel extends AndroidViewModel {
                 }
                 case SORT_EXPIRATION: {
                     Collections.sort(mFoodItems, (itemA, itemB) ->
-                            Long.compare(itemA.getId(), itemB.getId()));
+                            Long.compare(itemA.getExpiration(), itemB.getExpiration()));
                     break;
                 }
                 default :
