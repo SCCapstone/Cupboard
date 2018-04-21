@@ -26,7 +26,8 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
         )
 )
 public class SListItem implements Comparable<SListItem>{
-    @Exclude @PrimaryKey(autoGenerate = true)
+    @Exclude
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     @ColumnInfo(name = "name")
@@ -41,29 +42,34 @@ public class SListItem implements Comparable<SListItem>{
     @ColumnInfo(name = "parent_id")
     private long parentId;
 
-    @Exclude @ColumnInfo(name = "index")
+    @Exclude
+    @ColumnInfo(name = "index")
     private int index;
 
     public SListItem() {
     }
 
+    @Ignore
     public SListItem(String name, Boolean checked) {
         this.name = name;
         this.checked = checked;
     }
 
+    @Ignore
     public SListItem(String name, Boolean checked, String firebaseId) {
         this.name = name;
         this.checked = checked;
         this.firebaseKey = firebaseId;
     }
 
+    @Ignore
     public SListItem(String name, Boolean checked, int index) {
         this.name = name;
         this.checked = checked;
         this.index = index;
     }
 
+    @Exclude
     public long getId() {
         return id;
     }
@@ -88,6 +94,7 @@ public class SListItem implements Comparable<SListItem>{
         this.checked = checked;
     }
 
+    @Exclude
     public String getFirebaseKey() {
         return firebaseKey;
     }
@@ -104,6 +111,7 @@ public class SListItem implements Comparable<SListItem>{
         this.parentId = parentId;
     }
 
+    @Exclude
     public int getIndex() {
         return index;
     }

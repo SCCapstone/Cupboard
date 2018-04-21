@@ -23,13 +23,14 @@ import io.reactivex.Single;
  * Created by Kyle on 3/9/2018.
  */
 
-public class SListEditViewModel extends AndroidViewModel{
+public class SListEditViewModel extends AndroidViewModel {
     private static final String TAG = "SListViewModel";
     private SListDao mSListDao;
     private SListItemDao mSListItemDao;
 
     private Flowable<List<SListItem>> mSListItemFlowable;
     private Flowable<SList> mSListFlowable;
+    private List<SListItem> oldItems;
 
     public SListEditViewModel(@NonNull Application application) {
         super(application);
@@ -47,7 +48,7 @@ public class SListEditViewModel extends AndroidViewModel{
     }
 
     // Update the list title of a list with id
-    public void updateListTitle(long id, String name){
+    public void updateListTitle(long id, String name) {
         AsyncTask.execute(() -> {
             mSListDao.updateName(name, id);
         });
@@ -75,20 +76,20 @@ public class SListEditViewModel extends AndroidViewModel{
     }
 
     // Get the items of a list with id
-    public Flowable<List<SListItem>> getListItemsById(long id){
+    public Flowable<List<SListItem>> getListItemsById(long id) {
         return mSListItemDao.getSListItemById(id);
     }
 
     // Update list items
     public void update(List<SListItem> oldItems, List<SListItem> newItems) {
         AsyncTask.execute(() -> {
-            for (SListItem item: oldItems) {
+            for (SListItem item : oldItems) {
                 if (newItems.indexOf(item) == -1) {
                     mSListItemDao.delete(item);
                 }
             }
 
-            for (SListItem item: newItems) {
+            for (SListItem item : newItems) {
                 if (oldItems.indexOf(item) == -1) {
                     mSListItemDao.insertAll(item);
                 }
@@ -103,5 +104,13 @@ public class SListEditViewModel extends AndroidViewModel{
         AsyncTask.execute(() -> {
             mSListDao.updateLastModified(id, System.currentTimeMillis());
         });
+    }
+
+    public List<SListItem> getOldItems() {
+        return oldItems;
+    }
+
+    public void setOldItems(List<SListItem> oldItems) {
+        this.oldItems = oldItems;
     }
 }

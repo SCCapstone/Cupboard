@@ -95,7 +95,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                     .observeOn(AndroidSchedulers.mainThread()).subscribe(foodItem -> {
                         mNameEditText.setText(foodItem.getName());
                         mCalendar.setTime(new Date(foodItem.getExpiration()));
-                        mQuantityEditText.setText(Long.toString(foodItem.getExpiration()));
+                        mQuantityEditText.setText(Float.toString(foodItem.getQuantity()));
                         if (!foodItem.getCategory().isEmpty()) {
                             mCategorySpinner.setSelection(categoryAdapter.getPosition(foodItem.getCategory()));
                         }
@@ -130,40 +130,6 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
             } else {
 
             }
-
-            // Intent resultInt = new Intent();
-            // resultInt.putExtra("Result", "Done");
-            //
-            // if(!theName.isEmpty()) {
-            //     //If user enters in no expiration date, it will default a value far in the future
-            //     if(theDate.isEmpty()){
-            //         Date expDate = new Date(NO_EXP_DATE);
-            //         mCalendar.setTime(expDate);
-            //     }
-            //     if (theQuantity.isEmpty()){
-            //         theQuantity = "1";
-            //     }
-            //     float theQuantityFloat = Float.parseFloat(theQuantity);
-            //
-            //     FoodItem theFoodToBeAdded = new FoodItem(theName, mCalendar.getTimeInMillis(), theQuantityFloat, mFoodCategory);
-            //     theFoodToBeAdded.setDescription(theDesc);
-            //
-            //     Calendar theDateAdded = Calendar.getInstance();
-            //     theDateAdded.getTime();
-            //     theFoodToBeAdded.setDateAdded(theDateAdded.getTimeInMillis());
-            //
-            //     if (mRequestCode == NEW_ENTRY_REQUEST) {
-            //         UserData.get(ManualEntryActivity.this).addFoodItem(theFoodToBeAdded);
-            //     } else if(mRequestCode == UPDATE_ENTRY_REQUEST) {
-            //         // FoodItem oldFoodItem = UserData.get(ManualEntryActivity.this).getFoodItem(foodName);
-            //         // UserData.get(ManualEntryActivity.this).updateFoodItem(theFoodToBeAdded, oldFoodItem);
-            //     }
-            //     //go to the next screen passing FoodItem in...
-            //     setResult(RESULT_OK, resultInt);
-            //     finish();
-            // } else {
-            //     //signal to user required fields...
-            // }
         });
 
         mCancelButton.setOnClickListener(v -> {

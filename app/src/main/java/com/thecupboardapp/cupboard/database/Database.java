@@ -12,7 +12,10 @@ import com.thecupboardapp.cupboard.models.SListItem;
  * Created by Kyle on 3/8/2018.
  */
 
-@android.arch.persistence.room.Database(entities = {SList.class, SListItem.class, FoodItem.class}, version = 1)
+@android.arch.persistence.room.Database(
+        entities = {SList.class, SListItem.class, FoodItem.class},
+        version = 1,
+        exportSchema = false)
 public abstract class Database extends RoomDatabase {
     public static final String DATABASE_NAME = "cupboard";
 

@@ -39,21 +39,25 @@ public class FoodItem implements Comparable<FoodItem> {
 
     public FoodItem() {}
 
+    @Ignore
     public FoodItem(String name) {
         this.name = name;
     }
 
+    @Ignore
     public FoodItem(String name, long expiration) {
         this.name = name;
         this.expiration = expiration;
     }
 
+    @Ignore
     public FoodItem(String name, long expiration, float quantity) {
         this.name = name;
         this.expiration = expiration;
         this.quantity = quantity;
     }
 
+    @Ignore
     public FoodItem(String name, long expiration, float quantity, String category) {
         this.name = name;
         this.expiration = expiration;
@@ -61,6 +65,7 @@ public class FoodItem implements Comparable<FoodItem> {
         this.category = category;
     }
 
+    @Exclude
     public long getId() {
         return id;
     }
@@ -117,6 +122,7 @@ public class FoodItem implements Comparable<FoodItem> {
         this.dateAdded = dateAdded;
     }
 
+    @Exclude
     public String getFirebaseKey() {
         return firebaseKey;
     }
@@ -133,6 +139,7 @@ public class FoodItem implements Comparable<FoodItem> {
         this.description = description;
     }
 
+    @Exclude
     public int getIndex() {
         return index;
     }

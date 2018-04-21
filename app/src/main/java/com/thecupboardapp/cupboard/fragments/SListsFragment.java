@@ -79,19 +79,19 @@ public class SListsFragment extends Fragment{
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");
-
-        mDisposableSList = mSListViewModel.getLists()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(sLists -> {
-                    if (mAdapter == null) {
-                        mAdapter = new SListAdapter(sLists);
-                        mSListsRecyclerView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.swap(sLists);
-                    }
-        });
-
+        if (mDisposableSList == null) {
+            mDisposableSList = mSListViewModel.getLists()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(sLists -> {
+                        if (mAdapter == null) {
+                            mAdapter = new SListAdapter(sLists);
+                            mSListsRecyclerView.setAdapter(mAdapter);
+                        } else {
+                            mAdapter.swap(sLists);
+                        }
+                    });
+        }
         super.onStart();
     }
 
@@ -120,9 +120,9 @@ public class SListsFragment extends Fragment{
     }
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
         mDisposableSList.dispose();
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override

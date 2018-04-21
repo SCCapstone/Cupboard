@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.thecupboardapp.cupboard.R;
@@ -70,7 +72,10 @@ public class SListEditActivity extends AppCompatActivity {
         mSListEditViewModel = ViewModelProviders.of(this).get(SListEditViewModel.class);
         mSListEditViewModel.setSListItems(sListIdExtra);
         mSListEditViewModel.setSList(sListIdExtra);
+    }
 
+    @Override
+    protected void onStart() {
         // If the list exists, get the items and the slist
         if (sListIdExtra != NEW_SLIST) {
             disposableSListItems = mSListEditViewModel.getListItemsById(sListIdExtra)
@@ -105,12 +110,13 @@ public class SListEditActivity extends AppCompatActivity {
             mRecyclerView.setAdapter(mAdapter);
             editTitle();
         }
+        super.onStart();
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         mDisposables.dispose();
-        super.onStop();
+        super.onDestroy();
     }
 
     public static Intent newIntent(Context packageContext, long id) {
@@ -185,16 +191,18 @@ public class SListEditActivity extends AppCompatActivity {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         View v = getLayoutInflater().inflate(R.layout.dialog_slist_edit_title, null);
-        EditText text = v.findViewById(R.id.slist_edit_title);
+        EditText editText = v.findViewById(R.id.slist_edit_title);
 
         alert.setTitle("Title");
         alert.setView(v);
 
         alert.setPositiveButton("Ok", (dialog, whichButton) ->
-                SListEditActivity.this.setTitle(text.getText().toString()));
+                SListEditActivity.this.setTitle(editText.getText().toString()));
 
         alert.setNegativeButton("Back", (dialog, whichButton) -> dialog.dismiss());
 
-        alert.show();
+        AlertDialog dialog = alert.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 }

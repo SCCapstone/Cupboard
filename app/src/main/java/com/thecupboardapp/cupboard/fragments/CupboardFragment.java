@@ -76,36 +76,41 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         mExpandableListView = v.findViewById(R.id.accordion);
         manEntFAB = v.findViewById(R.id.add_food_fab);
 
-        mFoodItemDisposable = mCupboardViewModel.getFoodItemFlowable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(items -> {
-                    mCupboardViewModel.setFoodItems(items);
-                    updateFoods(items);
-
-                    mAdapter = new CupboardExpandableListAdapter(getActivity(), groups, fullGroups, children, fullChildren);
-
-                    if (mExpandableListView != null){
-                        mExpandableListView.setAdapter(mAdapter);
-                        mExpandableListView.setGroupIndicator(null);
-                    }
-                });
-
-
         manEntFAB.setOnClickListener(v1 -> {
             Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
             intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
             startActivityForResult(intent, NEW_ENTRY_REQUEST);
         });
 
+        if (mFoodItemDisposable == null) {
+            mFoodItemDisposable = mCupboardViewModel.getFoodItemFlowable()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(items -> {
+                        mCupboardViewModel.setFoodItems(items);
+                        updateFoods(items);
+                    });
+        }
         return v;
     }
 
     @Override
+    public void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+    }
+
+    @Override
     public void onStop() {
-        super.onStop();
         Log.d(TAG, "onStop: ");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         mFoodItemDisposable.dispose();
+        super.onDestroy();
     }
 
     @Override
@@ -190,23 +195,23 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         onActivityResult(SHOW_REQUEST, RESULT_OK,null);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                // updateFoods();
-                //mAdapter.notifyDataSetChanged();
-                mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
-                mExpandableListView.setAdapter(mAdapter);
-            }
-        }
-        else if(requestCode == SHOW_REQUEST){
-            if (resultCode == RESULT_OK) {
-                mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
-                mExpandableListView.setAdapter(mAdapter);
-            }
-        }
-    }
+    // @Override
+    // public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    //     if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
+    //         if (resultCode == RESULT_OK) {
+    //             // updateFoods();
+    //             //mAdapter.notifyDataSetChanged();
+    //             mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
+    //             mExpandableListView.setAdapter(mAdapter);
+    //         }
+    //     }
+    //     else if (requestCode == SHOW_REQUEST){
+    //         if (resultCode == RESULT_OK) {
+    //             mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
+    //             mExpandableListView.setAdapter(mAdapter);
+    //         }
+    //     }
+    // }
 
     public void updateFoods(List<FoodItem> mFoodItems) {
         groups = new String[mFoodItems.size()];
@@ -214,7 +219,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         children = new String[mFoodItems.size()][1];
         fullChildren = new String[mFoodItems.size()][1];
 
-        for(int i = 0; i < mFoodItems.size(); i++){
+        for (int i = 0; i < mFoodItems.size(); i++){
             groups[i] = mFoodItems.get(i).getName();
             fullGroups[i] = groups[i];
 
@@ -230,9 +235,15 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
             children[i][0] = info;
             fullChildren[i][0] = children[i][0];
         }
-        if(!mCategoryShown.equals("")) {
+
+        if (!mCategoryShown.equals("")) {
             showByCategory(mCategoryShown);
         }
+
+        mAdapter = new CupboardExpandableListAdapter(getActivity(), groups, fullGroups, children, fullChildren);
+
+        mExpandableListView.setAdapter(mAdapter);
+        mExpandableListView.setGroupIndicator(null);
     }
 }
 
