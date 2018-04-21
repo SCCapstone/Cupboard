@@ -22,7 +22,6 @@ import com.thecupboardapp.cupboard.adapters.CupboardExpandableListAdapter;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.viewmodels.CupboardViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -126,19 +125,19 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public boolean onClose() {
-        mAdapter.filterData("");
+        mAdapter.filterDataByQuery("");
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-        mAdapter.filterData(query);
+        mAdapter.filterDataByQuery(query);
         return false;
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mAdapter.filterData(query);
+        mAdapter.filterDataByQuery(query);
         return false;
     }
 
@@ -152,72 +151,24 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
                 mCupboardViewModel.sort(CupboardViewModel.SORT_EXPIRATION);
                 return true;
             case R.id.menu_show_pantry:
-                showByCategory("Pantry");
+                mAdapter.filterDataByCategory("Pantry");
                 return true;
             case R.id.menu_show_fridge:
-                showByCategory("Fridge");
+                mAdapter.filterDataByCategory("Fridge");
                 return true;
             case R.id.menu_show_freezer:
-                showByCategory("Freezer");
+                mAdapter.filterDataByCategory("Freezer");
                 return true;
             case R.id.menu_show_all:
-                showByCategory("All");
+                mAdapter.filterDataByCategory("All");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void showByCategory(String aCategory){
-        String[] newGroups;
-        ArrayList<FoodItem> newGroupsList = new ArrayList<>();
-
-        if (aCategory.equals("All")) {
-            newGroupsList.addAll(mCupboardViewModel.getFoodItems());
-            mCategoryShown = "";
-        } else {
-            for (FoodItem item: mCupboardViewModel.getFoodItems()){
-                if(item.getCategory().equals(aCategory)){
-                    newGroupsList.add(item);
-                }
-            }
-            mCategoryShown = aCategory;
-        }
-
-        newGroups = new String[newGroupsList.size()];
-        for (int i = 0; i < newGroupsList.size(); i++){
-            newGroups[i] = newGroupsList.get(i).getName();
-        }
-
-
-        groups = newGroups;
-
-        onActivityResult(SHOW_REQUEST, RESULT_OK,null);
-    }
-
-    // @Override
-    // public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    //     if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
-    //         if (resultCode == RESULT_OK) {
-    //             // updateFoods();
-    //             //mAdapter.notifyDataSetChanged();
-    //             mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
-    //             mExpandableListView.setAdapter(mAdapter);
-    //         }
-    //     }
-    //     else if (requestCode == SHOW_REQUEST){
-    //         if (resultCode == RESULT_OK) {
-    //             mAdapter = new CupboardExpandableListAdapter(getContext(), groups, fullGroups, children, fullChildren);
-    //             mExpandableListView.setAdapter(mAdapter);
-    //         }
-    //     }
-    // }
 
     public void updateFoods(List<FoodItem> mFoodItems) {
-        // if (!mCategoryShown.equals("")) {
-        //     showByCategory(mCategoryShown);
-        // }
-
         mAdapter = new CupboardExpandableListAdapter(getActivity(), mFoodItems);
 
         mExpandableListView.setAdapter(mAdapter);

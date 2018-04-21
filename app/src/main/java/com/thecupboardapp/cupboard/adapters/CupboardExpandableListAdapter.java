@@ -204,7 +204,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    public void filterData(String query){
+    public void filterDataByQuery(String query) {
         query = query.toLowerCase();
         mQueryFoodItems.clear();
 
@@ -214,6 +214,21 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         else {
             for (FoodItem foodItem: mFoodItems) {
                 if (foodItem.getName().toLowerCase().contains(query)) {
+                    mQueryFoodItems.add(foodItem);
+                }
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void filterDataByCategory(String category) {
+        mQueryFoodItems.clear();
+        if (category.equals("All")) {
+            mQueryFoodItems = new ArrayList<>(mFoodItems);
+        } else {
+            for (FoodItem foodItem: mFoodItems){
+                if (foodItem.getCategory().equals(category)){
                     mQueryFoodItems.add(foodItem);
                 }
             }
