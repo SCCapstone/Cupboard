@@ -1,6 +1,10 @@
 package com.thecupboardapp.cupboard.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,51 +12,66 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thecupboardapp.cupboard.R;
+import com.thecupboardapp.cupboard.UserData;
+import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
+import com.thecupboardapp.cupboard.database.Database;
+import com.thecupboardapp.cupboard.models.FoodItem;
+import com.thecupboardapp.cupboard.models.SList;
+import com.thecupboardapp.cupboard.models.SListItem;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Kyle on 4/19/2018.
  */
 
 public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
-    private final LayoutInflater inf;
-    private String[] groups;
-    private String[] fullGroups;
-    private String[][] children;
-    private String[][] fullChildren;
+    private final LayoutInflater mLayoutInflater;
+    private Context mContext;
 
-    public CupboardExpandableListAdapter(Context context, String[] groups, String[] fullGroups,
-                                         String[][] children, String[][] fullChildren) {
-        this.groups = groups;
-        this.fullGroups = fullGroups;
-        this.children = children;
-        this.fullChildren = fullChildren;
+    private List<FoodItem> mFoodItems;
+    private List<FoodItem> mQueryFoodItems;
 
-        inf = LayoutInflater.from(context);
+    public CupboardExpandableListAdapter(Context context, List<FoodItem> foodItems) {
+        mContext = context;
+        mLayoutInflater = LayoutInflater.from(context);
+        mFoodItems = foodItems;
+        mQueryFoodItems = new ArrayList<>(mFoodItems);
     }
 
     @Override
     public int getGroupCount() {
-        return groups.length;
+        return mQueryFoodItems.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return children[groupPosition].length;
+        return 1;
     }
 
     @Override
-    public Object getGroup(int groupPosition) {
-        return groups[groupPosition];
+    public FoodItem getGroup(int groupPosition) {
+        return mQueryFoodItems.get(groupPosition);
     }
 
     @Override
-    public Object getChild(int groupPosition, int childPosition) {
-        return children[groupPosition][childPosition];
+    public String getChild(int groupPosition, int childPosition) {
+        FoodItem item = mQueryFoodItems.get(groupPosition);
+        return String.format("Expires: %s\nDate Added: %s\nDescription: %s",
+                FoodItem.longToDate(item.getExpiration()),
+                FoodItem.longToDate(item.getDateAdded()),
+                item.getDescription());
     }
 
     @Override
@@ -74,9 +93,11 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
 
+        FoodItem foodItem = mQueryFoodItems.get(groupPosition);
+
         ViewHolder holder;
         if (convertView == null) {
-            convertView = inf.inflate(R.layout.list_item, parent, false);
+            convertView = mLayoutInflater.inflate(R.layout.list_item, parent, false);
             holder = new ViewHolder();
 
             holder.text = convertView.findViewById(R.id.lblListItem);
@@ -87,66 +108,53 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.text.setText(getChild(groupPosition, childPosition).toString());
+        holder.text.setText(getChild(groupPosition, childPosition));
         holder.editButton.setFocusable(false);
-        // holder.editButton.setOnClickListener(v -> {
-        //     FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-        //     Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
-        //     intent.putExtra("foodName", foodToUpdate.getName());
-        //     intent.putExtra("foodExpires", foodToUpdate.getExpirationAsLong());
-        //     intent.putExtra("foodQuantity", foodToUpdate.getQuantity());
-        //     intent.putExtra("foodCategory", foodToUpdate.getCategory());
-        //     intent.putExtra("foodDesc", foodToUpdate.getDescription());
-        //     intent.putExtra("requestCode", UPDATE_ENTRY_REQUEST);
-        //     startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
-        // });
+        holder.editButton.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, ManualEntryActivity.class);
+            intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, foodItem.getId());
+            mContext.startActivity(intent);
+        });
 
         holder.addToListButton.setFocusable(false);
-        // holder.addToListButton.setOnClickListener(new View.OnClickListener() {
-        //     @Override
-        //     public void onClick(View v) {
-        //         //Toast.makeText(v.getContext(),"Need to add to a list: " + getGroup(groupPosition).toString(),Toast.LENGTH_SHORT).show();
-        //         String foodName = getGroup(groupPosition).toString();
-        //         final SListItem foodToAdd = new SListItem(foodName);
-        //
-        //         final CharSequence lists[] = UserData.get(getActivity()).getShoppingListsNames();
-        //         final CharSequence choices[] = new CharSequence[lists.length+1];
-        //         for(int i=0;i<choices.length;i++){
-        //             if (i!=choices.length-1) choices[i] = lists[i];
-        //             else choices[i] = "Add to a New List";
-        //         }
-        //         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        //         builder.setTitle("Which list would you like to add " + foodName + " to?");
-        //         builder.setItems(choices, new DialogInterface.OnClickListener() {
-        //             @Override
-        //             public void onClick(DialogInterface dialog, int which) {
-        //                 //user clicked on choices[which]
-        //                 SList list;
-        //                 if (which==choices.length-1) {
-        //                     list = new SList();
-        //                     UserData.get(getActivity()).addShoppingList(list);
-        //                 }
-        //                 else
-        //                 list = UserData.get(getActivity()).getShoppingList(choices[which].toString());
-        //                 list.addShoppingListItem(foodToAdd);
-        //                 Toast.makeText(getContext(),"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
-        //             }
-        //         });
-        //         builder.show();
-        //
-        //
-        //     }
-        // });
+        holder.addToListButton.setOnClickListener(v -> {
+            Database.getDatabase(mContext).sListDao().getAllSingle()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(sLists -> {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle(String.format("Which list would you like to add \"%s\" to?", foodItem.getName()));
+
+                        List<String> choices = new ArrayList<>();
+                        for (SList sList: sLists) {
+                            choices.add(sList.getName());
+                        }
+                        String[] arr = choices.toArray(new String[choices.size()]);
+
+                        builder.setItems(arr, (dialog, which) -> {
+                            SListItem sListItem = new SListItem(foodItem.getName(), false);
+                            sListItem.setParentId(foodItem.getId());
+                            AsyncTask.execute( () -> {
+                                Database.getDatabase(mContext).sListItemDao().insertAll(sListItem);
+                            });
+
+                            // Toast.makeText(mContext,"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
+                        });
+                        builder.show();
+                    });
+        });
 
         return convertView;
     }
 
     @Override
     public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        FoodItem foodItem = mQueryFoodItems.get(groupPosition);
+
         final ViewHolder holder;
 
         if (convertView == null) {
-            convertView = inf.inflate(R.layout.list_group, parent, false);
+            convertView = mLayoutInflater.inflate(R.layout.list_group, parent, false);
 
             holder = new ViewHolder();
             holder.text = convertView.findViewById(R.id.lblListHeader);
@@ -156,42 +164,36 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+
         holder.quantityButton.setFocusable(false);
-        // holder.quantityButton.setText(String.valueOf((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity())));
-        // holder.quantityButton.setOnClickListener(new View.OnClickListener() {
-        //     @Override
-        //     public void onClick(View view) {
-        //         final NumberPicker numberPicker = new NumberPicker(getActivity());
-        //         final NumberPicker.OnValueChangeListener valueChangeListener = new NumberPicker.OnValueChangeListener() {
-        //             @Override
-        //             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        //                 FoodItem foodToBeChanged = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-        //                 foodToBeChanged.setQuantity(newVal);
-        //                 UserData.get(getActivity()).editFoodItemQuantity(foodToBeChanged);
-        //             }
-        //         };
-        //         numberPicker.setMinValue(0);
-        //         numberPicker.setMaxValue(999);
-        //         numberPicker.setValue((int)(UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString()).getQuantity()));
-        //         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        //         builder.setView(numberPicker);
-        //         builder.setTitle("Change the quantity");
-        //         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-        //             @Override
-        //             public void onClick(DialogInterface dialog, int which) {
-        //                 valueChangeListener.onValueChange(numberPicker,numberPicker.getValue(),numberPicker.getValue());
-        //             }
-        //         });
-        //         builder.setView(numberPicker);
-        //         builder.show();
-        //     }
-        // });
-        holder.text.setText(getGroup(groupPosition).toString());
+        holder.quantityButton.setText(Float.toString((int) foodItem.getQuantity()));
+        holder.quantityButton.setOnClickListener(view -> {
+            final NumberPicker numberPicker = new NumberPicker(mContext);
+            final NumberPicker.OnValueChangeListener valueChangeListener = (picker, oldVal, newVal) -> {
+                foodItem.setQuantity(newVal);
+                AsyncTask.execute(() -> Database.getDatabase(mContext).foodItemDao().update(foodItem));
+            };
+
+            numberPicker.setMinValue(0);
+            numberPicker.setMaxValue(999);
+            numberPicker.setValue((int) foodItem.getQuantity());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setView(numberPicker);
+            builder.setTitle("Change the quantity");
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                valueChangeListener.onValueChange(numberPicker, numberPicker.getValue(), numberPicker.getValue());
+            });
+            builder.setView(numberPicker);
+            builder.show();
+        });
+
+        holder.text.setText(getGroup(groupPosition).getName());
         holder.deleteButton.setFocusable(false);
         holder.deleteButton.setOnClickListener(v -> {
-            // FoodItem foodToDelete = UserData.get(getActivity()).getFoodItem(getGroup(groupPosition).toString());
-            // UserData.get(getActivity()).removeFoodItem(foodToDelete);
-            // onActivityResult(NEW_ENTRY_REQUEST,RESULT_OK,null);
+            AsyncTask.execute(()-> {
+                Database.getDatabase(mContext).foodItemDao().delete(foodItem);
+            });
         });
 
         return convertView;
@@ -203,42 +205,21 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void filterData(String query){
-
         query = query.toLowerCase();
-        Log.v("MyListAdapter", String.valueOf(groups.length));
-        String[] newGroups;
-        String[][] newChildren;
-        ArrayList<String> newGroupsList = new ArrayList<>();
-        ArrayList<String> newChildrenList = new ArrayList<>();
+        mQueryFoodItems.clear();
 
         if(query.isEmpty()){
-            // updateFoods();
-            newGroups = fullGroups;
-            newChildren = fullChildren;
+            mQueryFoodItems = new ArrayList<>(mFoodItems);
         }
         else {
-            int i=0;
-            for(String foodName: fullGroups){
-                if(foodName.toLowerCase().contains(query)){
-                    newGroupsList.add(foodName);
-                    newChildrenList.add(fullChildren[i][0]);
+            for (FoodItem foodItem: mFoodItems) {
+                if (foodItem.getName().toLowerCase().contains(query)) {
+                    mQueryFoodItems.add(foodItem);
                 }
-                i++;
             }
-            newGroups = new String[newGroupsList.size()];
-            newChildren = new String[newChildrenList.size()][1];
-            for(i=0;i<newGroupsList.size();i++){
-                newGroups[i] = newGroupsList.get(i);
-                newChildren[i][0] = newChildrenList.get(i);
-            }
-
         }
 
-        Log.v("MyListAdapter", String.valueOf(newGroupsList.size()));
-        groups = newGroups;
-        children = newChildren;
         notifyDataSetChanged();
-
     }
 
     private class ViewHolder {

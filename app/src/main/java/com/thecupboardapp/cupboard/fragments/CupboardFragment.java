@@ -78,7 +78,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
 
         manEntFAB.setOnClickListener(v1 -> {
             Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
-            intent.putExtra("requestCode", NEW_ENTRY_REQUEST);
+            intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, NEW_ENTRY_REQUEST);
             startActivityForResult(intent, NEW_ENTRY_REQUEST);
         });
 
@@ -214,33 +214,11 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
     // }
 
     public void updateFoods(List<FoodItem> mFoodItems) {
-        groups = new String[mFoodItems.size()];
-        fullGroups = new String[mFoodItems.size()];
-        children = new String[mFoodItems.size()][1];
-        fullChildren = new String[mFoodItems.size()][1];
+        // if (!mCategoryShown.equals("")) {
+        //     showByCategory(mCategoryShown);
+        // }
 
-        for (int i = 0; i < mFoodItems.size(); i++){
-            groups[i] = mFoodItems.get(i).getName();
-            fullGroups[i] = groups[i];
-
-            String info = "Expires: ";
-            if (mFoodItems.get(i).getExpiration() == NO_EXP_DATE) {
-                info = info.concat("Never");
-            } else {
-                info = info.concat(FoodItem.longToDate(mFoodItems.get(i).getExpiration()));
-            }
-
-            info = info.concat("\nDate Added: " + FoodItem.longToDate(mFoodItems.get(i).getDateAdded()));
-            info = info.concat("\nDescription: " + mFoodItems.get(i).getDescription());
-            children[i][0] = info;
-            fullChildren[i][0] = children[i][0];
-        }
-
-        if (!mCategoryShown.equals("")) {
-            showByCategory(mCategoryShown);
-        }
-
-        mAdapter = new CupboardExpandableListAdapter(getActivity(), groups, fullGroups, children, fullChildren);
+        mAdapter = new CupboardExpandableListAdapter(getActivity(), mFoodItems);
 
         mExpandableListView.setAdapter(mAdapter);
         mExpandableListView.setGroupIndicator(null);

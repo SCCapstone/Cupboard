@@ -42,7 +42,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ManualEntryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     public static final long NO_EXP_DATE = 4133987474999L;
     public static final long NEW_ENTRY_REQUEST = 0;
-    public static final long UPDATE_ENTRY_REQUEST = 1;
+    public static final String FOOD_ID_REQUEST_KEY = "com.thecupboardapp.cupboard.foodId";
 
     private EditText mNameEditText;
     private ImageButton mCalendarButton;
@@ -76,7 +76,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
         mCalendar = Calendar.getInstance();
         mFoodCategory = "";
-        mRequestCode = getIntent().getLongExtra("mRequestCode", NEW_ENTRY_REQUEST);
+        mRequestCode = getIntent().getLongExtra(FOOD_ID_REQUEST_KEY, NEW_ENTRY_REQUEST);
 
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
                 R.array.food_categories, R.layout.spinner_layout);
