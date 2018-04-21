@@ -1,14 +1,12 @@
 package com.thecupboardapp.cupboard.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.lifecycle.ViewModelStoreOwner;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -24,15 +22,12 @@ import android.widget.Toast;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.SListEditActivity;
 import com.thecupboardapp.cupboard.adapters.SListAdapter;
-import com.thecupboardapp.cupboard.decorations.SimpleDividerItemDecoration;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.viewmodels.SListViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Kyle on 1/12/2018.
@@ -52,7 +47,6 @@ public class SListsFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mSListViewModel = ViewModelProviders.of(getActivity()).get(SListViewModel.class);
     }
 
@@ -69,7 +63,6 @@ public class SListsFragment extends Fragment{
 
         mNewListFAB.setOnClickListener(v1 -> createNewList());
         mSListsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mSListsRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
 
         createItemTouchHelper().attachToRecyclerView(mSListsRecyclerView);
 
@@ -96,6 +89,12 @@ public class SListsFragment extends Fragment{
     }
 
     @Override
+    public void onDestroy() {
+        mDisposableSList.dispose();
+        super.onDestroy();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.slist_fragment_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -119,27 +118,6 @@ public class SListsFragment extends Fragment{
         return false;
     }
 
-    @Override
-    public void onDestroy() {
-        mDisposableSList.dispose();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case NEW_LIST_REQUEST_CODE: {
-                if (resultCode == RESULT_OK) {
-                    Log.d(TAG, "onActivityResult: New List Result OK!");
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-            default: {
-                Log.d(TAG, "onActivityResult: Default");
-            }
-        }
-    }
-
     private void createNewList() {
         Intent intent = new Intent(getActivity(), SListEditActivity.class);
         startActivity(intent);
@@ -156,7 +134,7 @@ public class SListsFragment extends Fragment{
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int pos = viewHolder.getAdapterPosition();
                 SList list = mAdapter.getSLists().get(pos);
-                ViewModelProviders.of(getActivity()).get(SListViewModel.class).removeList(list);
+                mSListViewModel.removeList(list);
 
                 Toast.makeText(getActivity(), "List Removed", Toast.LENGTH_SHORT).show();
             }
