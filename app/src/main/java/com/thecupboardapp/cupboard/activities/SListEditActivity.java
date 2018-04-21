@@ -2,6 +2,7 @@ package com.thecupboardapp.cupboard.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -88,7 +89,6 @@ public class SListEditActivity extends AppCompatActivity {
                             mRecyclerView.setAdapter(mAdapter);
                         } else {
                             mAdapter.updateList(sListItems);
-                            mAdapter.notifyDataSetChanged();
                         }
                     });
 
@@ -138,6 +138,10 @@ public class SListEditActivity extends AppCompatActivity {
                 editTitle();
                 break;
             }
+            case R.id.clear_list: {
+                clearList();
+                break;
+            }
             case android.R.id.home: {
                 onBackPressed();
                 return true;
@@ -162,18 +166,19 @@ public class SListEditActivity extends AppCompatActivity {
         alert.setTitle("Save Changes?");
 
         alert.setPositiveButton("Yes", (dialog, whichButton) -> {
-            if (sListIdExtra == -1) {
+            if (sListIdExtra == NEW_SLIST) {
                 SList newList = new SList(getTitle().toString());
                 Observable.fromCallable(() -> mSListEditViewModel.insertSList(newList))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(primaryKey -> {
-                            newList.setIndex(primaryKey.intValue());
+                            newList.setIndex(0);
                             mAdapter.setParentId(primaryKey);
                             mSListEditViewModel.updateSList(newList);
                             mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
                         });
             } else {
+                mAdapter.setParentId(sListIdExtra);
                 mSListEditViewModel.update(oldSListItems, mAdapter.getSListItems());
                 mSListEditViewModel.updateListTitle(sListIdExtra, getTitle().toString());
                 mSListEditViewModel.updateLastModified(sListIdExtra);
@@ -186,6 +191,24 @@ public class SListEditActivity extends AppCompatActivity {
         alert.setNegativeButton("No", (dialog, whichButton) -> super.onBackPressed());
         alert.show();
     }
+
+    private void clearList() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Clear List");
+        alert.setMessage("Are you sure you want to clear the list?");
+
+        alert.setPositiveButton("Yes", (dialog, which) -> {
+            mAdapter.clearItems();
+        });
+
+        alert.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+        });
+
+        alert.show();
+    }
+
 
     private void editTitle(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);

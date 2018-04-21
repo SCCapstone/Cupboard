@@ -91,6 +91,7 @@ public class SListEditViewModel extends AndroidViewModel {
 
             for (SListItem item : newItems) {
                 if (oldItems.indexOf(item) == -1) {
+                    Log.d(TAG, "update: " + item.toString());
                     mSListItemDao.insertAll(item);
                 }
             }

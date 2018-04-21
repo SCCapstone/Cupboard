@@ -91,9 +91,16 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
         }
     }
 
+    public void clearItems() {
+        mSListItems.clear();
+        mSListItems.add(new SListItem("", false));
+        notifyDataSetChanged();
+    }
+
     public void updateList(List<SListItem> sListItems) {
         mSListItems.clear();
         mSListItems.addAll(sListItems);
+        notifyDataSetChanged();
     }
 
     public void setParentId(long id){

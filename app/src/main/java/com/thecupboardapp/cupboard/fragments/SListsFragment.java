@@ -48,6 +48,7 @@ public class SListsFragment extends Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSListViewModel = ViewModelProviders.of(getActivity()).get(SListViewModel.class);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -56,7 +57,6 @@ public class SListsFragment extends Fragment{
         Log.d(TAG, "onCreateView: ");
         View v = inflater.inflate(R.layout.fragment_slists, container, false);
         getActivity().setTitle(R.string.title_lists);
-        setHasOptionsMenu(true);
 
         mNewListFAB = v.findViewById(R.id.add_list_fab);
         mSListsRecyclerView = v.findViewById(R.id.shopping_lists_recycler_view);
@@ -71,7 +71,6 @@ public class SListsFragment extends Fragment{
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: ");
         if (mDisposableSList == null) {
             mDisposableSList = mSListViewModel.getLists()
                     .subscribeOn(Schedulers.io())
@@ -82,6 +81,7 @@ public class SListsFragment extends Fragment{
                             mSListsRecyclerView.setAdapter(mAdapter);
                         } else {
                             mAdapter.swap(sLists);
+                            mSListsRecyclerView.scrollToPosition(0);
                         }
                     });
         }
@@ -115,6 +115,7 @@ public class SListsFragment extends Fragment{
             default:
                 break;
         }
+
         return false;
     }
 
