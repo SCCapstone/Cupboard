@@ -37,7 +37,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class CupboardFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
     public static final String TAG = "CupboardFragment";
-    public static final long NO_EXP_DATE = 4133987474999L;
 
     private ExpandableListView mExpandableListView;
     private CupboardExpandableListAdapter mAdapter;

@@ -68,9 +68,17 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public String getChild(int groupPosition, int childPosition) {
         FoodItem item = mQueryFoodItems.get(groupPosition);
+        String date;
+
+        if (Long.toString(item.getExpiration()).isEmpty()) {
+            date = "Never";
+        } else {
+            date = FoodItem.longToDate(item.getExpiration());
+        }
+
         return String.format("Expires: %s\nDate Added: %s\nDescription: %s",
                 FoodItem.longToDate(item.getExpiration()),
-                FoodItem.longToDate(item.getDateAdded()),
+                date,
                 item.getDescription());
     }
 

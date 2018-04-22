@@ -1,10 +1,16 @@
 package com.thecupboardapp.cupboard.activities;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -38,9 +45,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class ManualEntryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    public static final long NO_EXP_DATE = 4133987474999L;
     public static final int NEW_ENTRY_REQUEST = 0;
     public static final int EDIT_ENTRY_REQUEST = 1;
+    private static final int CAMERA_PERMISSION_REQUEST = 0;
     public static final String FOOD_ID_REQUEST_KEY = "com.thecupboardapp.cupboard.foodId";
 
     private EditText mNameEditText;
@@ -86,6 +93,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         if (mRequestCode == NEW_ENTRY_REQUEST) {
             setTitle("New Food");
             mDescription.setText("None");
+            mExpirationEditText.setText("Never");
         } else {
             setTitle("Edit Food");
             mAddUpdateButton.setText("Update");
@@ -118,9 +126,15 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
 
         mAddUpdateButton.setOnClickListener(v -> {
+            if (!inputsAreCorrect()) {
+                return;
+            }
+
             FoodItem item = new FoodItem();
             item.setName(mNameEditText.getText().toString());
-            item.setExpiration(mCalendar.getTimeInMillis());
+            if (!mExpirationEditText.getText().toString().equals("Never")) {
+                item.setExpiration(mCalendar.getTimeInMillis());
+            }
             item.setQuantity(Float.parseFloat(mQuantityEditText.getText().toString()));
             item.setCategory(mCategorySpinner.getSelectedItem().toString());
             item.setDescription(mDescription.getText().toString());
@@ -144,6 +158,18 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
             setResult(RESULT_CANCELED);
             finish();
         });
+    }
+
+    private boolean inputsAreCorrect() {
+        if (mNameEditText.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please specify a name.", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (mQuantityEditText.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please specify an amount.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -176,11 +202,35 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_camera:
-                IntentIntegrator integrator = new IntentIntegrator(this);
-                integrator.initiateScan();
-                return true;
+                return openCamera();
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public boolean openCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.initiateScan();
+            return true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+            return false;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION_REQUEST: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openCamera();
+                } else {
+                    Toast.makeText(this, "You must accept the permission to use the barcode scanner.", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
@@ -215,12 +265,9 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                     String theName = theNamearr[0];
                     String theDesc = theHTMLarr[7].substring(1,theHTMLarr[7].length()-7);
                     theName = theName.replaceAll("\"", "");
-                    EditText edittext = (EditText) findViewById(R.id.edit_food_name);
-                    edittext.setText(theName);
-                    EditText edittext2 = (EditText) findViewById(R.id.edit_quantity);
-                    edittext2.setText("1.0");
-                    TextView textView1 = (TextView) findViewById(R.id.text_description);
-                    textView1.setText(theDesc);
+                    mNameEditText.setText(theName);
+                    mQuantityEditText.setText("1.0");
+                    mDescription.setText(theDesc);
                     Log.i("tag2", theDesc);
                 }
             }
@@ -228,7 +275,6 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         catch (Exception e) {
             Log.i("theError", e.toString());
         }
-        // else continue with any other code you need in the method
     }
 
     public static String getHTML(String urlToRead) throws Exception {
@@ -248,7 +294,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
-        //parent.getItemAtPosition(pos);
+        // parent.getItemAtPosition(pos);
         // mFoodCategory = parent.getItemAtPosition(pos).toString();
     }
 
