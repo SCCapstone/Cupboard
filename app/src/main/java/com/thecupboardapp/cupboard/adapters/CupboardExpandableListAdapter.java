@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
+    public static final String TAG = "ExpandableListAdapter";
     private final LayoutInflater mLayoutInflater;
     private Context mContext;
     private CupboardFragment mFragment;
@@ -71,15 +73,15 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         FoodItem item = mQueryFoodItems.get(groupPosition);
         String date;
 
-        if (Long.toString(item.getExpiration()).isEmpty()) {
+        if (item.getExpiration() == 0) {
             date = "Never";
         } else {
             date = FoodItem.longToDate(item.getExpiration());
         }
 
         return String.format("Expires: %s\nDate Added: %s\nDescription: %s",
-                FoodItem.longToDate(item.getExpiration()),
                 date,
+                FoodItem.longToDate(item.getDateAdded()),
                 item.getDescription());
     }
 

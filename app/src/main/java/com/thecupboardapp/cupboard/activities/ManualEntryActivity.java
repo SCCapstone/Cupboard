@@ -101,14 +101,17 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe(foodItem -> {
                         mNameEditText.setText(foodItem.getName());
-                        mCalendar.setTime(new Date(foodItem.getExpiration()));
+                        if (foodItem.getExpiration() == 0) {
+                            mExpirationEditText.setText("Never");
+                        } else {
+                            mCalendar.setTime(new Date(foodItem.getExpiration()));
+                            updateExpirationLabel();
+                        }
                         mQuantityEditText.setText(Float.toString(foodItem.getQuantity()));
-
                         if (!foodItem.getCategory().isEmpty()) {
                             mCategorySpinner.setSelection(categoryAdapter.getPosition(foodItem.getCategory()));
                         }
                         mDescriptionEditText.setText(foodItem.getDescription());
-                        updateExpirationLabel();
                     });
         }
     }
