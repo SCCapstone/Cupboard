@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:text="Name:"
+        android:text="@string/title_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toStartOf="@+id/edit_food_name"
         app:layout_constraintHorizontal_bias="0.5"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
-        android:text="Expires:"
+        android:text="@string/title_expires"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toStartOf="@+id/edit_expiration"
         app:layout_constraintHorizontal_bias="0.5"
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
-        android:text="Quantity:"
+        android:text="@string/title_quantity"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toStartOf="@+id/edit_quantity"
         app:layout_constraintHorizontal_bias="0.5"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
-        android:text="Category:"
+        android:text="@string/title_category"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toStartOf="@+id/spinner_category"
         app:layout_constraintHorizontal_bias="0.5"
@@ -79,11 +79,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Add"
+        android:layout_marginTop="8dp"
+        android:text="@string/button_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button_cancel_food" />
+        app:layout_constraintStart_toEndOf="@+id/button_cancel_food"
+        app:layout_constraintTop_toBottomOf="@+id/edit_description" />
 
     <Button
         android:id="@+id/button_cancel_food"
@@ -91,11 +93,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="8dp"
-        android:text="Cancel"
+        android:layout_marginTop="8dp"
+        android:text="@string/button_cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_add_update_food"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_description" />
 
     <EditText
         android:id="@+id/edit_expiration"
@@ -152,19 +156,26 @@
         android:layout_height="38dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
-        android:text="Description:"
+        android:text="@string/title_description"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_category" />
 
-    <TextView
-        android:id="@+id/text_description"
-        android:layout_width="353dp"
-        android:layout_height="104dp"
+    <EditText
+        android:id="@+id/edit_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:text="TextView"
+        android:layout_marginTop="8dp"
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:maxLines="5"
+        android:background="@drawable/list_background"
+        android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_description_title"
-        tools:text="None" />
+        app:layout_constraintTop_toBottomOf="@+id/text_description_title" />
 
 </android.support.constraint.ConstraintLayout>

@@ -26,7 +26,8 @@
             android:name=".activities.SListEditActivity"
             android:parentActivityName=".activities.HomeActivity">
         </activity>
-        <activity android:name=".activities.ManualEntryActivity">
+        <activity android:name=".activities.ManualEntryActivity"
+            android:windowSoftInputMode="stateUnchanged|adjustPan">
         </activity>
         <activity android:name=".activities.SignInActivity"
             android:windowSoftInputMode="adjustResize">

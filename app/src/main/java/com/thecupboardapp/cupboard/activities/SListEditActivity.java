@@ -2,20 +2,17 @@ package com.thecupboardapp.cupboard.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.thecupboardapp.cupboard.R;
@@ -155,7 +152,6 @@ public class SListEditActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         if (mAdapter.getSListItems().size() == 0) {
             super.onBackPressed();
             return;

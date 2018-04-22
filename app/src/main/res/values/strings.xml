@@ -32,6 +32,13 @@
     <string name="description_delete_item">Delete item</string>
     <string name="icon_delete_description">Delete</string>
     <string name="slist_item_hint">Create an item</string>
+    <string name="title_name">Name:</string>
+    <string name="title_expires">Expires:</string>
+    <string name="title_quantity">Quantity:</string>
+    <string name="title_category">Category:</string>
+    <string name="title_description">Description:</string>
+    <string name="button_add">Add</string>
+    <string name="button_cancel">Cancel</string>
 
     <string-array name="sort_choices"><item>Alphabetically</item><item>Expiration</item></string-array>
 

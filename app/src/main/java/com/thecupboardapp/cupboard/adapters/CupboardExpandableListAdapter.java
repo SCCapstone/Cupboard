@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
@@ -146,7 +147,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
                                 Database.getDatabase(mContext).sListItemDao().insertAll(sListItem);
                             });
 
-                            // Toast.makeText(mActivity,"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, String.format("%s added to: %s", foodItem.getName(), arr[which]), Toast.LENGTH_SHORT).show();
                         });
                         builder.show();
                     });

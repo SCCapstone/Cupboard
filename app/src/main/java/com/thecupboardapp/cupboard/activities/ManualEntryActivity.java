@@ -1,7 +1,6 @@
 package com.thecupboardapp.cupboard.activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -55,7 +54,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
     private ImageButton mCalendarButton;
     private EditText mQuantityEditText;
     private Spinner mCategorySpinner;
-    private TextView mDescription;
+    private TextView mDescriptionEditText;
     private Button mCancelButton;
     private Button mAddUpdateButton;
 
@@ -73,7 +72,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         mNameEditText = findViewById(R.id.edit_food_name);
         mQuantityEditText = findViewById(R.id.edit_quantity);
         mCalendarButton = findViewById(R.id.image_button_calendar);
-        mDescription = findViewById(R.id.text_description);
+        mDescriptionEditText = findViewById(R.id.edit_description);
         mCategorySpinner = findViewById(R.id.spinner_category);
         mAddUpdateButton = findViewById(R.id.button_add_update_food);
         mCancelButton = findViewById(R.id.button_cancel_food);
@@ -92,7 +91,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
         if (mRequestCode == NEW_ENTRY_REQUEST) {
             setTitle("New Food");
-            mDescription.setText("None");
+            mDescriptionEditText.setText("None");
             mExpirationEditText.setText("Never");
         } else {
             setTitle("Edit Food");
@@ -108,7 +107,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                         if (!foodItem.getCategory().isEmpty()) {
                             mCategorySpinner.setSelection(categoryAdapter.getPosition(foodItem.getCategory()));
                         }
-                        mDescription.setText(foodItem.getDescription());
+                        mDescriptionEditText.setText(foodItem.getDescription());
                         updateExpirationLabel();
                     });
         }
@@ -137,7 +136,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
             }
             item.setQuantity(Float.parseFloat(mQuantityEditText.getText().toString()));
             item.setCategory(mCategorySpinner.getSelectedItem().toString());
-            item.setDescription(mDescription.getText().toString());
+            item.setDescription(mDescriptionEditText.getText().toString());
             item.setDateAdded(System.currentTimeMillis());
 
             if (mRequestCode == NEW_ENTRY_REQUEST) {
@@ -228,7 +227,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 } else {
-                    Toast.makeText(this, "You must accept the permission to use the barcode scanner.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Permission denied, barcode scanner disabled.", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -254,7 +253,6 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                 String theHTML = "";
                 try {
                     theHTML = getHTML("https://api.upcitemdb.com/prod/trial/lookup?upc=" + theUpc[1]);
-                    Log.i("theHTML", theHTML);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -267,8 +265,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                     theName = theName.replaceAll("\"", "");
                     mNameEditText.setText(theName);
                     mQuantityEditText.setText("1.0");
-                    mDescription.setText(theDesc);
-                    Log.i("tag2", theDesc);
+                    mDescriptionEditText.setText(theDesc);
                 }
             }
         }
