@@ -106,12 +106,16 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(getContext(), "Food added!", Toast.LENGTH_SHORT).show();
                 }
+                break;
             }
             case ManualEntryActivity.EDIT_ENTRY_REQUEST: {
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(getContext(), "Food edited!", Toast.LENGTH_SHORT).show();
                 }
+                break;
             }
+            default:
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
