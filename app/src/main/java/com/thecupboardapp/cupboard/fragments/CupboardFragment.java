@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
@@ -36,23 +37,11 @@ import static android.app.Activity.RESULT_OK;
 
 public class CupboardFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener {
     public static final String TAG = "CupboardFragment";
+    public static final long NO_EXP_DATE = 4133987474999L;
 
-    ExpandableListView mExpandableListView;
+    private ExpandableListView mExpandableListView;
     private CupboardExpandableListAdapter mAdapter;
-
-    private String mCategoryShown = "";
-
-    private String[] groups;
-    private String[] fullGroups;
-    private String[][] children;
-    private String[][] fullChildren;
-
     private FloatingActionButton manEntFAB;
-
-    private int NEW_ENTRY_REQUEST = 0;
-    private int UPDATE_ENTRY_REQUEST = 1;
-    private int SHOW_REQUEST = 2;
-    long NO_EXP_DATE = 4133987474999L;
 
     private Disposable mFoodItemDisposable;
 
@@ -62,7 +51,6 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
         mCupboardViewModel = ViewModelProviders.of(this).get(CupboardViewModel.class);
     }
 
@@ -76,9 +64,9 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         manEntFAB = v.findViewById(R.id.add_food_fab);
 
         manEntFAB.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getActivity(), ManualEntryActivity.class);
-            intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, NEW_ENTRY_REQUEST);
-            startActivityForResult(intent, NEW_ENTRY_REQUEST);
+            Intent intent = new Intent(getContext(), ManualEntryActivity.class);
+            intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, ManualEntryActivity.NEW_ENTRY_REQUEST);
+            startActivityForResult(intent, ManualEntryActivity.NEW_ENTRY_REQUEST);
         });
 
         if (mFoodItemDisposable == null) {
@@ -94,20 +82,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
     }
 
     @Override
-    public void onPause() {
-        Log.d(TAG, "onPause: ");
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop: ");
-        super.onStop();
-    }
-
-    @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
         mFoodItemDisposable.dispose();
         super.onDestroy();
     }
@@ -121,6 +96,25 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: " + requestCode + " , " + resultCode);
+        switch (requestCode) {
+            case ManualEntryActivity.NEW_ENTRY_REQUEST: {
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(getContext(), "Food added!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            case ManualEntryActivity.EDIT_ENTRY_REQUEST: {
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(getContext(), "Food edited!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -169,7 +163,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
 
 
     public void updateFoods(List<FoodItem> mFoodItems) {
-        mAdapter = new CupboardExpandableListAdapter(getActivity(), mFoodItems);
+        mAdapter = new CupboardExpandableListAdapter(getActivity(), mFoodItems, this);
 
         mExpandableListView.setAdapter(mAdapter);
         mExpandableListView.setGroupIndicator(null);

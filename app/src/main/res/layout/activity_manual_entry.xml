@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.thecupboardapp.cupboard.activities.ManualEntryActivity">
+    tools:activity="com.thecupboardapp.cupboard.activities.ManualEntryActivity">
 
     <TextView
         android:id="@+id/text_food_name"
@@ -14,6 +14,9 @@
         android:layout_marginTop="24dp"
         android:text="Name:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toStartOf="@+id/edit_food_name"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +28,9 @@
         android:layout_marginTop="40dp"
         android:text="Expires:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toStartOf="@+id/edit_expiration"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_food_name" />
 
@@ -36,8 +42,11 @@
         android:layout_marginTop="40dp"
         android:text="Quantity:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toStartOf="@+id/edit_quantity"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_expiration"/>
+        app:layout_constraintTop_toBottomOf="@+id/text_expiration" />
 
     <TextView
         android:id="@+id/text_category"
@@ -47,22 +56,26 @@
         android:layout_marginTop="40dp"
         android:text="Category:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toStartOf="@+id/spinner_category"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_quantity"/>
+        app:layout_constraintTop_toBottomOf="@+id/text_quantity" />
 
     <EditText
         android:id="@+id/edit_food_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="text"
+        app:layout_constraintBaseline_toBaselineOf="@+id/text_food_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/text_food_name" />
 
     <Button
-        android:id="@+id/button_add_food"
+        android:id="@+id/button_add_update_food"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -80,22 +93,23 @@
         android:layout_marginEnd="8dp"
         android:text="Cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_add_food"
+        app:layout_constraintEnd_toStartOf="@+id/button_add_update_food"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/edit_expiration"
-        android:layout_width="165dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
         android:clickable="true"
         android:editable="false"
         android:ems="10"
         android:focusable="false"
         android:inputType="date"
+        app:layout_constraintBaseline_toBaselineOf="@+id/text_expiration"
         app:layout_constraintEnd_toStartOf="@+id/image_button_calendar"
-        app:layout_constraintTop_toBottomOf="@+id/edit_food_name" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/text_expiration" />
 
     <ImageButton
         android:id="@+id/image_button_calendar"
@@ -117,6 +131,8 @@
         android:ems="10"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/text_quantity"
         app:layout_constraintTop_toBottomOf="@+id/edit_expiration" />
 
     <Spinner
@@ -126,6 +142,8 @@
         android:layout_marginTop="40dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/text_category"
         app:layout_constraintTop_toBottomOf="@+id/edit_quantity" />
 
     <TextView

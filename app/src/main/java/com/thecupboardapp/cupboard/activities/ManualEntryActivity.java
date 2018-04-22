@@ -22,7 +22,6 @@ import android.widget.TextView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.thecupboardapp.cupboard.R;
-import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.viewmodels.ManualEntryViewModel;
 
@@ -33,7 +32,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -41,23 +39,24 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ManualEntryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     public static final long NO_EXP_DATE = 4133987474999L;
-    public static final long NEW_ENTRY_REQUEST = 0;
+    public static final int NEW_ENTRY_REQUEST = 0;
+    public static final int EDIT_ENTRY_REQUEST = 1;
     public static final String FOOD_ID_REQUEST_KEY = "com.thecupboardapp.cupboard.foodId";
 
     private EditText mNameEditText;
+    private EditText mExpirationEditText;
     private ImageButton mCalendarButton;
     private EditText mQuantityEditText;
-    private TextView mDescription;
     private Spinner mCategorySpinner;
-    private Button mAddButton;
+    private TextView mDescription;
     private Button mCancelButton;
+    private Button mAddUpdateButton;
 
     private Disposable mFoodDisposable;
     private ManualEntryViewModel mManualEntryViewModel;
 
     private long mRequestCode;
     private Calendar mCalendar;
-    private String mFoodCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +68,13 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         mCalendarButton = findViewById(R.id.image_button_calendar);
         mDescription = findViewById(R.id.text_description);
         mCategorySpinner = findViewById(R.id.spinner_category);
-        mAddButton = findViewById(R.id.button_add_food);
+        mAddUpdateButton = findViewById(R.id.button_add_update_food);
         mCancelButton = findViewById(R.id.button_cancel_food);
+        mExpirationEditText = findViewById(R.id.edit_expiration);
 
         mManualEntryViewModel = ViewModelProviders.of(this).get(ManualEntryViewModel.class);
 
         mCalendar = Calendar.getInstance();
-        mFoodCategory = "";
         mRequestCode = getIntent().getLongExtra(FOOD_ID_REQUEST_KEY, NEW_ENTRY_REQUEST);
 
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
@@ -89,6 +88,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
             mDescription.setText("None");
         } else {
             setTitle("Edit Food");
+            mAddUpdateButton.setText("Update");
             mManualEntryViewModel.setFoodItemFlowable(mRequestCode);
             mFoodDisposable = mManualEntryViewModel.getFoodItemFlowable()
                     .subscribeOn(Schedulers.io())
@@ -96,10 +96,12 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                         mNameEditText.setText(foodItem.getName());
                         mCalendar.setTime(new Date(foodItem.getExpiration()));
                         mQuantityEditText.setText(Float.toString(foodItem.getQuantity()));
+
                         if (!foodItem.getCategory().isEmpty()) {
                             mCategorySpinner.setSelection(categoryAdapter.getPosition(foodItem.getCategory()));
                         }
                         mDescription.setText(foodItem.getDescription());
+                        updateExpirationLabel();
                     });
         }
     }
@@ -115,28 +117,31 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         });
 
 
-        mAddButton.setOnClickListener(v -> {
+        mAddUpdateButton.setOnClickListener(v -> {
+            FoodItem item = new FoodItem();
+            item.setName(mNameEditText.getText().toString());
+            item.setExpiration(mCalendar.getTimeInMillis());
+            item.setQuantity(Float.parseFloat(mQuantityEditText.getText().toString()));
+            item.setCategory(mCategorySpinner.getSelectedItem().toString());
+            item.setDescription(mDescription.getText().toString());
+            item.setDateAdded(System.currentTimeMillis());
+
             if (mRequestCode == NEW_ENTRY_REQUEST) {
-                FoodItem item = new FoodItem();
-                item.setName(mNameEditText.getText().toString());
-                item.setExpiration(mCalendar.getTimeInMillis());
-                item.setQuantity(Float.parseFloat(mQuantityEditText.getText().toString()));
-                item.setCategory(mCategorySpinner.getSelectedItem().toString());
-                item.setDescription(mDescription.getText().toString());
-                item.setDateAdded(System.currentTimeMillis());
-
                 mManualEntryViewModel.insertFood(item);
-                finish();
             } else {
-
+                item.setId(mRequestCode);
+                mManualEntryViewModel.updateFood(item);
             }
+
+            Intent intent = new Intent();
+            intent.putExtra("result", "done");
+
+            setResult(RESULT_OK, intent);
+            finish();
         });
 
         mCancelButton.setOnClickListener(v -> {
-            Intent resultInt = new Intent();
-            resultInt.putExtra("Result", "Done");
-
-            setResult(RESULT_CANCELED, resultInt);
+            setResult(RESULT_CANCELED);
             finish();
         });
     }
@@ -158,7 +163,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         mCalendar.set(Calendar.YEAR, year);
         mCalendar.set(Calendar.MONTH, monthOfYear);
         mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        updateLabel();
+        updateExpirationLabel();
     };
 
     @Override
@@ -179,11 +184,9 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         }
     }
 
-    private void updateLabel() {
-        String myFormat = "MM/dd/yy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        EditText edittext= (EditText) findViewById(R.id.edit_expiration);
-        edittext.setText(sdf.format(mCalendar.getTime()));
+    private void updateExpirationLabel() {
+        String date = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM).format(mCalendar.getTimeInMillis());
+        mExpirationEditText.setText(date);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -241,11 +244,12 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         rd.close();
         return result.toString();
     }
+
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         //parent.getItemAtPosition(pos);
-        mFoodCategory = parent.getItemAtPosition(pos).toString();
+        // mFoodCategory = parent.getItemAtPosition(pos).toString();
     }
 
     public void onNothingSelected(AdapterView<?> parent) {

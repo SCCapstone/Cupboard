@@ -1,11 +1,12 @@
 package com.thecupboardapp.cupboard.adapters;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thecupboardapp.cupboard.R;
-import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.activities.ManualEntryActivity;
 import com.thecupboardapp.cupboard.database.Database;
+import com.thecupboardapp.cupboard.fragments.CupboardFragment;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
@@ -27,9 +27,7 @@ import com.thecupboardapp.cupboard.models.SListItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -39,12 +37,14 @@ import io.reactivex.schedulers.Schedulers;
 public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
     private final LayoutInflater mLayoutInflater;
     private Context mContext;
+    private CupboardFragment mFragment;
 
     private List<FoodItem> mFoodItems;
     private List<FoodItem> mQueryFoodItems;
 
-    public CupboardExpandableListAdapter(Context context, List<FoodItem> foodItems) {
+    public CupboardExpandableListAdapter(Context context, List<FoodItem> foodItems, CupboardFragment fragment) {
         mContext = context;
+        mFragment = fragment;
         mLayoutInflater = LayoutInflater.from(context);
         mFoodItems = foodItems;
         mQueryFoodItems = new ArrayList<>(mFoodItems);
@@ -113,7 +113,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         holder.editButton.setOnClickListener(v -> {
             Intent intent = new Intent(mContext, ManualEntryActivity.class);
             intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, foodItem.getId());
-            mContext.startActivity(intent);
+            mFragment.startActivityForResult(intent, ManualEntryActivity.EDIT_ENTRY_REQUEST);
         });
 
         holder.addToListButton.setFocusable(false);
@@ -138,7 +138,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
                                 Database.getDatabase(mContext).sListItemDao().insertAll(sListItem);
                             });
 
-                            // Toast.makeText(mContext,"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(mActivity,"Added " + getGroup(groupPosition).toString() +" to "+list.getName(),Toast.LENGTH_SHORT).show();
                         });
                         builder.show();
                     });

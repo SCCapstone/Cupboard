@@ -96,7 +96,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.d(TAG, "onActivityResult in homeactivity: " + requestCode + ", " + resultCode);
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             switch (resultCode) {
                 case SignInActivity.SIGN_IN_RESULT_CODE:
