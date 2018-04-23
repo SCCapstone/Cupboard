@@ -144,7 +144,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
 
                         builder.setItems(arr, (dialog, which) -> {
                             SListItem sListItem = new SListItem(foodItem.getName(), false);
-                            sListItem.setParentId(foodItem.getId());
+                            sListItem.setParentId(sLists.get(which).getId());
                             AsyncTask.execute( () -> {
                                 Database.getDatabase(mContext).sListItemDao().insertAll(sListItem);
                             });
@@ -177,7 +177,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         holder.quantityButton.setFocusable(false);
-        holder.quantityButton.setText(Float.toString((int) foodItem.getQuantity()));
+        holder.quantityButton.setText(Float.toString(foodItem.getQuantity()));
         holder.quantityButton.setOnClickListener(view -> {
             final NumberPicker numberPicker = new NumberPicker(mContext);
             final NumberPicker.OnValueChangeListener valueChangeListener = (picker, oldVal, newVal) -> {
@@ -192,6 +192,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setView(numberPicker);
             builder.setTitle("Change the quantity");
+            builder.setMessage("For fractions, you'll need to navigate to the \"Edit Food\" screen");
             builder.setPositiveButton("OK", (dialog, which) -> {
                 valueChangeListener.onValueChange(numberPicker, numberPicker.getValue(), numberPicker.getValue());
             });
