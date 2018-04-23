@@ -2,7 +2,69 @@
 
 Manage your foods, recipes, and shopping lists all in one convenient app!
 
-## Installation:
+I couldn't tell you how many times I've forgotten which ingredients I have in my kitchen. When I go grocery shopping, I often accidentally buy something I may already have! And remember that cheese in the bottom drawer of the fridge? Me neither. I could have sworn that it had another week of life left in it. Yuck!
+
+Cupboard plans to solve these problems, as well as provide other functionality to drastically improve your cooking and shopping experience. With the Cupboard app, you will be able to keep track of foods you already have in your pantry, when they expire, and more. Having your ingredients stored inside your phone, you can go shopping with the peace of mind that you will not buy foods you already own. It is Cupboard's mission to save you time and money both inside the kitchen and out.
+
+{% include youtubePlayer.html id=page.youtubeId %}
+
+
+
+## Tutorial
+
+### Create an account
+
+Open the navigation tray in the upper-left corner. Tapping the area at the top will lead you to the sign-in/account creation screen. Simply input your email and password to create an account!
+
+<img src="https://i.imgur.com/Aro8eCg.png" alt="hi" style="inline" img align="left" width="200" />
+ 
+<img src="https://i.imgur.com/eVrGHoD.png" alt="hi" style="inline" img align="center" width="200" />
+
+
+
+### The home screen
+ 
+The home screen displays your foods that are about to expire and the last lists you modified.
+ 
+<img src="https://i.imgur.com/Jexeyyy.png" alt="hi" style="inline" width="200" />
+
+
+
+### Adding items to your cupboard
+
+Open the navigation tray once again in the upper-left corner and head over to cupboard. Clicking the red button at the bottom will lead you to adding a new food screen. Input a name, expiration date, quantity, category, and description for your food. Alternativly, scan in the barcode with the camera button in the upper-right corner to fill in the data for you! Change the quantity of each item as you use them by tapping on the number to the right of each.
+ 
+<img src="https://i.imgur.com/g0g2kTd.png" alt="hi" style="inline" img align="left" width="200" />
+ 
+<img src="https://i.imgur.com/GmxLyua.png" alt="hi" style="inline" img align="center" width="200" />
+
+
+
+### Shopping lists
+
+Use shopping lists to keep track of what you need at the store. Click the red button at the bottom to create a new shopping list. Enter each of your items on your list, pressing enter between each one. Once you've bought the item, simply check it off by tapping on the buttons on the left.
+
+<img src="https://i.imgur.com/imGhgkh.png" alt="hi" style="inline" img align="left"  width="200" />
+ 
+<img src="https://i.imgur.com/bxQ1jmW.png" alt="hi" style="inline" img align="center" width="200" />
+
+
+
+## About
+
+Meet the Devs!
+
+[Kyle Carhart](https://github.com/KMCGamer) |
+[Will Wells](https://github.com/WillWells)
+
+[Jacob Strom](https://github.com/jmstrom) |
+[Bradley McClain](https://github.com/BradleyMcClain)
+
+[Zak Slater](https://github.com/ZakSlater)
+
+
+
+## Installation
 
 ### Android Studio
 Install [Android Studio.](https://developer.android.com/studio/index.html)
