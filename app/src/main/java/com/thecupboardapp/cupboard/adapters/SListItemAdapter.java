@@ -70,7 +70,9 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
 
         // Delete the item from the list
         holder.mSListItemDeleteButton.setOnClickListener(v -> {
-            if (mSListItems.size() == 1) return; // Never delete the last one
+            if (mSListItems.size() == position + 1) {
+                return; // Never delete the last one
+            }
             mSListItems.remove(holder.getAdapterPosition());
             this.notifyItemRemoved(holder.getAdapterPosition());
         });
