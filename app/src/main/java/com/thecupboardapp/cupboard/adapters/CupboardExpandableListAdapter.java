@@ -194,7 +194,9 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setView(numberPicker);
-            builder.setTitle("Change the quantity");
+            builder.setTitle("Current Quantity: "
+                    + Float.toString(foodItem.getQuantity())
+                    + " " + foodItem.getUnits());
             builder.setMessage("For fractions, you'll need to navigate to the \"Edit Food\" screen");
             builder.setPositiveButton("OK", (dialog, which) -> {
                 valueChangeListener.onValueChange(numberPicker, numberPicker.getValue(), numberPicker.getValue());
