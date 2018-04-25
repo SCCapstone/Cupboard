@@ -71,7 +71,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public String getChild(int groupPosition, int childPosition) {
         FoodItem item = mQueryFoodItems.get(groupPosition);
-        String date;
+        String date, quantity;
 
         if (item.getExpiration() == 0) {
             date = "Never";
@@ -79,7 +79,10 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
             date = FoodItem.longToDate(item.getExpiration());
         }
 
-        return String.format("Expires: %s\nDate Added: %s\nDescription: %s",
+        quantity = Float.toString(item.getQuantity()) + " " + item.getUnits();
+
+        return String.format("Quantity: %s\nExpires: %s\nDate Added: %s\nDescription: %s",
+                quantity,
                 date,
                 FoodItem.longToDate(item.getDateAdded()),
                 item.getDescription());
@@ -191,7 +194,9 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setView(numberPicker);
-            builder.setTitle("Change the quantity");
+            builder.setTitle("Current Quantity: "
+                    + Float.toString(foodItem.getQuantity())
+                    + " " + foodItem.getUnits());
             builder.setMessage("For fractions, you'll need to navigate to the \"Edit Food\" screen");
             builder.setPositiveButton("OK", (dialog, which) -> {
                 valueChangeListener.onValueChange(numberPicker, numberPicker.getValue(), numberPicker.getValue());
