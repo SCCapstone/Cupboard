@@ -3,6 +3,7 @@ package com.thecupboardapp.cupboard.database;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
@@ -30,7 +31,7 @@ public interface SListDao {
     @Insert
     void insertAll(SList... sLists);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertList(SList sList);
 
     @Delete

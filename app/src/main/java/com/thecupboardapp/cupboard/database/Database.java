@@ -1,12 +1,21 @@
 package com.thecupboardapp.cupboard.database;
 
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Relation;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import com.thecupboardapp.cupboard.Cupboard;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
+
+import java.util.List;
+
+import io.reactivex.Flowable;
 
 /**
  * Created by Kyle on 3/8/2018.
@@ -20,8 +29,12 @@ public abstract class Database extends RoomDatabase {
     public static final String DATABASE_NAME = "cupboard";
 
     public abstract SListDao sListDao();
+
     public abstract SListItemDao sListItemDao();
+
     public abstract FoodItemDao foodItemDao();
+
+    public abstract Cupboard.SListAndItemsDao sListAndItemsDao();
 
     private static Database INSTANCE;
 

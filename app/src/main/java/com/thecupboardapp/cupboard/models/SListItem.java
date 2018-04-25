@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -39,6 +40,7 @@ public class SListItem implements Comparable<SListItem>{
     @ColumnInfo(name = "firebase_key")
     private String firebaseKey;
 
+    @Exclude
     @ColumnInfo(name = "parent_id")
     private long parentId;
 
@@ -103,6 +105,7 @@ public class SListItem implements Comparable<SListItem>{
         this.firebaseKey = firebaseKey;
     }
 
+    @Exclude
     public long getParentId() {
         return parentId;
     }
@@ -135,11 +138,14 @@ public class SListItem implements Comparable<SListItem>{
 
     @Ignore
     @Override
-    public int compareTo(@NonNull SListItem o) {
-        if (this.id == o.id) {
+    public int compareTo(@NonNull SListItem sListItem) {
+        if (this.id == sListItem.getId()) {
             return 0;
-        } else {
-            return -1;
+        } else if (this.getName() == sListItem.getName()
+                && this.getChecked() == sListItem.getChecked()
+                && this.getParentId() == sListItem.getParentId()) {
+            return 0;
         }
+        return 0;
     }
 }

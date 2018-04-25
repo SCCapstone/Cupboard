@@ -33,6 +33,7 @@ public class DashboardFragment extends Fragment{
     private TextView mNextExpiring;
     private TextView mLastModifiedList;
 
+    private Button mTestButton;
     private Button mTestButton2;
 
     @Override
@@ -48,6 +49,10 @@ public class DashboardFragment extends Fragment{
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        mTestButton = v.findViewById(R.id.test_button_1);
+        mTestButton.setOnClickListener(view -> testButtonPress1());
+
 
         mTestButton2 = v.findViewById(R.id.test_button_2);
         mTestButton2.setOnClickListener(view -> testButtonPress2());
@@ -99,6 +104,16 @@ public class DashboardFragment extends Fragment{
         // UserData.get(getActivity()).updateFromFirebase();
 
         return v;
+    }
+
+    private void testButtonPress1() {
+        SList sList = new SList();
+        sList.setId(1);
+        sList.setName("debug");
+        sList.setLastModified(System.currentTimeMillis());
+        AsyncTask.execute(() -> {
+            Database.getDatabase(getContext()).sListDao().insertList(sList);
+        });
     }
 
     // private void updateNextExpiring() {
