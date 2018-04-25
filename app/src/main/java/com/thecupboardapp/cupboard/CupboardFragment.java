@@ -373,6 +373,21 @@ implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
                             ShoppingList list;
                             if (which==choices.length-1) {
                                 list = new ShoppingList();
+                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("lists")
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .push();
+
+                                ref.child("name").setValue(list.getName());
+                                ref.child("lastModified").setValue(System.currentTimeMillis());
+                                ShoppingListItem item = new ShoppingListItem(foodToAdd.getName());
+                                DatabaseReference listref = ref.child("items").push();
+                                item.setFirebaseId(listref.getKey());
+                                listref.child("name").setValue(item.getName());
+                                listref.child("checked").setValue(item.isChecked());
+                                
+                                list.setFirebaseId(ref.getKey());
+                                list.setLastModified(System.currentTimeMillis());
+
                                 UserData.get(getActivity()).addShoppingList(list);
                             }
                             else
