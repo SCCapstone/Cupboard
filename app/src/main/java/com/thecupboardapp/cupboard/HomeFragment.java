@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getActivity().setTitle(R.string.title_dashboard);
+        getActivity().setTitle(R.string.title_home);
     }
 
     @Nullable

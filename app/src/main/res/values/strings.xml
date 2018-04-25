@@ -18,7 +18,7 @@
     <string name="nav_label_settings">Settings</string>
     <string name="nav_label_logout">Log out</string>
 
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_home">Home</string>
     <string name="title_cupboard">My Cupboard</string>
     <string name="title_recipes">My Recipes</string>
     <string name="title_lists">My Shopping Lists</string>
