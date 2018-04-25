@@ -31,6 +31,7 @@ import static android.view.inputmethod.EditorInfo.IME_ACTION_NEXT;
  */
 
 public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SListItemHolder> {
+    private static final String TAG = "SListItemAdapter";
     private List<SListItem> mSListItems;
     private RecyclerView mRecyclerView;
     private long mParentId;
@@ -70,9 +71,9 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
 
         // Delete the item from the list
         holder.mSListItemDeleteButton.setOnClickListener(v -> {
-            if (mSListItems.size() == position + 1) {
-                return; // Never delete the last one
-            }
+            // Never delete the last one
+            if (mSListItems.size() == holder.getAdapterPosition() + 1) { return; }
+
             mSListItems.remove(holder.getAdapterPosition());
             this.notifyItemRemoved(holder.getAdapterPosition());
         });
