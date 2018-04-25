@@ -51,6 +51,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
     private EditText mNameEditText;
     private EditText mExpirationEditText;
+    private EditText mUnitsEditText;
     private ImageButton mCalendarButton;
     private EditText mQuantityEditText;
     private Spinner mCategorySpinner;
@@ -71,6 +72,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
         mNameEditText = findViewById(R.id.edit_food_name);
         mQuantityEditText = findViewById(R.id.edit_quantity);
+        mUnitsEditText = findViewById(R.id.edit_units);
         mCalendarButton = findViewById(R.id.image_button_calendar);
         mDescriptionEditText = findViewById(R.id.edit_description);
         mCategorySpinner = findViewById(R.id.spinner_category);
@@ -93,6 +95,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
             setTitle("New Food");
             mDescriptionEditText.setText("None");
             mExpirationEditText.setText("Never");
+            mUnitsEditText.setText("Units");
         } else {
             setTitle("Edit Food");
             mAddUpdateButton.setText("Update");
@@ -108,6 +111,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                             updateExpirationLabel();
                         }
                         mQuantityEditText.setText(Float.toString(foodItem.getQuantity()));
+                        mUnitsEditText.setText(foodItem.getUnits());
                         if (!foodItem.getCategory().isEmpty()) {
                             mCategorySpinner.setSelection(categoryAdapter.getPosition(foodItem.getCategory()));
                         }
@@ -138,6 +142,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
                 item.setExpiration(mCalendar.getTimeInMillis());
             }
             item.setQuantity(Float.parseFloat(mQuantityEditText.getText().toString()));
+            item.setUnits(mUnitsEditText.getText().toString());
             item.setCategory(mCategorySpinner.getSelectedItem().toString());
             item.setDescription(mDescriptionEditText.getText().toString());
             item.setDateAdded(System.currentTimeMillis());

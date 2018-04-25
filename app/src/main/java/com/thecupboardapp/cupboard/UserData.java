@@ -83,6 +83,7 @@ public class UserData {
 
                         if(food.hasChild("category")) foodItem.setCategory(food.child("category").getValue().toString());
                         if(food.hasChild("description")) foodItem.setDescription(food.child("description").getValue().toString());
+                        if(food.hasChild("units")) foodItem.setUnits(food.child("units").getValue().toString());
 
                         try {
                             //Log.d("getFoods", "entering try block");
