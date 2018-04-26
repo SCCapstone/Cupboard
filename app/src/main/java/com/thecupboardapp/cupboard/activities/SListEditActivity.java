@@ -49,7 +49,7 @@ public class SListEditActivity extends AppCompatActivity {
 
     private SListEditViewModel mSListEditViewModel;
 
-    public static boolean mIsEnterPressed = false;
+    private boolean mIsEdited;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +60,7 @@ public class SListEditActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.shopping_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(SListEditActivity.this));
 
-        // init disposable container
+        // Init disposable container
         mDisposables = new CompositeDisposable();
 
         // Get the sListIdExtra to see if this is a new list or not
@@ -70,6 +70,9 @@ public class SListEditActivity extends AppCompatActivity {
         mSListEditViewModel = ViewModelProviders.of(this).get(SListEditViewModel.class);
         mSListEditViewModel.setSListItems(sListIdExtra);
         mSListEditViewModel.setSList(sListIdExtra);
+
+        // Set edited to false, no actions were performed yet
+        mIsEdited = false;
     }
 
     @Override
@@ -101,9 +104,9 @@ public class SListEditActivity extends AppCompatActivity {
         } else {
             oldSList = new SList("New List");
             setTitle("New List");
-            oldSListItems = new ArrayList<SListItem>();
+            oldSListItems = new ArrayList<>();
 
-            mAdapter = new SListItemAdapter(new ArrayList<SListItem>(), sListIdExtra);
+            mAdapter = new SListItemAdapter(new ArrayList<>(), sListIdExtra);
             mRecyclerView.setAdapter(mAdapter);
             editTitle();
         }
@@ -112,10 +115,11 @@ public class SListEditActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mDisposables.dispose();
+        mDisposables.dispose(); // Dispose the listeners
         super.onDestroy();
     }
 
+    /* Creates an intent for this Activity. Takes in an id for the list selected. */
     public static Intent newIntent(Context packageContext, long id) {
         Intent intent = new Intent(packageContext, SListEditActivity.class);
         intent.putExtra(EXTRA_ID, id);
@@ -152,7 +156,7 @@ public class SListEditActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mAdapter.getSListItems().size() == 0) {
+        if (!mIsEdited && !mAdapter.isEdited()) {
             super.onBackPressed();
             return;
         }
@@ -196,6 +200,7 @@ public class SListEditActivity extends AppCompatActivity {
 
         alert.setPositiveButton("Yes", (dialog, which) -> {
             mAdapter.clearItems();
+            mIsEdited = true;
         });
 
         alert.setNegativeButton("No", (dialog, which) -> {
@@ -215,8 +220,10 @@ public class SListEditActivity extends AppCompatActivity {
         alert.setTitle("Title");
         alert.setView(v);
 
-        alert.setPositiveButton("Ok", (dialog, whichButton) ->
-                SListEditActivity.this.setTitle(editText.getText().toString()));
+        alert.setPositiveButton("Ok", (dialog, whichButton) -> {
+            SListEditActivity.this.setTitle(editText.getText().toString());
+            mIsEdited = true;
+        });
 
         alert.setNegativeButton("Back", (dialog, whichButton) -> dialog.dismiss());
 
