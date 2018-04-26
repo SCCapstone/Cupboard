@@ -128,7 +128,7 @@ public class SListEditActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_menu, menu);
+        inflater.inflate(R.menu.slistedit_menu, menu);
         return true;
     }
 
@@ -195,7 +195,7 @@ public class SListEditActivity extends AppCompatActivity {
     private void clearList() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-        alert.setTitle("Clear List");
+        alert.setTitle("Delete All Items");
         alert.setMessage("Are you sure you want to clear the list?");
 
         alert.setPositiveButton("Yes", (dialog, which) -> {

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item android:id="@+id/edit_title"
-        android:title="Edit Title" />
+        android:title="@string/edit_title" />
     <item android:id="@+id/clear_list"
-        android:title="Clear List" />
+        android:title="@string/delete_all_items" />
 </menu>
