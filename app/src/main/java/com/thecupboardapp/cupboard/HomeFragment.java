@@ -124,73 +124,16 @@ public class HomeFragment extends Fragment{
 
         mExpandableListView.setAdapter(mAccordion);
 
+        mExpandableListView.expandGroup(0);
+        mExpandableListView.expandGroup(1);
+
+
+        mExpandableListView.expandGroup(0);
+        mExpandableListView.expandGroup(1);
+
         return v;
     }
 
-    private void updateNextExpiring() {
-        mFoods = UserData.get(getActivity()).getFoodItems();
-        //UserData.get(getA)
-        Collections.sort(mFoods);
-        //FoodItem mExpFood1 = ;
-        try {
-            if (!mFoods.isEmpty()) {
-            /*Log.d("mFoods", "not null");
-            FoodItem f = mFoods.get(0);
-            for (FoodItem food: mFoods) {
-                Log.d("mFoods", food.getName());
-            }*/
-                String mNextThreeExpiring = "";
-                for (int i = 0; i < 3; ++i){
-                    if (mFoods.size() >  i) {
-                        mNextThreeExpiring += mFoods.get(i).getName();
-                        mNextThreeExpiring += "\n";
-                    }
-                }
-                mNextExpiring.setText(mNextThreeExpiring);
-            }
-            else {
-                //Log.d("mFoods", "mFoods equals null");
-                //Log.d("mFoods", "UID = );
-                String s = "no foods";
-                mNextExpiring.setText(s);
-            }
-        }
-        catch (Exception e) {
-            mNextExpiring.setText("error in next expiring");
-        }
-
-    }
-
-    private void updateLastModifiedList() {
-        mLists = UserData.get(getActivity()).getShoppingLists();
-        String s = "";
-
-        try {
-            if (mLists.isEmpty()) {
-                s = "create a list";
-            }
-
-            else {
-                Collections.sort(mLists);
-
-
-                s = mLists.get(0).getName() + "\n";
-                List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
-                for ( ShoppingListItem item : items) {
-                    s += item.getName() + "\n";
-                }
-            }
-        }
-        catch (Exception e) {
-            s = "something went wrong";
-        }
-
-
-
-
-        mLastModifiedList.setText(s);
-
-    }
 
     private void prepareAccordion() {
 
@@ -226,7 +169,7 @@ public class HomeFragment extends Fragment{
 
         try {
             if (mLists.isEmpty()) {
-                mHeaders.add("You don't have any Shopping Lists :(");
+                mHeaders.add("You don't have any\nShopping Lists :(");
                 ArrayList<String> empty = new ArrayList<String>();
                 empty.add("Create a Shopping List to display the last shopping list you modified on the home screen.");
                 mListChild.put(mHeaders.get(1), empty);
@@ -266,30 +209,6 @@ public class HomeFragment extends Fragment{
 
     }
 
-    /*private List<String> setLastShoppingList() {
-        mLists = UserData.get(getActivity()).getShoppingLists();
-        ArrayList<String> retVal = new ArrayList<String>();
-
-        try {
-            if (mLists.isEmpty()) {
-                retVal.add("You don't have any shopping lists. Go to Shopping Lists to add one.");
-            }
-
-            else {
-                Collections.sort(mLists);
-
-
-                s = mLists.get(0).getName() + "\n";
-                List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
-                for ( ShoppingListItem item : items) {
-                    s += item.getName() + "\n";
-                }
-            }
-        }
-        catch (Exception e) {
-            s = "something went wrong";
-        }
-    }*/
 
     private List<String> setExpiringSoon(int days) {
         mFoods = UserData.get(getActivity()).getFoodItems();
@@ -341,7 +260,9 @@ public class HomeFragment extends Fragment{
     private String formatFood(FoodItem f) {
         String s = "";
         s += f.getName();
-        s += "\nExpiration Date: ";
+        //s += ": ";
+        s += "\n";
+        s += "On: ";
         s += f.getExpirationAsString();
 
         return s;
@@ -405,6 +326,9 @@ public class HomeFragment extends Fragment{
                 LayoutInflater inf = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inf.inflate(R.layout.home_group,null);
             }
+
+            //ExpandableListView eListView = (ExpandableListView) parent;
+            //eListView.expandGroup(groupPosition);
 
             TextView mHomeGroupHeader = (TextView) convertView.findViewById(R.id.home_group_header);
             mHomeGroupHeader.setText(mHeaderTitle);

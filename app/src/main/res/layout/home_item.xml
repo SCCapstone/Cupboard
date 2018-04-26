@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <LinearLayout
         android:id="@+id/home_item"
         android:layout_width="match_parent"
@@ -12,7 +13,14 @@
         <TextView
             android:id="@+id/home_item_list_item"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="6dip"
+            android:paddingTop="6dip"
+            android:textColor="@color/darkGray"
+            android:textSize="18dp"
+
+            android:layout_weight="1"
+             />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
