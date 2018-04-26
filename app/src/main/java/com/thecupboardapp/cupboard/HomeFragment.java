@@ -124,12 +124,7 @@ public class HomeFragment extends Fragment{
 
         mExpandableListView.setAdapter(mAccordion);
 
-        mExpandableListView.expandGroup(0);
-        mExpandableListView.expandGroup(1);
-
-
-        mExpandableListView.expandGroup(0);
-        mExpandableListView.expandGroup(1);
+        
 
         return v;
     }
@@ -262,7 +257,7 @@ public class HomeFragment extends Fragment{
         s += f.getName();
         //s += ": ";
         s += "\n";
-        s += "On: ";
+        //s += "On: ";
         s += f.getExpirationAsString();
 
         return s;
