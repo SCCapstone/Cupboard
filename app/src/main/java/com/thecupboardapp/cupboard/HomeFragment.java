@@ -1,6 +1,7 @@
 package com.thecupboardapp.cupboard;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Collections;
 
+import static android.app.Activity.RESULT_OK;
+import static com.thecupboardapp.cupboard.ManualEntry.NEW_ENTRY_REQUEST;
+import static com.thecupboardapp.cupboard.ManualEntry.UPDATE_ENTRY_REQUEST;
+
 /**
  * Created by Kyle on 1/13/2018.
  * Editied by Jacob Strom on 2/19/2018.
@@ -44,21 +49,14 @@ public class HomeFragment extends Fragment{
     private List<String> mHeaders;
     private HashMap<String, List<String>> mListChild;
 
+    private int NEW_ENTRY_REQUEST = 0;
+    private int UPDATE_ENTRY_REQUEST = 1;
+    private int SHOW_REQUEST = 2;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.title_home);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
-            return v;
-        }
-
-        View v = inflater.inflate(R.layout.home_fragment, container, false);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -92,6 +90,46 @@ public class HomeFragment extends Fragment{
                         mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
 
                         mExpandableListView.setAdapter(mAccordion);
+
+                        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                            @Override
+                            public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
+
+                                if (groupPosition == 0) {
+                                    Log.d("childClickListener", "Food Clicked\t" + mFoods.get(childPosition).toString());
+                                    FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(mFoods.get(childPosition).getName());
+                                    Intent intent = new Intent(getActivity(), ManualEntry.class);
+                                    intent.putExtra(getString(R.string.food_name), foodToUpdate.getName());
+                                    intent.putExtra(getString(R.string.food_expires),
+                                            foodToUpdate.getExpirationAsLong());
+                                    intent.putExtra(getString(R.string.food_quantity), foodToUpdate.getQuantity());
+                                    intent.putExtra(getString(R.string.food_category), foodToUpdate.getCategory());
+                                    intent.putExtra(getString(R.string.food_description),
+                                            foodToUpdate.getDescription());
+                                    intent.putExtra(getString(R.string.request_code), UPDATE_ENTRY_REQUEST);
+                                    startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
+
+
+
+                                }
+
+                                if (groupPosition == 1) {
+                                    Intent intent = ShoppingListActivity.newIntent(getActivity(), mLists.get(childPosition).getId());
+                                    startActivity(intent);
+                                }
+
+                                prepareAccordion();
+
+                                mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+                                mExpandableListView.setAdapter(mAccordion);
+
+                                mExpandableListView.expandGroup(0);
+                                mExpandableListView.expandGroup(1);
+
+                                return true;
+                            }
+                        });
                     }
                     UserData.get(getContext()).setFoodItems(foodItems);
 
@@ -99,6 +137,7 @@ public class HomeFragment extends Fragment{
                     //updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
 
                     prepareAccordion();
+
                     //mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
                 }
 
@@ -108,6 +147,131 @@ public class HomeFragment extends Fragment{
                 }
             });
         }
+
+        //mExpandableListView = (ExpandableListView) getView().findViewById(R.id.home_fragment_expandable_list_view);
+        prepareAccordion();
+
+        mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+        //mExpandableListView.setAdapter(mAccordion);
+
+        //mExpandableListView.expandGroup(0);
+        //mExpandableListView.expandGroup(1);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NEW_ENTRY_REQUEST || requestCode == UPDATE_ENTRY_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                prepareAccordion();
+                mAccordion = new HomeFragment.ExpandableListAdapter(getContext(), mHeaders, mListChild);
+                mExpandableListView.setAdapter(mAccordion);
+            }
+        }
+        else if(requestCode == SHOW_REQUEST){
+            if (resultCode == RESULT_OK) {
+                mAccordion = new HomeFragment.ExpandableListAdapter(getContext(), mHeaders, mListChild);
+                mExpandableListView.setAdapter(mAccordion);
+            }
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            View v = inflater.inflate(R.layout.sign_in_fragment, container, false);
+            return v;
+        }
+
+        View v = inflater.inflate(R.layout.home_fragment, container, false);
+/*
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            DatabaseReference refFood = database.getReference("foods/" + user.getUid());
+            refFood.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<FoodItem> foodItems = new ArrayList<FoodItem>();
+                    for (DataSnapshot food : dataSnapshot.getChildren()) {
+                        FoodItem foodItem = new FoodItem();
+
+                        foodItem.setFirebaseId(food.getKey());
+                        foodItem.setName(food.child("name").getValue().toString());
+                        //Log.d("getFoods", food.child("name").getValue().toString());
+
+                        try {
+                            //Log.d("getFoods", "entering try block");
+                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toS
+                            Date dateAdded = new Date(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
+                            foodItem.setDateAdded(dateAdded);
+                            foodItem.setName(food.child("name").getValue().toString());
+                            //Log.d("getFoods", food.child("name").getValue().toString());
+
+                        }
+                        catch (Exception e) {
+                        }
+
+                        foodItems.add(foodItem);
+                        prepareAccordion();
+                        mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+                        mExpandableListView.setAdapter(mAccordion);
+
+                        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                            @Override
+                            public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
+
+                                if (groupPosition == 0) {
+                                    Log.d("childClickListener", "Food Clicked\t" + mFoods.get(childPosition).toString());
+                                    FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(mFoods.get(childPosition).getName());
+                                    Intent intent = new Intent(getActivity(), ManualEntry.class);
+                                    intent.putExtra(getString(R.string.food_name), foodToUpdate.getName());
+                                    intent.putExtra(getString(R.string.food_expires),
+                                            foodToUpdate.getExpirationAsLong());
+                                    intent.putExtra(getString(R.string.food_quantity), foodToUpdate.getQuantity());
+                                    intent.putExtra(getString(R.string.food_category), foodToUpdate.getCategory());
+                                    intent.putExtra(getString(R.string.food_description),
+                                            foodToUpdate.getDescription());
+                                    intent.putExtra(getString(R.string.request_code), UPDATE_ENTRY_REQUEST);
+                                    startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
+
+
+
+                                }
+
+                                if (groupPosition == 1) {
+                                    Intent intent = ShoppingListActivity.newIntent(getActivity(), mLists.get(childPosition).getId());
+                                    startActivity(intent);
+                                }
+
+                                prepareAccordion();
+
+                                mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+                                mExpandableListView.setAdapter(mAccordion);
+
+                                return true;
+                            }
+                        });
+                    }
+                    UserData.get(getContext()).setFoodItems(foodItems);
+
+                    //updateNextExpiring();
+                    //updateLastModifiedList(); //This is the line that needs to be commented out to launch the app
+
+                    prepareAccordion();
+
+                    //mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }*/
         //FoodItem f = new FoodItem();
         //UserData.get(getActivity()).addFoodItem(f);
 
@@ -124,7 +288,48 @@ public class HomeFragment extends Fragment{
 
         mExpandableListView.setAdapter(mAccordion);
 
-        
+
+        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
+
+                if (groupPosition == 0) {
+                    Log.d("childClickListener", "Food Clicked\t" + mFoods.get(childPosition).toString());
+                    FoodItem foodToUpdate = UserData.get(getActivity()).getFoodItem(mFoods.get(childPosition).getName());
+                    Intent intent = new Intent(getActivity(), ManualEntry.class);
+                    intent.putExtra(getString(R.string.food_name), foodToUpdate.getName());
+                    intent.putExtra(getString(R.string.food_expires),
+                            foodToUpdate.getExpirationAsLong());
+                    intent.putExtra(getString(R.string.food_quantity), foodToUpdate.getQuantity());
+                    intent.putExtra(getString(R.string.food_category), foodToUpdate.getCategory());
+                    intent.putExtra(getString(R.string.food_description),
+                            foodToUpdate.getDescription());
+                    intent.putExtra(getString(R.string.request_code), UPDATE_ENTRY_REQUEST);
+                    startActivityForResult(intent, UPDATE_ENTRY_REQUEST);
+
+                }
+
+
+                if (groupPosition == 1) {
+                    Intent intent = ShoppingListActivity.newIntent(getActivity(), mLists.get(childPosition).getId());
+                    startActivity(intent);
+                }
+
+                prepareAccordion();
+
+                mAccordion = new ExpandableListAdapter(getContext(), mHeaders, mListChild);
+
+                mExpandableListView.setAdapter(mAccordion);
+
+                mExpandableListView.expandGroup(0);
+                mExpandableListView.expandGroup(1);
+
+                return true;
+            }
+        });
+
+        mExpandableListView.expandGroup(0);
+        mExpandableListView.expandGroup(1);
 
         return v;
     }
@@ -161,12 +366,13 @@ public class HomeFragment extends Fragment{
 
         mLists = UserData.get(getActivity()).getShoppingLists();
 
+        mHeaders.add("Shopping Lists");
 
         try {
             if (mLists.isEmpty()) {
-                mHeaders.add("You don't have any\nShopping Lists :(");
+                //mHeaders.add("You don't have any\nShopping Lists :(");
                 ArrayList<String> empty = new ArrayList<String>();
-                empty.add("Create a Shopping List to display the last shopping list you modified on the home screen.");
+                empty.add("Create a Shopping List by going to the Shopping Lists menu.");
                 mListChild.put(mHeaders.get(1), empty);
             }
 
@@ -186,13 +392,24 @@ public class HomeFragment extends Fragment{
 */
 
 
-                mHeaders.add("Last Modified List: " + mLists.get(0).getName());
+                /*mHeaders.add("Last Modified List: \n" + mLists.get(0).getName());
                 ArrayList<String> lastList = new ArrayList<String>();
                 List<ShoppingListItem> items = mLists.get(0).getShoppingListItems();
                 for ( ShoppingListItem item : items) {
-                     lastList.add(item.getName());
+
+                    if (!item.getName().equals("")) { //check for empty item name
+                        lastList.add(item.getName());
+                    }
+
                 }
-                mListChild.put(mHeaders.get(1), lastList);
+                mListChild.put(mHeaders.get(1), lastList);*/
+
+
+                ArrayList<String> shoppingListNames = new ArrayList<String>();
+                for (ShoppingList list : mLists) {
+                    shoppingListNames.add(list.getName());
+                }
+                mListChild.put(mHeaders.get(1), shoppingListNames);
 
             }
         }
@@ -257,8 +474,26 @@ public class HomeFragment extends Fragment{
         s += f.getName();
         //s += ": ";
         s += "\n";
-        //s += "On: ";
+        s += "Expires on: ";
         s += f.getExpirationAsString();
+
+        /*long expDate = f.getExpirationAsLong();
+        long cDate = Calendar.getInstance().getTimeInMillis();
+        long millisPerDay = 86400*1000;
+        long millisRemaining = expDate - cDate;
+        long daysRemaining = millisRemaining / millisPerDay;
+        Log.d("formatFood", Long.toString(daysRemaining));
+        int displayDays = 0;
+        if (daysRemaining <= 0) {
+            s += "Item is past expiration date by " + daysRemaining-- + " days";
+        }
+        else if (daysRemaining == 0) {
+            s += "Item expires TODAY";
+        }
+        else {
+            s += "Item will expire in " + daysRemaining + " days";
+        }*/
+
 
         return s;
     }
@@ -350,6 +585,9 @@ public class HomeFragment extends Fragment{
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
         }
+
+
+
     }
 }
 
