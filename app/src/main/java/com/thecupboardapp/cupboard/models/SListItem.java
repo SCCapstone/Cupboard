@@ -138,14 +138,19 @@ public class SListItem implements Comparable<SListItem>{
 
     @Ignore
     @Override
+    /* Compares on item to another, if they're not the same, sort by index */
     public int compareTo(@NonNull SListItem sListItem) {
-        if (this.id == sListItem.getId()) {
-            return 0;
-        } else if (this.getName() == sListItem.getName()
-                && this.getChecked() == sListItem.getChecked()
-                && this.getParentId() == sListItem.getParentId()) {
+        if (this.id == sListItem.getId()
+                && this.name.equals(sListItem.name)
+                && this.checked == sListItem.checked
+                && this.parentId == sListItem.parentId)  {
             return 0;
         }
-        return 0;
+
+        if (this.index < sListItem.getIndex()) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }

@@ -237,6 +237,7 @@ public class SListItemAdapter extends RecyclerView.Adapter<SListItemAdapter.SLis
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            mIsEdited = true;
             int index = mSListItems.indexOf(mSListItem);
             mSListItems.get(index).setChecked(isChecked);
         }

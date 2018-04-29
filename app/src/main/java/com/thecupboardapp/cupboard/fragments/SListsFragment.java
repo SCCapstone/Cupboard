@@ -49,6 +49,7 @@ public class SListsFragment extends Fragment{
         super.onCreate(savedInstanceState);
         mSListViewModel = ViewModelProviders.of(getActivity()).get(SListViewModel.class);
         setHasOptionsMenu(true);
+        getActivity().setTitle(R.string.title_lists);
     }
 
     @Nullable
@@ -56,7 +57,6 @@ public class SListsFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         View v = inflater.inflate(R.layout.fragment_slists, container, false);
-        getActivity().setTitle(R.string.title_lists);
 
         mNewListFAB = v.findViewById(R.id.add_list_fab);
         mSListsRecyclerView = v.findViewById(R.id.shopping_lists_recycler_view);

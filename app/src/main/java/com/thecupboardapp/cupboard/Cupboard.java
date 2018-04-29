@@ -5,6 +5,9 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Relation;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,9 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -37,58 +38,85 @@ public class Cupboard extends Application {
     private DatabaseReference mSListsRef;
     private DatabaseReference mUserRef;
 
-    private Disposable mDisposable;
+    private Disposable mListsDisposable;
     private Disposable mSListItemsDisposable;
 
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "onCreate: ");
         Stetho.initializeWithDefaults(this);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            mSListsRef = FirebaseDatabase.getInstance().getReference()
-                    .child("lists")
-                    .child(mUserId);
-
-            mUserRef = FirebaseDatabase.getInstance().getReference().child("users")
-                    .child(mUserId);
-
-            // mSListsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            //     @Override
-            //     public void onDataChange(DataSnapshot dataSnapshot) {
-            //         dataSnapshot.
-            //     }
-            //
-            //     @Override
-            //     public void onCancelled(DatabaseError databaseError) {
-            //
-            //     }
-            // });
-
-            syncWithFirebase();
+            initialize();
         }
     }
 
-    private void syncWithFirebase(){
-        mDisposable = Database.getDatabase(this).sListAndItemsDao().getALlFlowable()
+
+    private void syncFromFirebase() {
+        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot listSnapshot: dataSnapshot.getChildren()) {
+                    SList list = new SList();
+                    list.setFirebaseKey(listSnapshot.getKey());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: ");
+            }
+        });
+    }
+
+    private void syncToFirebase(){
+        SharedPreferences.Editor editor = getSharedPreferences("name", MODE_PRIVATE).edit();
+        if (mSListItemsDisposable != null && mSListItemsDisposable.isDisposed()) { mListsDisposable.dispose(); }
+
+        mListsDisposable = Database.getDatabase(this).sListAndItemsDao().getAllFlowable()
                 .subscribeOn(Schedulers.io())
                 .subscribe(sListAndItems -> {
+                    Long timeNow = System.currentTimeMillis();
                     Map<String, Object> map = new HashMap<>();
                     for (SListAndItems listAndItems: sListAndItems) {
                         Map<String, Object> inner = new HashMap<>();
                         inner.put("name", listAndItems.getSList().getName());
                         inner.put("lastModified", listAndItems.getSList().getLastModified());
 
+                        if (listAndItems.getSList().getFirebaseKey() == null) {
+                            String key = mSListsRef.push().getKey();
+                            listAndItems.getSList().setFirebaseKey(key);
+
+                            AsyncTask.execute( () -> {
+                                Database.getDatabase(this).sListDao().update(listAndItems.getSList());
+                            });
+                        }
+
                         Map<String, Object> itemMap = new HashMap<>();
                         for (SListItem sListItem: listAndItems.getSListItems()) {
-                            itemMap.put(String.valueOf(sListItem.getId()), sListItem);
+                            if (sListItem.getFirebaseKey() == null) {
+                                // generate a key
+                                String key = mSListsRef.child(listAndItems.getSList().getFirebaseKey()).child("items").push().getKey();
+                                sListItem.setFirebaseKey(key);
+                                itemMap.put(key, sListItem);
+
+                                // update the entry
+                                AsyncTask.execute( () -> {
+                                   Database.getDatabase(this).sListItemDao().update(sListItem);
+                                });
+                            } else {
+                                itemMap.put(sListItem.getFirebaseKey(), sListItem);
+                            }
                         }
 
                         inner.put("items", itemMap);
-
-                        map.put(String.valueOf(listAndItems.getSList().getId()), inner);
+                        map.put(listAndItems.getSList().getFirebaseKey(), inner);
                     }
                     mSListsRef.setValue(map);
+
+                    mUserRef.child("lastModified").setValue(timeNow);
+                    editor.putLong("lastModified", timeNow);
+                    editor.apply();
                 });
     }
 
@@ -103,8 +131,7 @@ public class Cupboard extends Application {
         @Relation(parentColumn = "id", entityColumn = "parent_id")
         private List<SListItem> mSListItems;
 
-        public SListAndItems() {
-        }
+        public SListAndItems() { }
 
         public SList getSList() {
             return mSList;
@@ -126,6 +153,32 @@ public class Cupboard extends Application {
     @Dao
     public interface SListAndItemsDao {
         @Query("SELECT * FROM slists")
-        Flowable<List<SListAndItems>> getALlFlowable();
+        Flowable<List<SListAndItems>> getAllFlowable();
+    }
+
+    public void initialize() {
+        mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mSListsRef = FirebaseDatabase.getInstance().getReference()
+                .child("lists").child(mUserId);
+
+        mUserRef = FirebaseDatabase.getInstance().getReference()
+                .child("users").child(mUserId);
+
+        mUserRef.child("lastModified").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Long lastModified = (long) dataSnapshot.getValue();
+                if (lastModified < getSharedPreferences("name", MODE_PRIVATE).getLong("lastModified", -1)) {
+                    // syncFromFirebase();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        syncToFirebase();
     }
 }

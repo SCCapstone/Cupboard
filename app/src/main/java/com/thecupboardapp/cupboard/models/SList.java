@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -14,7 +15,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 @Entity(tableName = "slists")
-public class SList {
+public class SList implements Comparable<SList>{
     @PrimaryKey(autoGenerate = true)
     private long id;
 
@@ -88,12 +89,25 @@ public class SList {
 
     @Ignore
     public String toString() {
-        String str = "SList{ id: " + id + " , " +
+        return "SList{ id: " + id + " , " +
                 "name: " + name + " , " +
                 "index: " + index + " , " +
                 "lastModified: " + lastModified + " , " +
                 "firebaseKey: " + firebaseKey + "}";
+    }
 
-        return str;
+    @Override
+    public int compareTo(@NonNull SList sList) {
+        if (this.id == sList.id
+                && this.name == sList.name
+                && this.lastModified == sList.lastModified) {
+            return 0;
+        }
+
+        if (this.index < sList.index) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }

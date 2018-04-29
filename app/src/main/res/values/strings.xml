@@ -41,6 +41,7 @@
     <string name="button_cancel">Cancel</string>
     <string name="edit_title">Edit Title</string>
     <string name="delete_all_items">Delete All Items</string>
+    <string name="cupboard_logo">Cupboard logo</string>
 
     <string-array name="sort_choices"><item>Alphabetically</item><item>Expiration</item></string-array>
 

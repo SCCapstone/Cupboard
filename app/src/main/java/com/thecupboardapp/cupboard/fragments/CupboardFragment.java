@@ -51,6 +51,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mCupboardViewModel = ViewModelProviders.of(this).get(CupboardViewModel.class);
+        getActivity().setTitle(R.string.title_cupboard);
     }
 
     @Nullable
@@ -63,6 +64,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         manEntFAB = v.findViewById(R.id.add_food_fab);
 
         manEntFAB.setOnClickListener(v1 -> {
+            Log.d(TAG, "onCreateView: entry thing clicked");
             Intent intent = new Intent(getContext(), ManualEntryActivity.class);
             intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, ManualEntryActivity.NEW_ENTRY_REQUEST);
             startActivityForResult(intent, ManualEntryActivity.NEW_ENTRY_REQUEST);
