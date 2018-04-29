@@ -51,6 +51,7 @@ public class CupboardViewModel extends AndroidViewModel {
         return mFoodItemDao.getAllMaybe();
     }
 
+    //Sort by food name alphabetically or expiration date from closest to furthest from present
     public void sort(int method) {
         AsyncTask.execute(() -> {
             switch (method) {
@@ -60,8 +61,13 @@ public class CupboardViewModel extends AndroidViewModel {
                     break;
                 }
                 case SORT_EXPIRATION: {
-                    Collections.sort(mFoodItems, (itemA, itemB) ->
-                            Long.compare(itemA.getExpiration(), itemB.getExpiration()));
+                    //If one or both has no exp date, want to list it last
+                    Collections.sort(mFoodItems, (itemA, itemB) ->{
+                        if (itemA.getExpiration() == 0 || itemB.getExpiration() == 0)
+                            return -Long.compare(itemA.getExpiration(), itemB.getExpiration());
+                        else
+                            return Long.compare(itemA.getExpiration(), itemB.getExpiration());
+                            });
                     break;
                 }
                 default :

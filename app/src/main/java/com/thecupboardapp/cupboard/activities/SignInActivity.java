@@ -46,10 +46,10 @@ public class SignInActivity extends AppCompatActivity {
         mEmail = "";
         mPassword = "";
 
-        mEmailEditText = (EditText) findViewById(R.id.sign_in_email);
-        mPasswordEditText = (EditText) findViewById(R.id.sign_in_password);
-        mSignInButton = (Button) findViewById(R.id.button_sign_in);
-        mCreateAccountButton = (Button) findViewById(R.id.button_create_account);
+        mEmailEditText = findViewById(R.id.sign_in_email);
+        mPasswordEditText = findViewById(R.id.sign_in_password);
+        mSignInButton = findViewById(R.id.button_sign_in);
+        mCreateAccountButton = findViewById(R.id.button_create_account);
 
         mEmailEditText.addTextChangedListener(new TextWatcher() {
             @Override

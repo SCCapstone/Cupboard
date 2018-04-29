@@ -86,6 +86,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         super.onDestroy();
     }
 
+    //Inflates the menu for My Cupboard, sets up the search bar
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.cupboard_menu, menu);
@@ -98,6 +99,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
 
     }
 
+    //Method called after a food is added or edited
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: " + requestCode + " , " + resultCode);
@@ -120,24 +122,28 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    //Closing out of the search bar completely should return to showing whole list
     @Override
     public boolean onClose() {
         mAdapter.filterDataByQuery("");
         return false;
     }
 
+    //Search bar method for changing the string being searched
     @Override
     public boolean onQueryTextChange(String query) {
         mAdapter.filterDataByQuery(query);
         return false;
     }
 
+    //Do same thing as onQueryTextChange
     @Override
     public boolean onQueryTextSubmit(String query) {
         mAdapter.filterDataByQuery(query);
         return false;
     }
 
+    //Method for user to select what foods My Cupboard displays with the menu list
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
@@ -164,7 +170,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         }
     }
 
-
+    //After a change is made to mFoodItems, this method called to update adapter
     public void updateFoods(List<FoodItem> mFoodItems) {
         mAdapter = new CupboardExpandableListAdapter(getActivity(), mFoodItems, this);
 

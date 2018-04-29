@@ -82,6 +82,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
         mManualEntryViewModel = ViewModelProviders.of(this).get(ManualEntryViewModel.class);
 
+        //Set up initial values for variables
         mCalendar = Calendar.getInstance();
         mRequestCode = getIntent().getLongExtra(FOOD_ID_REQUEST_KEY, NEW_ENTRY_REQUEST);
 
@@ -92,11 +93,13 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         mCategorySpinner.setOnItemSelectedListener(this);
 
         if (mRequestCode == NEW_ENTRY_REQUEST) {
+            //Fill non-required fields with values if new item
             setTitle("New Food");
             mDescriptionEditText.setText("None");
             mExpirationEditText.setText("Never");
             mUnitsEditText.setText("Units");
         } else {
+            //Fill all fields with previous values if editing item
             setTitle("Edit Food");
             mAddUpdateButton.setText("Update");
             mManualEntryViewModel.setFoodItemFlowable(mRequestCode);
@@ -120,6 +123,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         }
     }
 
+    //Sets all onClickListeners for all buttons
     @Override
     protected void onStart() {
         super.onStart();
@@ -167,6 +171,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         });
     }
 
+    //Checks if the required inputs have been entered in
     private boolean inputsAreCorrect() {
         if (mNameEditText.getText().toString().isEmpty()) {
             Toast.makeText(this, "Please specify a name.", Toast.LENGTH_SHORT).show();
@@ -192,6 +197,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         return intent;
     }
 
+    //Calendar Dialog for user when selecting an expiration date
     DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
         mCalendar.set(Calendar.YEAR, year);
         mCalendar.set(Calendar.MONTH, monthOfYear);
@@ -205,6 +211,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         return super.onCreateOptionsMenu(menu);
     }
 
+    //Barcode Scanner
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
@@ -215,6 +222,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         }
     }
 
+    //Checks if permissions are valid to use barcode scanner and starts scan
     public boolean openCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -229,7 +237,8 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case CAMERA_PERMISSION_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -241,8 +250,10 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         }
     }
 
+    //Used to set label beside Calendar image button to correct date
     private void updateExpirationLabel() {
-        String date = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM).format(mCalendar.getTimeInMillis());
+        String date = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
+                .format(mCalendar.getTimeInMillis());
         mExpirationEditText.setText(date);
     }
 
@@ -296,6 +307,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         return result.toString();
     }
 
+    //Required method to implement AdapterView.OnItemSelectedListener
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
@@ -303,6 +315,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
         // mFoodCategory = parent.getItemAtPosition(pos).toString();
     }
 
+    //Required method to implement AdapterView.OnItemSelectedListener
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
     }

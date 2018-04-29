@@ -64,6 +64,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         return mQueryFoodItems.get(groupPosition);
     }
 
+    //Returns text that child of FoodItem will display
     @Override
     public String getChild(int groupPosition, int childPosition) {
         FoodItem item = mQueryFoodItems.get(groupPosition);
@@ -99,6 +100,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
+    //Returns view of child of FoodItem
     @Override
     public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
@@ -119,6 +121,8 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         holder.text.setText(getChild(groupPosition, childPosition));
+
+        //Pressing editButton sends user to ManualEntry Screen with data from item pressed
         holder.editButton.setFocusable(false);
         holder.editButton.setOnClickListener(v -> {
             Intent intent = new Intent(mContext, ManualEntryActivity.class);
@@ -126,6 +130,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
             mFragment.startActivityForResult(intent, ManualEntryActivity.EDIT_ENTRY_REQUEST);
         });
 
+        //Pressing addToListButton displays dialog to choose which list to add to
         holder.addToListButton.setFocusable(false);
         holder.addToListButton.setOnClickListener(v -> {
             Database.getDatabase(mContext).sListDao().getAllSingle()
@@ -157,6 +162,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    //Returns View for group
     @Override
     public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         FoodItem foodItem = mQueryFoodItems.get(groupPosition);
@@ -175,6 +181,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        //pressing quantityButton displays dialog with picker to change quantity of food
         holder.quantityButton.setFocusable(false);
         holder.quantityButton.setText(Float.toString(foodItem.getQuantity()));
         holder.quantityButton.setOnClickListener(view -> {
@@ -217,6 +224,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
+    //Filtering method for search bar, displays only items that contain 'query' in name of item
     public void filterDataByQuery(String query) {
         query = query.toLowerCase();
         mQueryFoodItems.clear();
@@ -235,6 +243,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
     }
 
+    //Filtering method for categories, displays only items with category 'category' (or all)
     public void filterDataByCategory(String category) {
         mQueryFoodItems.clear();
         if (category.equals("All")) {

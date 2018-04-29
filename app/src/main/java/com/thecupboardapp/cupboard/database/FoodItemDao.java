@@ -20,12 +20,15 @@ import io.reactivex.Maybe;
 
 @Dao
 public interface FoodItemDao {
+    //Gets all FoodItems in Flowable
     @Query("SELECT * FROM food_items ORDER BY `index` ASC")
     Flowable<List<FoodItem>> getAllFlowable();
 
+    //Gets all FoodItems in Maybe
     @Query("SELECT * FROM food_items ORDER BY `index` ASC")
     Maybe<List<FoodItem>> getAllMaybe();
 
+    //Gets 1 FoodItem with specified id
     @Query("SELECT * FROM food_items WHERE id = :id LIMIT 1")
     Flowable<FoodItem> getFoodItemFlowable(long id);
 

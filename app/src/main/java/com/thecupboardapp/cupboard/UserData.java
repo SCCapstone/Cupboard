@@ -29,7 +29,6 @@ public class UserData {
     private static final String TAG = "UserData";
     private static UserData sUserData;
     private List<FoodItem> mFoodItems;
-    private List<String> mRecipes;
 
     public Database db;
 
@@ -42,26 +41,10 @@ public class UserData {
 
     private UserData(Context context) {
         mFoodItems = new ArrayList<FoodItem>();
-        mRecipes = new ArrayList<String>();
-
-        // db = Room.databaseBuilder(context, Database.class, "cupboard_db").build();
-
-        // final com.thecupboardapp.cupboard.models.SList list = new com.thecupboardapp.cupboard.models.SList("another", 6);
-        // list.setId(1);
-
-        // db.sListDao().getAllFlowable().subscribe(lists -> {
-        //     Log.d(TAG, "UserData: size of all = " + lists.size());
-        // });
-
-        // If signed in do shit
-        // if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-        //     updateFromFirebase();
-        // }
     }
 
     public void reset() {
         mFoodItems = new ArrayList<FoodItem>();
-        mRecipes = new ArrayList<String>();
     }
 
     public void getFoodsFromFirebase() {
@@ -86,8 +69,6 @@ public class UserData {
                         if(food.hasChild("units")) foodItem.setUnits(food.child("units").getValue().toString());
 
                         try {
-                            //Log.d("getFoods", "entering try block");
-                            //Log.d("getFoods", food.child("expirationAsLong").getValue().toString());
                             foodItem.setExpiration(Long.parseLong(food.child("expirationAsLong").getValue().toString()));
                             foodItem.setDateAdded(Long.parseLong(food.child("dateAddedAsLong").getValue().toString()));
                         } catch (Exception e) {
@@ -97,7 +78,6 @@ public class UserData {
                     }
                     mFoodItems = foodItems;
                     sortFoodItems("alphabetically");
-                    //sortFoodItems("expiresSoon");
                 }
 
                 @Override
@@ -110,7 +90,6 @@ public class UserData {
 
 
     public void updateFromFirebase() {
-        // getListsFromFirebase();
         getFoodsFromFirebase();
     }
 
