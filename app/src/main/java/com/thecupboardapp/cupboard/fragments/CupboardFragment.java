@@ -66,7 +66,7 @@ public class CupboardFragment extends Fragment implements SearchView.OnQueryText
         manEntFAB.setOnClickListener(v1 -> {
             Log.d(TAG, "onCreateView: entry thing clicked");
             Intent intent = new Intent(getContext(), ManualEntryActivity.class);
-            intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, ManualEntryActivity.NEW_ENTRY_REQUEST);
+            intent.putExtra(ManualEntryActivity.FOOD_ID_EXTRA_KEY, ManualEntryActivity.NEW_ENTRY_REQUEST);
             startActivityForResult(intent, ManualEntryActivity.NEW_ENTRY_REQUEST);
         });
 

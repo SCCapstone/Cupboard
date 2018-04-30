@@ -149,11 +149,6 @@ public class FoodItem implements Comparable<FoodItem> {
     }
 
     @Ignore
-    public static String longToDate(long dateInMillis) {
-        return SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM).format(dateInMillis);
-    }
-
-    @Ignore
     public int compareTo(FoodItem f2) {
         long comparison = this.expiration - f2.getExpiration();
 

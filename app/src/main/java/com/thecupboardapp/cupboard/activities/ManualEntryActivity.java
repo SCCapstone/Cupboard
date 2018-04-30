@@ -47,7 +47,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
     public static final int NEW_ENTRY_REQUEST = 0;
     public static final int EDIT_ENTRY_REQUEST = 1;
     private static final int CAMERA_PERMISSION_REQUEST = 0;
-    public static final String FOOD_ID_REQUEST_KEY = "com.thecupboardapp.cupboard.foodId";
+    public static final String FOOD_ID_EXTRA_KEY = "com.thecupboardapp.cupboard.foodId";
 
     private EditText mNameEditText;
     private EditText mExpirationEditText;
@@ -84,7 +84,7 @@ public class ManualEntryActivity extends AppCompatActivity implements AdapterVie
 
         //Set up initial values for variables
         mCalendar = Calendar.getInstance();
-        mRequestCode = getIntent().getLongExtra(FOOD_ID_REQUEST_KEY, NEW_ENTRY_REQUEST);
+        mRequestCode = getIntent().getLongExtra(FOOD_ID_EXTRA_KEY, NEW_ENTRY_REQUEST);
 
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
                 R.array.food_categories, R.layout.spinner_layout);

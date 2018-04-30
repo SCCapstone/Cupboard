@@ -21,6 +21,7 @@ import com.thecupboardapp.cupboard.fragments.CupboardFragment;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
+import com.thecupboardapp.cupboard.utils.DateUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +74,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         if (item.getExpiration() == 0) {
             date = "Never";
         } else {
-            date = FoodItem.longToDate(item.getExpiration());
+            date = DateUtilities.longToDate(item.getExpiration());
         }
 
         quantity = Float.toString(item.getQuantity()) + " " + item.getUnits();
@@ -81,7 +82,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         return String.format("Quantity: %s\nExpires: %s\nDate Added: %s\nDescription: %s",
                 quantity,
                 date,
-                FoodItem.longToDate(item.getDateAdded()),
+                DateUtilities.longToDate(item.getDateAdded()),
                 item.getDescription());
     }
 
@@ -126,7 +127,7 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
         holder.editButton.setFocusable(false);
         holder.editButton.setOnClickListener(v -> {
             Intent intent = new Intent(mContext, ManualEntryActivity.class);
-            intent.putExtra(ManualEntryActivity.FOOD_ID_REQUEST_KEY, foodItem.getId());
+            intent.putExtra(ManualEntryActivity.FOOD_ID_EXTRA_KEY, foodItem.getId());
             mFragment.startActivityForResult(intent, ManualEntryActivity.EDIT_ENTRY_REQUEST);
         });
 
