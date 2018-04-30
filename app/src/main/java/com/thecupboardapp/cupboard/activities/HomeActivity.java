@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.fragments.CupboardFragment;
-import com.thecupboardapp.cupboard.fragments.DashboardFragment;
+import com.thecupboardapp.cupboard.fragments.HomeFragment;
 import com.thecupboardapp.cupboard.fragments.SListsFragment;
 
 public class HomeActivity extends AppCompatActivity
@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Set the home screen to be up first
         FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().add(R.id.fragment_container, new DashboardFragment()).commit();
+        fm.beginTransaction().add(R.id.fragment_container, new HomeFragment()).commit();
     }
 
     @Override
@@ -125,7 +125,7 @@ public class HomeActivity extends AppCompatActivity
 
         switch(item.getItemId()) {
             case R.id.nav_dashboard: {
-                fragment = new DashboardFragment();
+                fragment = new HomeFragment();
                 currentFragment = R.id.nav_dashboard;
                 break;
             }
