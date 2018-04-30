@@ -25,6 +25,9 @@ public interface FoodItemDao {
     @Query("SELECT * FROM food_items ORDER BY `index` ASC")
     Flowable<List<FoodItem>> getAllFlowable();
 
+    @Query("SELECT * FROM food_items WHERE expiration != 0 AND :timeNow + :timeFrame >= expiration ORDER BY expiration ASC")
+    Flowable<List<FoodItem>> getAllFlowableByExpiration(long timeNow, long timeFrame);
+
     //Gets all FoodItems in Maybe
     @Query("SELECT * FROM food_items ORDER BY `index` ASC")
     Maybe<List<FoodItem>> getAllMaybe();

@@ -9,10 +9,20 @@
 
 
     <ExpandableListView
-        android:id="@+id/home_fragment_expandable_list_view"
-        android:layout_width="368dp"
-        android:layout_height="495dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"
-        tools:ignore="MissingConstraints" />
+        android:id="@+id/food_expandable_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_height="100dp" />
+
+    <ExpandableListView
+        android:id="@+id/slist_expandable_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/food_expandable_view"
+        tools:layout_height="100dp" />
 </android.support.constraint.ConstraintLayout>

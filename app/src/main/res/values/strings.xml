@@ -11,7 +11,7 @@
     <string name="nav_header_title">Not currently signed in.</string>
     <string name="nav_header_subtitle">Click here to sign in!</string>
 
-    <string name="nav_label_home">Home</string>
+    <string name="nav_label_dashboard">Dashboard</string>
     <string name="nav_label_cupboard">Cupboard</string>
     <string name="nav_label_recipes">Recipes</string>
     <string name="nav_label_lists">Shopping Lists</string>
@@ -23,7 +23,6 @@
     <string name="title_recipes">My Recipes</string>
     <string name="title_lists">My Shopping Lists</string>
 
-    <string name="nav_label_dashboard">Dashboard</string>
 
     <string name="email_text_box">Email</string>
     <string name="password_text_box">Password</string>

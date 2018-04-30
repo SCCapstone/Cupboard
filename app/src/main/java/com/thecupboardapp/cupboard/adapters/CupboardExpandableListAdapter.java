@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
-    public static final String TAG = "ExpandableListAdapter";
+    public static final String TAG = "ExpandableFoodAdapter";
     private final LayoutInflater mLayoutInflater;
     private Context mContext;
     private CupboardFragment mFragment;

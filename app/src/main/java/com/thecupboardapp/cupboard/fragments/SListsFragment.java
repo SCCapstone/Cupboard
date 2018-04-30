@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Kyle on 1/12/2018.
  */
 
-public class SListsFragment extends Fragment{
+public class SListsFragment extends Fragment {
     private final String TAG = "SListsFragment";
 
     public static final int NEW_LIST_REQUEST_CODE = 1;

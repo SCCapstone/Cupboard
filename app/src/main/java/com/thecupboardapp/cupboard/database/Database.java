@@ -9,6 +9,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import com.thecupboardapp.cupboard.Cupboard;
+import com.thecupboardapp.cupboard.UserData;
 import com.thecupboardapp.cupboard.models.FoodItem;
 import com.thecupboardapp.cupboard.models.SList;
 import com.thecupboardapp.cupboard.models.SListItem;
@@ -34,7 +35,7 @@ public abstract class Database extends RoomDatabase {
 
     public abstract FoodItemDao foodItemDao();
 
-    public abstract Cupboard.SListAndItemsDao sListAndItemsDao();
+    public abstract UserData.SListAndItemsDao sListAndItemsDao();
 
     private static Database INSTANCE;
 

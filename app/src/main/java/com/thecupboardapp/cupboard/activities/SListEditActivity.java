@@ -33,7 +33,7 @@ import io.reactivex.schedulers.Schedulers;
 public class SListEditActivity extends AppCompatActivity {
     private String TAG = "SListEditActivity";
 
-    public static final String EXTRA_ID = "com.thecupboardapp.cupboard.EXTRA_ID";
+    public static final String SLIST_ID_EXTRA_KEY = "com.thecupboardapp.cupboard.SLIST_ID_EXTRA_KEY";
     public static final long NEW_SLIST = -1;
     private long sListIdExtra;
 
@@ -64,7 +64,7 @@ public class SListEditActivity extends AppCompatActivity {
         mDisposables = new CompositeDisposable();
 
         // Get the sListIdExtra to see if this is a new list or not
-        sListIdExtra = getIntent().getLongExtra(EXTRA_ID, NEW_SLIST);
+        sListIdExtra = getIntent().getLongExtra(SLIST_ID_EXTRA_KEY, NEW_SLIST);
 
         // Initialize the viewmodel
         mSListEditViewModel = ViewModelProviders.of(this).get(SListEditViewModel.class);
@@ -122,7 +122,7 @@ public class SListEditActivity extends AppCompatActivity {
     /* Creates an intent for this Activity. Takes in an id for the list selected. */
     public static Intent newIntent(Context packageContext, long id) {
         Intent intent = new Intent(packageContext, SListEditActivity.class);
-        intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(SLIST_ID_EXTRA_KEY, id);
         return intent;
     }
 

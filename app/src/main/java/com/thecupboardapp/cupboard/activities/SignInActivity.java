@@ -129,17 +129,15 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         mAuth.signInWithEmailAndPassword(mEmail, mPassword)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        UserData.get(SignInActivity.this).updateFromFirebase();
-                        setResult(SIGN_IN_RESULT_CODE);
-                        finish();
-                    } else {
-                        Toast.makeText(SignInActivity.this, task.getException().getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
+            .addOnCompleteListener(this, task -> {
+                if (task.isSuccessful()) {
+                    UserData.get(SignInActivity.this).setReferences();
+                    UserData.get(SignInActivity.this).setUpListeners();
+                    setResult(SIGN_IN_RESULT_CODE);
+                    finish();
+                } else {
+                    Toast.makeText(SignInActivity.this, task.getException().getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -150,16 +148,16 @@ public class SignInActivity extends AppCompatActivity {
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(mEmail, mPassword).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    setResult(NEW_ACCOUNT_RESULT_CODE);
-                    finish();
-                } else {
-                    Toast.makeText(SignInActivity.this, task.getException().getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                }
+        mAuth.createUserWithEmailAndPassword(mEmail, mPassword).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                UserData.get(SignInActivity.this).setReferences();
+                UserData.get(SignInActivity.this).initialPushToFirebase();
+                UserData.get(SignInActivity.this).setUpListeners();
+                setResult(NEW_ACCOUNT_RESULT_CODE);
+                finish();
+            } else {
+                Toast.makeText(SignInActivity.this, task.getException().getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
