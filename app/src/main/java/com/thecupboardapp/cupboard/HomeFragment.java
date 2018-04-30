@@ -321,15 +321,15 @@ public class HomeFragment extends Fragment{
 
                 mExpandableListView.setAdapter(mAccordion);
 
-                mExpandableListView.expandGroup(0);
-                mExpandableListView.expandGroup(1);
+                /*mExpandableListView.expandGroup(0);
+                mExpandableListView.expandGroup(1);*/
 
                 return true;
             }
         });
 
-        mExpandableListView.expandGroup(0);
-        mExpandableListView.expandGroup(1);
+        /*mExpandableListView.expandGroup(0);
+        mExpandableListView.expandGroup(1);*/
 
         return v;
     }
