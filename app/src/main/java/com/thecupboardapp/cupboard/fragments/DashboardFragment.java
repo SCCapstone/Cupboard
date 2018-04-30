@@ -84,7 +84,7 @@ public class DashboardFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(sLists -> {
-                    mExpandableSListAdapter = new ExpandableSListAdapter(getContext(), "Last Modified Lists", sLists);
+                    mExpandableSListAdapter = new ExpandableSListAdapter(getContext(), "Shopping Lists", sLists);
                     mListExpandableView.setAdapter(mExpandableSListAdapter);
                     mListExpandableView.expandGroup(0);
                 });

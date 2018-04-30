@@ -35,6 +35,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by Kyle on 1/15/2018.
  */
@@ -43,6 +45,7 @@ public class UserData {
     private static final String TAG = "UserData";
     private static UserData sUserData;
     private Database mDatabase;
+    private static SharedPreferences sSharedPreferences;
 
     private DatabaseReference mSListsRef;
     private DatabaseReference mUserRef;
@@ -62,11 +65,32 @@ public class UserData {
     private UserData(Context context) {
         mDatabase = Database.getDatabase(context);
         mCompositeDisposable = new CompositeDisposable();
+        sSharedPreferences = context.getSharedPreferences("name", MODE_PRIVATE);
     }
 
-    public void initialPushToFirebase(){
-        // SharedPreferences.Editor editor = getSharedPreferences("name", MODE_PRIVATE).edit();
+    public void syncWithFirebase(){
         CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+        // mUserRef.child("lastModified").addListenerForSingleValueEvent(new ValueEventListener() {
+        //     @Override
+        //     public void onDataChange(DataSnapshot dataSnapshot) {
+        //         long firebaseLastModified = (long) dataSnapshot.getValue();
+        //         if (firebaseLastModified < sSharedPreferences.getLong("lastModified", 0)) {
+        //
+        //         } else {
+        //
+        //         }
+        //     }
+        //
+        //     @Override
+        //     public void onCancelled(DatabaseError databaseError) {
+        //
+        //     }
+        // });
+
+        // if (sSharedPreferences.getLong("lastModified"), 0) == mU {
+        //
+        // }
 
         compositeDisposable.add(mDatabase.sListAndItemsDao().getAllSingle()
                 .subscribeOn(Schedulers.io())

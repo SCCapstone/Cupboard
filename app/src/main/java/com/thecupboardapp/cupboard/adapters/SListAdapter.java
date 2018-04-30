@@ -115,16 +115,16 @@ public class SListAdapter extends RecyclerView.Adapter<SListAdapter.SListHolder>
                 view.getContext().startActivity(intent);
             });
 
-            mTitleTextView.setOnLongClickListener(view -> {
-                String name = mTitleTextView.getText().toString();
-                String[] options = {"Delete", "Copy", "Another option"};
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle(String.format("\"%s\" Options", name));
-                builder.setItems(options, (dialog, which) -> Log.d(TAG, "onClick:"));
-                builder.show();
-                return true;
-            });
+            // mTitleTextView.setOnLongClickListener(view -> {
+            //     String name = mTitleTextView.getText().toString();
+            //     String[] options = {"Delete", "Copy", "Another option"};
+            //
+            //     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            //     builder.setTitle(String.format("\"%s\" Options", name));
+            //     builder.setItems(options, (dialog, which) -> Log.d(TAG, "onClick:"));
+            //     builder.show();
+            //     return true;
+            // });
         }
     }
 }

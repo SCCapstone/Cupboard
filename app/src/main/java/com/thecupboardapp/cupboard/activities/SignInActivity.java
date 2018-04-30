@@ -3,7 +3,6 @@ package com.thecupboardapp.cupboard.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,9 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.thecupboardapp.cupboard.R;
 import com.thecupboardapp.cupboard.UserData;
@@ -151,7 +147,7 @@ public class SignInActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(mEmail, mPassword).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 UserData.get(SignInActivity.this).setReferences();
-                UserData.get(SignInActivity.this).initialPushToFirebase();
+                UserData.get(SignInActivity.this).syncWithFirebase();
                 UserData.get(SignInActivity.this).setUpListeners();
                 setResult(NEW_ACCOUNT_RESULT_CODE);
                 finish();
