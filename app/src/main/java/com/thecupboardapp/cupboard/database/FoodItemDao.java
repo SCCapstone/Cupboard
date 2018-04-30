@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 /**
  * Created by Kyle on 4/19/2018.
@@ -27,6 +28,9 @@ public interface FoodItemDao {
     //Gets all FoodItems in Maybe
     @Query("SELECT * FROM food_items ORDER BY `index` ASC")
     Maybe<List<FoodItem>> getAllMaybe();
+
+    @Query("SELECT * FROM food_items")
+    Single<List<FoodItem>> getAllSingle();
 
     //Gets 1 FoodItem with specified id
     @Query("SELECT * FROM food_items WHERE id = :id LIMIT 1")
