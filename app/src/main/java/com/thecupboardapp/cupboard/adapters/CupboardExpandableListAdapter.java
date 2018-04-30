@@ -138,25 +138,30 @@ public class CupboardExpandableListAdapter extends BaseExpandableListAdapter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(sLists -> {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                        builder.setTitle(String.format("Which list would you like to add \"%s\" to?", foodItem.getName()));
-
-                        List<String> choices = new ArrayList<>();
-                        for (SList sList: sLists) {
-                            choices.add(sList.getName());
+                        if(sLists.size()==0){
+                            Toast.makeText(mContext, "No shopping lists to add to", Toast.LENGTH_SHORT).show();
                         }
-                        String[] arr = choices.toArray(new String[choices.size()]);
+                        else{
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle(String.format("Which list would you like to add \"%s\" to?", foodItem.getName()));
 
-                        builder.setItems(arr, (dialog, which) -> {
-                            SListItem sListItem = new SListItem(foodItem.getName(), false);
-                            sListItem.setParentId(sLists.get(which).getId());
-                            AsyncTask.execute( () -> {
-                                Database.getDatabase(mContext).sListItemDao().insertAll(sListItem);
+                            List<String> choices = new ArrayList<>();
+                            for (SList sList: sLists) {
+                                choices.add(sList.getName());
+                            }
+                            String[] arr = choices.toArray(new String[choices.size()]);
+
+                            builder.setItems(arr, (dialog, which) -> {
+                                SListItem sListItem = new SListItem(foodItem.getName(), false);
+                                sListItem.setParentId(sLists.get(which).getId());
+                                AsyncTask.execute( () -> {
+                                    Database.getDatabase(mContext).sListItemDao().insertAll(sListItem);
+                                });
+
+                                Toast.makeText(mContext, String.format("%s added to: %s", foodItem.getName(), arr[which]), Toast.LENGTH_SHORT).show();
                             });
-
-                            Toast.makeText(mContext, String.format("%s added to: %s", foodItem.getName(), arr[which]), Toast.LENGTH_SHORT).show();
-                        });
-                        builder.show();
+                            builder.show();
+                        }
                     });
         });
 
