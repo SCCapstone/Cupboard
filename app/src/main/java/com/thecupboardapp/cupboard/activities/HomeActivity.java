@@ -34,14 +34,15 @@ public class HomeActivity extends AppCompatActivity
     private NavigationView mNavigationView;
     private View mHeaderView;
 
-    private int currentFragment;
+    private int currentFragment = R.layout.activity_home;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        currentFragment = R.layout.activity_home;
         setContentView(R.layout.activity_home);
+        currentFragment = R.layout.activity_home;
 
         mToolbar = findViewById(R.id.toolbar);
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -96,7 +97,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult in homeactivity: " + requestCode + ", " + resultCode);
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             switch (resultCode) {
                 case SignInActivity.SIGN_IN_RESULT_CODE:
@@ -108,7 +108,6 @@ public class HomeActivity extends AppCompatActivity
                 default:
                     return;
             }
-            recreate();
         }
     }
 
@@ -145,8 +144,9 @@ public class HomeActivity extends AppCompatActivity
             }
             case R.id.nav_logout: {
                 FirebaseAuth.getInstance().signOut();
+                UserData.get(this).stopListeners();
                 Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
-                recreate();
+                // recreate();
                 break;
             }
             default: {
